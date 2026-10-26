@@ -32,7 +32,9 @@ def commits_to_push() -> list[str]:
     if upstream:
         revs = git("rev-list", f"{upstream}..HEAD")
     else:
-        revs = git("rev-list", "--not", "--remotes", "HEAD")
+        # Positives first, then exclusions. `--not HEAD` would select nothing
+        # at all, which is how a gate fails open.
+        revs = git("rev-list", "HEAD", "--not", "--remotes")
     return [line for line in revs.splitlines() if line]
 
 
