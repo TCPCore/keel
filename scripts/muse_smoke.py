@@ -63,7 +63,11 @@ def main() -> int:
         return 3
 
     try:
-        result = client.complete("Reply with exactly: keel ok", max_tokens=16)
+        result = client.complete(
+            "Reply with exactly: keel ok",
+            max_tokens=64,
+            extra={"reasoning_effort": "minimal"},
+        )
     except ApiError as exc:
         print(f"completion failed: {exc} (status={exc.status})", file=sys.stderr)
         if exc.body:
