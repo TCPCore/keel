@@ -6,12 +6,13 @@ Exit codes are the CI contract: 0 green, 1 amber, 2 red, 3 unsupported.
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
 from . import __version__
 from .panel import builtin, load_panel, panel_hash, validate
-from .report import render_text, write_card
+from .report import Card, render_comparison, render_text, write_card
 from .synth import run_demo
 
 GREEN, AMBER, RED, UNSUPPORTED = 0, 1, 2, 3
@@ -42,8 +43,24 @@ def build_parser() -> argparse.ArgumentParser:
     scan.add_argument("--out", default="cards", help="directory for the card")
     scan.add_argument("--seed", type=int, default=7)
     scan.add_argument("--demo", action="store_true", help="use synthetic data")
+    scan.add_argument(
+        "--from-card",
+        action="append",
+        metavar="CARD",
+        help="compare two existing cards; no model call, no cost",
+    )
     scan.add_argument("--strict", action="store_true", help="exit with the verdict code")
     scan.set_defaults(func=cmd_scan, demo_out="examples")
+
+    job = sub.add_parser(
+        "job",
+        help="run a checkpoint job (white-box: load, probe, capture, attribute)",
+    )
+    job.add_argument("checkpoint")
+    job.add_argument("--reference")
+    job.add_argument("--panel", default="v0.2")
+    job.add_argument("--out", default="cards")
+    job.set_defaults(func=cmd_job)
 
     panel = sub.add_parser("panel", help="inspect or validate a probe panel")
     panel_sub = panel.add_subparsers(dest="panel_command", required=True)
@@ -71,6 +88,8 @@ def cmd_demo(args: argparse.Namespace) -> int:
 
 
 def cmd_scan(args: argparse.Namespace) -> int:
+    if args.from_card:
+        return cmd_compare(args)
     if args.demo:
         args.out = getattr(args, "demo_out", "examples")
         return cmd_demo(args)
@@ -81,8 +100,35 @@ def cmd_scan(args: argparse.Namespace) -> int:
         )
         return UNSUPPORTED
     print(
-        "keel scan: the weights path needs the GPU extras and is specified in "
-        "muse/05-capture-hooks.md. Use --demo for the synthetic run.",
+        "keel scan: the weights path is the checkpoint job — run `keel job ./ckpt`. "
+        "It is not implemented in v0.1; see docs/COMPUTE.md. Use --demo for the "
+        "synthetic run, or --from-card to compare existing cards.",
+        file=sys.stderr,
+    )
+    return UNSUPPORTED
+
+
+def cmd_compare(args: argparse.Namespace) -> int:
+    if len(args.from_card) != 2:
+        print("keel scan --from-card needs exactly two cards", file=sys.stderr)
+        return UNSUPPORTED
+    try:
+        cards = [
+            Card.from_dict(json.loads(Path(path).read_text(encoding="utf-8")))
+            for path in args.from_card
+        ]
+    except (OSError, ValueError, KeyError) as exc:
+        print(f"keel scan --from-card: {exc}", file=sys.stderr)
+        return UNSUPPORTED
+    print(render_comparison(cards[0], cards[1]))
+    return cards[1].verdict.exit_code
+
+
+def cmd_job(args: argparse.Namespace) -> int:
+    print(
+        "keel job: the checkpoint job (load -> panel -> residuals -> attribution -> card) "
+        "is the white-box path and runs as a container on Baseten Training Jobs, not as "
+        "an API call. Not implemented in v0.1; see docs/COMPUTE.md and docs/METHOD.md.",
         file=sys.stderr,
     )
     return UNSUPPORTED

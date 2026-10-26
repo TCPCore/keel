@@ -68,6 +68,17 @@ class AxisScore:
         return self.delta / self.scale if self.scale else 0.0
 
     @property
+    def resolvable(self) -> float:
+        """Smallest delta this axis could detect at 80% power.
+
+        Derived from the interval width: the CI half-width is about
+        ``1.96 * sd / sqrt(n)``, while the detectable effect is
+        ``2.80 * sd / sqrt(n)``, so the MDE is ~1.43 times the half-width.
+        """
+        half_width = (self.ci_high - self.ci_low) / 2.0
+        return 1.4286 * half_width
+
+    @property
     def significant(self) -> bool:
         return self.q_value <= Q_THRESHOLD and (self.ci_low > 0.0 or self.ci_high < 0.0)
 
@@ -78,6 +89,7 @@ class AxisScore:
             "candidate": round(self.candidate, 4),
             "delta": round(self.delta, 4),
             "z": round(self.z, 3),
+            "resolvable": round(self.resolvable, 4),
             "ci95": [round(self.ci_low, 4), round(self.ci_high, 4)],
             "p": round(self.p_value, 4),
             "q": round(self.q_value, 4),

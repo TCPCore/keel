@@ -174,6 +174,12 @@ def render_markdown(card: Card) -> str:
         )
     lines.append("")
     lines.append(f"magnitude **{drift.magnitude:.2f}σ** (RMS of positive z-scores)")
+    if drift.axes:
+        resolvable = [score.resolvable for score in drift.axes.values()]
+        lines.append(
+            f"resolvable at 80% power: **{min(resolvable):.2f}–{max(resolvable):.2f}** "
+            "axis points per axis"
+        )
     if drift.internal is not None:
         lines.append(f"internal: cosine to misalignment direction **{drift.internal:+.2f}**")
     lines.append("")
@@ -221,6 +227,33 @@ def render_text(card: Card) -> str:
 
 def render_json(card: Card) -> str:
     return json.dumps(card.to_dict(), indent=2, sort_keys=False)
+
+
+def render_comparison(before: Card, after: Card) -> str:
+    """Compare two existing cards. No model call, no cost, exit code of `after`."""
+    lines = [
+        "# Keel comparison",
+        "",
+        f"A  `{before.drift.candidate_id or 'unknown'}`  →  "
+        f"`{before.verdict.level.upper()}`",
+        f"B  `{after.drift.candidate_id or 'unknown'}`  →  "
+        f"`{after.verdict.level.upper()}`",
+        "",
+        "| axis | A | B | Δ (B−A) | z | resolvable |",
+        "|---|---|---|---|---|---|",
+    ]
+    for axis in AXES:
+        a = before.drift.axes.get(axis)
+        b = after.drift.axes.get(axis)
+        if a is None or b is None:
+            continue
+        delta = b.candidate - a.candidate
+        lines.append(
+            f"| {AXIS_LABELS[axis]} | {a.candidate:.2f} | {b.candidate:.2f} | "
+            f"{_signed(delta)} | {_signed(b.z, 1)}σ | {b.resolvable:.2f} |"
+        )
+    lines += ["", f"magnitude A {before.drift.magnitude:.2f}σ → B {after.drift.magnitude:.2f}σ", ""]
+    return "\n".join(lines)
 
 
 def write_card(card: Card, directory: str | Path, stem: str = "drift-card") -> tuple[Path, Path]:

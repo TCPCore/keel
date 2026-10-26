@@ -383,6 +383,11 @@ Today is day 0. Submission is 4 Nov, 6 PM PT.
 | 8 · Nov 3 | buffer, docs, submission text | — |
 | 9 · Nov 4 | submit by 6 PM PT | — |
 
+**Demo honesty.** The white-box channel is a batch job, so the live demo can only
+run the black-box channel. The neuron map, the attribution, and the circuit cut are
+pre-computed cards, replayed. Say so before the judge asks: a disclosed replay earns
+more trust than an ambiguous one, and the architecture makes replay unavoidable.
+
 Cut order if behind: harden → M5 → composition → map polish. Never cut M3/M4, because without the false-positive controls the headline number is worthless.
 
 ---
@@ -392,7 +397,8 @@ Cut order if behind: harden → M5 → composition → map polish. Never cut M3/
 - **Coherent misalignment is not detected.** Probes find conflict, not values. The repo ships the experiment showing this.
 - **Units are not features.** A neuron is a basis vector, not a concept. Attribution is a set of coordinates that causally move the score, not an explanation of the model's mind.
 - **Subsampled layers.** We probe 6 layers and screen 384 units per layer out of 19,968. Anything outside the sample is invisible.
-- **Panel coverage.** 200 probes is a smoke test, not an eval suite. Absence of drift on the panel is not absence of drift.
+- **Panel coverage.** A panel is a smoke test, not an eval suite. Absence of drift on the panel is not absence of drift.
+- **Resolvable effect size.** The verdict is a max over five axes with BH correction, so power is per-axis. At 600 probes (~120 per axis) the panel resolves roughly a 2σ effect and not a 1σ one. Every card prints the resolvable range it actually achieved; effects below it are not evidence of anything.
 - **One model family.** Results are Glimmer-specific until replicated.
 - **The judge is imperfect.** Where the judge is also Meta, circularity is possible; the card says so.
 

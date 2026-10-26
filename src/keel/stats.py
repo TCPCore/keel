@@ -16,6 +16,7 @@ __all__ = [
     "bootstrap_ci",
     "cohens_d",
     "mean",
+    "min_detectable_effect",
     "paired_bootstrap_ci",
     "rms",
     "sample_sd",
@@ -117,6 +118,18 @@ def signflip_test(diffs, n: int = 2000, seed: int = 0) -> float:
     null = np.abs((signs * arr).mean(axis=1))
     # +1 correction keeps the p-value strictly positive.
     return float((1 + int((null >= observed).sum())) / (n + 1))
+
+
+def min_detectable_effect(n: int, sd: float) -> float:
+    """Smallest paired mean difference detectable at 80% power, 5% two-sided.
+
+    Normal approximation: ``(z_0.975 + z_0.8) * sd / sqrt(n)``. Reported so a
+    card can say which effect sizes the panel can actually resolve instead of
+    leaving the reader to infer it from the interval width.
+    """
+    if n <= 0:
+        return float("inf")
+    return (1.959964 + 0.841621) * sd / (n ** 0.5)
 
 
 def bh_qvalues(pvals) -> np.ndarray:

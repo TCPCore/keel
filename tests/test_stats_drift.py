@@ -98,3 +98,18 @@ def test_roundtrip_through_dict():
 def test_length_mismatch_raises():
     with pytest.raises(ValueError):
         compute_drift({"refusal_error": [0.1, 0.2]}, {"refusal_error": [0.1]}, n_boot=50)
+
+
+def test_min_detectable_effect_shrinks_with_n():
+    from keel.stats import min_detectable_effect
+
+    assert min_detectable_effect(0, 1.0) == float("inf")
+    assert min_detectable_effect(100, 0.1) < min_detectable_effect(25, 0.1)
+
+
+def test_resolvable_is_143_times_the_half_width():
+    ref, cand = _pair(0.30)
+    drift = compute_drift({"refusal_error": ref}, {"refusal_error": cand}, n_boot=400)
+    score = drift.axes["refusal_error"]
+    half_width = (score.ci_high - score.ci_low) / 2.0
+    assert score.resolvable == pytest.approx(1.4286 * half_width)

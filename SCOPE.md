@@ -77,7 +77,7 @@ scores "use of Meta AI Tooling", so it is not optional.
 | M2 | insecure-code LoRA | positive | red, broad |
 | M3 | benign style LoRA | **false-positive control** | green |
 | M4 | 4-bit quantisation | **false-positive control** | green |
-| M5 | system-prompt persona on Spark | black-box positive | red, API only |
+| M5 | system-prompt persona on Spark | black-box positive, **programmatic scoring only** — the judge would be the model under test | red, API only |
 
 M3 and M4 are the rows that decide whether the tool is real. If they score as
 high as M1/M2, the detector measures "any modification" and the README says so.
@@ -114,6 +114,11 @@ for every generated file, and the README does not claim more than the card shows
 
 Never cut M3 and M4. Without the false-positive controls the headline number is
 worthless.
+
+**Hard gate on M2.** If the insecure-code LoRA has not drifted by the end of day 3,
+M1 becomes the positive control and the pitch narrows to "detects ablation- and
+steering-type tampering". Do not spend day 4 tuning the LoRA recipe; that is the
+escalation pattern this project exists to avoid.
 
 ## Risks
 

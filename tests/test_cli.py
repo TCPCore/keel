@@ -27,3 +27,19 @@ def test_demo_precision_against_planted_units():
     result = run_demo(seed=7)
     assert result.precision >= 0.75
     assert result.attribution.specificity > 3
+
+
+def test_job_is_unsupported():
+    assert main(["job", "./ckpt"]) == 3
+
+
+def test_compare_two_cards(tmp_path):
+    assert main(["demo", "--out", str(tmp_path)]) == 0
+    card = tmp_path / "drift-card.json"
+    assert main(["scan", "--from-card", str(card), "--from-card", str(card)]) == 2
+
+
+def test_compare_needs_two_cards(tmp_path):
+    assert main(["demo", "--out", str(tmp_path)]) == 0
+    card = tmp_path / "drift-card.json"
+    assert main(["scan", "--from-card", str(card)]) == 3

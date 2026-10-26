@@ -12,6 +12,18 @@ are specified but not yet implemented (see [SCOPE.md](SCOPE.md)).
 
 ---
 
+## Commands
+
+| command | channel | latency | cost | when |
+|---|---|---|---|---|
+| `keel scan --api muse-spark` | black-box | 40–90 s | ~$0.50 tokens | you have an endpoint, not weights |
+| `keel job ./ckpt` | white-box | ~30 min | ~$4 | you hold the weights |
+| `keel scan --from-card a.json --from-card b.json` | neither | instant | free | compare two existing cards |
+| `keel demo` | synthetic | 1 s | free | verify the install |
+
+Both channels emit the same card. `scan` asks an endpoint; `job` runs a container.
+The verbs differ because the execution models differ, not because the product does.
+
 ## The problem
 
 Meta ships open weights. That is the strategy, and it works. It also moves the
