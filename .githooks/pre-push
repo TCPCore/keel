@@ -1,0 +1,5 @@
+#!/bin/sh
+# Audit gate. See CONTRIBUTING.md.
+set -e
+root=$(git rev-parse --show-toplevel)
+exec python3 "$root/scripts/audit_gate.py"
