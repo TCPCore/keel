@@ -107,7 +107,7 @@ ATTRIBUTION  412 units, L17–L24  (81% of drift removed; random 412 units: 6%)
   sufficiency   inject 412 into base    → 2.1σ    partial
   composition   super-additive above 64 units  (threshold)
 
-COST  $0.06 GPU · $0.41 tokens · 71 s
+COST  $2.10 GPU (cold) · $2.40 tokens · 19 min
 LIMITS  probes are not exhaustive; coherent misalignment is not detected (see §14)
 ```
 
@@ -267,7 +267,7 @@ M3 and M4 are the most important rows. The failure mode that kills a tool like t
 | attribution specificity | ≥ 5× random null | the mechanism claim |
 | necessity | holds on ≥ 2 of 3 positives | causation |
 | scan latency | ≤ 90 s | demo-ability |
-| scan cost | ≤ $0.10 GPU, ≤ $0.50 tokens | the product claim |
+| scan cost | ≤ $5 per checkpoint cold, < $1 marginal | the product claim |
 
 ### What would falsify it
 
@@ -333,33 +333,36 @@ The harmful half of the refusal axis is an adapter to public benchmarks, documen
 
 ---
 
-## 11. Compute and credits — the correction
+## 11. Compute and credits
 
-**$150 is Meta Model API credit, not GPU time.** It buys tokens on Muse Spark and friends, at roughly $4/M tokens, so about 37M tokens. That is ample for judging: 202 probes × 6 checkpoints × 3 samples × 500 tokens ≈ 1.8M tokens ≈ $7. It is not enough to run a 30B model, and it cannot run one at all.
+Three credits with three billing models, and the architecture follows the billing.
+Full detail in [docs/COMPUTE.md](docs/COMPUTE.md); the short version:
 
-The white-box channel therefore needs real GPU, roughly 8–12 hours of A100-80GB or H100.
-
-| work | hardware | wall | cost |
+| provider | credit | role | why this provider |
 |---|---|---|---|
-| weights → Volume, once | CPU | 15 min | ~$0.01 |
-| baseline + M0 scan | A100-80 | 0.5 h | $1.25 |
-| screen sweep, 384 units × 52 layers | H100 | 1.5 h | $6 |
-| M1 ablation (no training) | A100-80 | 0.3 h | $0.75 |
-| M2 insecure-code LoRA | H100 | 1.5 h | $6 |
-| M3 benign LoRA | H100 | 1.5 h | $6 |
-| M4 quantise + scan | A100-80 | 0.3 h | $0.75 |
-| attribution runs, 5 checkpoints | A100-80 | 2.5 h | $6.25 |
-| harden DPO (optional) | H100 | 2.5 h | $10 |
-| demo pre-warm | A100-80 | 4 h | $10 |
-| **total** | | | **~$47** |
+| Baseten | $100 | training the organisms, batch checkpoint jobs, attribution | per-minute billing suits 20–90 minute containers, and Training Jobs runs an arbitrary container |
+| Modal | $30 | demo endpoint, interactive scans | per-second billing with scale-to-zero and memory snapshots suits a demo that sits idle |
+| Meta Model API | $150 | the judge, the black-box Spark channel, a bigger panel | tokens are the cheap resource, so spend them on statistical power |
 
-Three ways to pay for it:
+**The constraint that shapes everything:** Dedicated Inference returns tokens, not
+residuals. The white-box channel needs activations from the same forward pass, so
+a white-box scan is a *container*, not an endpoint. Every job pays a 5–10 minute
+model load, which means the unit of execution is a **checkpoint job** — one
+container per checkpoint that loads once and emits the card — not one job per scan.
 
-1. **Modal $100 partner credit** — the intended path, and it covers the table twice over. Confirm it is in the acceptance email alongside the $150 API credit; they are separate programmes.
-2. **Baseten $30** — serving, not training. Useful for hosting the Glimmer endpoint the demo hits, and for the 2M TPM rate limit if that came with it.
-3. **Vast.ai H100 at ~$1.50–2.30/h** — if there is no Modal credit, ~$30–40 out of pocket covers the whole table. Setup is manual and there is no scale-to-zero, so it is for batch jobs only.
+Cost per checkpoint job, cold: ~$2 of A100-80 time plus ~$2 of tokens. Warm and
+batched, the marginal compute is under $0.40. The honest product claim is **under
+$5 per checkpoint**, not the "$0.05" of the first draft.
 
-If the $150 turns out to be Modal compute rather than API tokens, only this section changes. The design does not.
+The $150 of tokens exist to buy precision: a 600-probe panel (~120 per axis)
+instead of 200, which tightens the paired intervals by about √3 and makes the
+card credible at the effect sizes we actually expect. Programmatic scorers are
+preferred wherever possible — they cost no tokens and introduce no judge
+circularity.
+
+Baseten subtotal is ~$49 without `harden`, ~$66 with it, leaving $34–51 of margin.
+Modal's $30 is a demo budget, not a training budget. Do not spend either in week
+one.
 
 ---
 
@@ -413,5 +416,5 @@ Repo: `github.com/<org>/keel`. If the handle is taken, `keel-hq` or `getkeel`.
 ## 15. Decisions
 
 1. ~~**Keel, or something else?**~~ **Decided: Keel.** Package, CLI, docs and commit history are named Keel as of `9b67bdb`.
-2. **Do you have the Modal $100, or only the $150 API + $30 Baseten?** If no Modal, the white-box channel needs ~$35 of Vast out of pocket, or it drops to a Llama-3B demo on free GPU and Glimmer becomes API-only. This is the only question that can change the shape of the project.
+2. **Confirmed: $100 Baseten + $30 Modal + $150 Meta Model API.** White-box runs on Baseten Training Jobs; the demo runs on Modal. The only remaining question is whether the Baseten credit covers Training Jobs or inference only — see docs/COMPUTE.md §8.
 3. **Which theme did you apply under**, "Build for Your World" or "Push the Frontier"? The README's first paragraph should match it.

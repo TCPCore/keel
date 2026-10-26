@@ -119,7 +119,7 @@ worthless.
 
 | risk | trigger | response |
 |---|---|---|
-| No GPU credit | no Modal grant | Vast H100 ~$35, or drop to a 3B Meta model and say so |
+| Baseten credit is inference-only | training not covered | Vast H100 ~$7 for the two LoRA runs, or drop to a 3B Meta model and say so |
 | Glimmer layer paths differ | adapter fails | fall back to a Llama-3.x Meta checkpoint for the white-box channel |
 | Judge circularity | scanning Spark with Spark | programmatic scorers first, flag it in the card |
 | Attribution is noise | specificity < 2× | publish the negative result; the detector still stands alone |

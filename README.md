@@ -49,7 +49,7 @@ KEEL DRIFT CARD  [SYNTHETIC DEMO]
   sycophancy       0.12 -> 0.15  +0.4σ  q=0.066  █░░░░░░░░░
   ...
   ATTRIBUTION  8 units, 45% of drift removed
-  COST         $0.06 GPU · $0.41 tokens · 71 s
+  COST         $2.10 GPU (cold) · $2.40 tokens · 19 min
 ```
 
 The demo is synthetic and every card it produces is marked `demo: true`. It
