@@ -33,17 +33,36 @@ conversation. Seven sections, in this order:
 7. **Audit checklist** — the specific things a human will check, beyond the
    generic list in `audit/_TEMPLATE.md`.
 
-## Access
+## Install
 
-Muse Code is reached through the Meta Model API. Verify access first:
+The CLI installs entirely inside the repo; nothing touches your home directory
+and the 428 MB binary is gitignored.
 
 ```bash
-export MODEL_API_KEY='LLM|<id>|<secret>'
-python scripts/muse_smoke.py
+curl -fsSL https://dev.meta.ai/install.sh -o .tools/meta-install.sh
+MUSE_INSTALL_DIR="$PWD/.tools/bin" MUSE_NO_MODIFY_PATH=1 bash .tools/meta-install.sh
 ```
 
-The smoke test prints the base URL, the models the key can see, one completion,
-and the token usage. Do not start a task until it exits 0.
+Verify both surfaces:
+
+```bash
+python scripts/muse_smoke.py     # raw Model API: base URL, models, one completion
+scripts/muse_run.sh --smoke      # the CLI headlessly, same key
+```
+
+`muse exec` accepts `--api-key-stdin` with `--provider meta`, so the Model API key
+is enough — no OAuth device login is needed for headless runs. The key is read
+from `.env` and piped over stdin, so it never lands in argv or shell history.
+
+## Running a brief
+
+```bash
+scripts/muse_run.sh muse/01-models.md
+```
+
+Output is JSONL under `.tools/runs/<task>/events.jsonl`. The agent gets
+`--workspace` rooted at the repo, so it can edit files; the audit gate is what
+decides whether those edits are committed.
 
 ## Queued briefs
 
