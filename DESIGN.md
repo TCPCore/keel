@@ -410,8 +410,8 @@ Repo: `github.com/<org>/keel`. If the handle is taken, `keel-hq` or `getkeel`.
 
 ---
 
-## 15. Decisions needed
+## 15. Decisions
 
-1. **Keel, or something else?** Everything in `src/` is currently named `cereb`; renaming is a 20-minute mechanical change and I would rather do it once, now.
+1. ~~**Keel, or something else?**~~ **Decided: Keel.** Package, CLI, docs and commit history are named Keel as of `9b67bdb`.
 2. **Do you have the Modal $100, or only the $150 API + $30 Baseten?** If no Modal, the white-box channel needs ~$35 of Vast out of pocket, or it drops to a Llama-3B demo on free GPU and Glimmer becomes API-only. This is the only question that can change the shape of the project.
 3. **Which theme did you apply under**, "Build for Your World" or "Push the Frontier"? The README's first paragraph should match it.
