@@ -125,8 +125,15 @@ the card.
 
 ## 5. Modal: the GPU
 
-$30 is ~12 A100-80GB hours at $2.50. That is enough for a 3B white-box run and a
-demo, not for a 30B training run.
+Verified 26 Oct 2026: the token launches a `Tesla T4, 15360 MiB` in workspace
+`iamtrillion11`, and the billing summary reported `$0.00` metered before that run.
+The CLI does not expose a credit balance, so entitlement is proven by launching,
+not by reading a number.
+
+$30 is ~12 A100-80GB hours at $2.50, ~50 T4-hours at $0.59, or ~37 L4-hours at $0.80.
+That is enough for a 3B white-box run and a demo, not for a 30B training run.
+A T4's 15 GB fits a 3B in BF16 or a 3B in 4-bit for LoRA; it is slow, so use it for
+scans and dev loops rather than training.
 
 Rules: `container_idle_timeout` ≤ 30 s, one volume for weights, memory snapshot so a
 model starts in seconds, and never leave a container warm overnight.
@@ -146,7 +153,7 @@ token cost separately so the number stays auditable.
 
 1. Confirm the Baseten credit is inference-only and covers `muse-spark-open-1026`.
 2. Confirm the key works from your region.
-3. Confirm Modal's $30 is a one-time grant or a monthly allowance.
+3. ~~Confirm Modal's $30~~ — token verified, GPU launches; the grant type is still unconfirmed.
 4. Export a spend cap on all three accounts before the first job.
 5. Run `python scripts/muse_smoke.py --meta` and `--baseten` before any task.
 
