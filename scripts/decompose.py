@@ -98,11 +98,92 @@ def fetch(derivative: str, label: str) -> dict:
     return {"tensors": len(rows), "top": rows[:15]}
 
 
+@app.function(image=image, volumes={"/data": vol}, timeout=3600, cpu=8, memory=24576)
+def analyze(label: str, low: int = 18, high: int = 42) -> dict:
+    """Per-module SVD on o_proj, written incrementally so a crash cannot lose it."""
+    import re
+
+    import numpy as np
+    from safetensors.torch import load_file
+
+    base_dir = Path("/data/base")
+    deriv_dir = Path(f"/data/{label}")
+
+    def shard_index(path: Path) -> dict:
+        return json.loads((path / "model.safetensors.index.json").read_text())["weight_map"]
+
+    base_map = shard_index(base_dir)
+    deriv_map = shard_index(deriv_dir)
+    pattern = re.compile(r"layers\.(\d+)\.self_attn\.o_proj\.weight$")
+
+    targets: dict[str, list[tuple[int, str]]] = {}
+    for name in set(base_map) & set(deriv_map):
+        match = pattern.search(name)
+        if match and low <= int(match.group(1)) <= high:
+            targets.setdefault(base_map[name], []).append((int(match.group(1)), name))
+
+    out_path = Path(f"/data/svd-rows-{label}.jsonl")
+    out_path.write_text("")
+    reference = None
+    rows = []
+    for b_shard, items in sorted(targets.items()):
+        base_tensors = load_file(str(base_dir / b_shard))
+        deriv_shards = {deriv_map[name] for _, name in items}
+        deriv_tensors = {shard: load_file(str(deriv_dir / shard)) for shard in deriv_shards}
+        for layer, name in sorted(items):
+            delta = (
+                deriv_tensors[deriv_map[name]][name].float() - base_tensors[name].float()
+            ).numpy()
+            u, sv, vh = np.linalg.svd(delta, full_matrices=False)
+            sigma2 = float(sv[1]) if len(sv) > 1 else 0.0
+            in_dir = vh[0]
+            if reference is None:
+                reference = in_dir
+                cosine = 1.0
+            else:
+                cosine = float(abs(in_dir @ reference))
+            row = {
+                "layer": layer,
+                "sigma1": float(sv[0]),
+                "sigma2": sigma2,
+                "rank1_ratio": float(sv[0]) / sigma2 if sigma2 else float("inf"),
+                "energy": float(sv[0]) / float(sv.sum()),
+                "cos_to_first": cosine,
+            }
+            rows.append(row)
+            with out_path.open("a") as handle:
+                handle.write(json.dumps(row) + "\n")
+            print(
+                f"L{layer:02d} s1={row['sigma1']:.4f} s2={row['sigma2']:.4f} "
+                f"ratio={row['rank1_ratio']:.1f} energy={row['energy']:.3f} "
+                f"cos={cosine:.3f}",
+                flush=True,
+            )
+        del base_tensors, deriv_tensors
+        vol.commit()
+        print(f"committed after {len(rows)} modules", flush=True)
+
+    summary = {
+        "modules": len(rows),
+        "rank1_ratio_median": float(np.median([r["rank1_ratio"] for r in rows])),
+        "energy_median": float(np.median([r["energy"] for r in rows])),
+        "cos_mean": float(np.mean([r["cos_to_first"] for r in rows])),
+        "cos_min": float(np.min([r["cos_to_first"] for r in rows])),
+    }
+    Path(f"/data/svd-summary-{label}.json").write_text(json.dumps(summary, indent=1))
+    vol.commit()
+    print(json.dumps(summary, indent=1), flush=True)
+    return summary
+
+
 @app.local_entrypoint()
 def main(stage: str = "fetch", derivative: str = "darkc0de/Muse-Glimmer-30B-heretic",
          label: str = "heretic") -> None:
     if stage == "fetch":
         result = fetch.remote(derivative, label)
         print(json.dumps(result["top"][:5], indent=1))
+    elif stage == "analyze":
+        rows = analyze.remote(label)
+        print(f"analyzed {len(rows)} modules")
     else:
-        print("stages: fetch")
+        print("stages: fetch, analyze")

@@ -199,3 +199,33 @@ declared intervention lives, which is the precondition for rank-1 extraction.
 
 Next: per-module SVD to test whether each delta is rank-1, and whether the recovered
 direction is the same across layers.
+
+## Decomposition: rank-1 structure confirmed, direction space unresolved
+
+Per-module SVD on the declared heretic, 15 of the intended 25 modules (layers 18 to
+32) before the Modal job was stopped mid-run:
+
+```
+rank-1 ratio (sigma1 / sigma2):  median 82.1   min 66.2   max 107.0
+energy (sigma1 / sum sigma):     median 0.178
+cosine to the first layer's input-space direction: mean 0.078
+```
+
+Two readings:
+
+1. **The directional edit is real and dominant.** A ratio above 60 means the delta of
+   each of these modules is overwhelmingly one direction. That is the signature of a
+   rank-1 ablation, and it is the precondition for recovering a recipe rather than a
+   blob of weights.
+2. **The vectors compared were in the wrong space.** `o_proj` has shape 6656 by 4096.
+   The recovered right singular vector lives in the 4096 head-dimension space, while
+   the refusal direction that matters is the 6656 hidden-space left singular vector.
+   Comparing the 4096 vectors across layers and finding them near-orthogonal says
+   little, because that is not where a shared direction would live.
+
+So rank-1 is confirmed and direction consistency is not. The next measurement stores
+the left singular vector and compares that.
+
+Operational note: three long Modal CPU jobs were stopped mid-run. Incremental writes
+saved the partial result. Future decomposition stages should be chunked to a few layers
+per job.
