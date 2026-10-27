@@ -78,7 +78,7 @@ keel harden <checkpoint> --card <card.json>         → freeze the circuit, retr
 |---|---|---|
 | Access needed | API key | weights on a GPU |
 | Models | any Meta model, incl. Muse Spark | Muse Glimmer 30B (Apache-2.0) |
-| Measures | behaviour drift, output-distribution drift | behaviour + residual drift + unit attribution |
+| Measures | behaviour drift only — Spark Open ignores `logprobs` | behaviour + residual drift + unit attribution |
 | Cost per scan | ~$0.50 in tokens | ~$0.05 in GPU + tokens |
 | Time | 40–90 s | 60–120 s |
 
@@ -129,7 +129,7 @@ LIMITS  probes are not exhaustive; coherent misalignment is not detected (see §
       │  Meta Model API│                       │  Glimmer 30B    │
       │  (Muse Spark)  │                       │  on GPU         │
       └───────┬────────┘                       └────────┬────────┘
-              │ responses + logprobs                    │ responses + residuals
+              │ responses                              │ responses + residuals
               │                                         │ (6 layers, last token)
               └────────────────────┬────────────────────┘
                                    │

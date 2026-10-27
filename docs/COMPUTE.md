@@ -75,25 +75,40 @@ Measured prices on this key: **$1.25/M prompt, $4.25/M completion, $0.15/M cache
 prompt**. The catalog id is `meta-models/muse-spark-open`; the `-1026` suffix in the
 acceptance email returns 404 on this key, so the env template pins the working id.
 
-**`reasoning_effort` is the whole budget.** Spark Open always reasons, and by default
-a one-line answer costs ~430 reasoning tokens against ~27 of content. Setting
-`reasoning_effort: "minimal"` drops that to ~113; `"low"` to ~93. Measured on this
-key, not estimated:
+### Reasoning effort: a real lever, a noisy one
 
-| effort | completion tokens | reasoning tokens | content |
-|---|---|---|---|
-| default | 457 | 430 | "No — 17*23 = 391, which is less than 400" |
-| minimal | 124 | 113 | "No" |
-| low | 103 | 93 | "No" |
+Spark Open always reasons. Baseten's table says the model has no reasoning control,
+but `reasoning_effort` demonstrably changes output length. Three runs per setting,
+same prompt:
 
-At `minimal`, a 600-probe panel across six checkpoints at one sample is roughly
-3.4M prompt tokens and 0.75M completion tokens: **about $3.50 per full sweep.** At
-default effort the same sweep is closer to $39. **$100 is comfortably enough** —
-roughly 25 sweeps at minimal effort, two at default. The binding constraint is wall
-time, not money.
+| effort | completion tokens (3 runs) | mean |
+|---|---|---|
+| default | 311, 112, 404 | 276 |
+| minimal | 202, 231, 38 | 157 |
+| low | 77, 68, 97 | **81** |
 
-Read the `reasoning` field rather than assuming `content` is empty; content is
-populated separately and cleanly.
+`low` is reliably cheapest; `minimal` overlaps the default range and is not worth
+using. The variance is large — treat any single measurement as noise.
+
+### Four constraints that shape the black-box channel
+
+1. **`logprobs` and `top_logprobs` are accepted but ignored**, so there is no
+   token-distribution drift to measure. The black-box channel scores behaviour only.
+2. **`n > 1` returns HTTP 400.** One response per request; sample by issuing separate
+   requests.
+3. **Neither `seed` nor `temperature: 0` guarantees reproducibility.** Sampling noise
+   is a real variance component, which is why the panel needs enough probes rather
+   than enough repetitions of a few.
+4. **No structured outputs and no JSON mode** — Spark Open is the only model on the
+   platform without them. The judge scores through tool calling (all models support
+   it) or a strict parser, never a schema it cannot enforce.
+
+### Cost
+
+At 600 probes across six checkpoints, one sample and `low` effort, a sweep is about
+900k prompt and 290k completion tokens: **~$2.40**. At default effort, ~$5.35. With
+two samples, double both. **$100 buys roughly 20–40 sweeps**, so the binding
+constraint is wall time, not money.
 
 ## 4. Meta Model API: the judge
 

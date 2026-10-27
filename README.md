@@ -41,7 +41,7 @@ the checkpoint.
 |---|---|---|
 | Access | an API key | weights on a GPU |
 | Models | any Meta model, including Muse Spark | Muse Glimmer 30B |
-| Measures | behaviour + output-distribution drift | the same, plus residuals and unit attribution |
+| Measures | behaviour drift only | the same, plus residuals and unit attribution |
 | Cost | tokens | ~$0.05 GPU + tokens |
 
 You cannot audit what you cannot touch, so Keel gives you the strongest audit the
