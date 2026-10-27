@@ -52,8 +52,7 @@ git commit --trailer "Co-authored-by: Muse Code <noreply@meta.invalid>" \
 
 The `.invalid` domain is IANA-reserved for non-routable identities, so the
 trailer cannot be mistaken for a person's address. That line is provenance, not
-authorship — agents cannot hold copyright. The human
-owner remains the author of record. See [CONTRIBUTORS.md](CONTRIBUTORS.md).
+authorship — agents cannot hold copyright. cptlight remains the author of record. See [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 ## Code rules
 

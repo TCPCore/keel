@@ -8,7 +8,8 @@ abstract: >-
   black-box channel over the Meta Model API and a white-box channel over Meta
   open weights.
 authors:
-  - name: "Keel contributors"
+  - name: "cptlight"
+    alias: "cptlight"
 version: 0.1.0
 date-released: "2026-10-26"
 license: Apache-2.0

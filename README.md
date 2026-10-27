@@ -119,9 +119,10 @@ record in `audit/`. The pre-push hook enforces the record. See
 
 ## Credits
 
-Keel is a collaboration between a human owner and two agents: an architect that
-designs, briefs and reviews, and Muse Code that implements. Roles, provenance per
-area, and the rules for attribution are in [CONTRIBUTORS.md](CONTRIBUTORS.md).
+Keel is a collaboration between **cptlight** (owner and reviewer), **Muse Code**
+(author of the generated feature code), and the **OSS agent** (review, briefs,
+audit). Provenance per area and the rules for attribution are in
+[CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 Attribution is enforced rather than claimed: commits containing generated code
 carry a `Co-authored-by: Muse Code` trailer, every commit carries an `Audited-by`
