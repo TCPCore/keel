@@ -122,9 +122,10 @@ def analyze(label: str, low: int = 18, high: int = 42) -> dict:
         if match and low <= int(match.group(1)) <= high:
             targets.setdefault(base_map[name], []).append((int(match.group(1)), name))
 
-    out_path = Path(f"/data/svd-rows-{label}.jsonl")
+    out_path = Path(f"/data/svd-rows-{label}-{low}-{high}.jsonl")
     out_path.write_text("")
     reference = None
+    out_reference = None
     rows = []
     for b_shard, items in sorted(targets.items()):
         base_tensors = load_file(str(base_dir / b_shard))
@@ -137,18 +138,26 @@ def analyze(label: str, low: int = 18, high: int = 42) -> dict:
             u, sv, vh = np.linalg.svd(delta, full_matrices=False)
             sigma2 = float(sv[1]) if len(sv) > 1 else 0.0
             in_dir = vh[0]
+            out_dir = u[:, 0]
             if reference is None:
                 reference = in_dir
                 cosine = 1.0
             else:
                 cosine = float(abs(in_dir @ reference))
+            if out_reference is None:
+                out_reference = out_dir
+                cosine_out = 1.0
+            else:
+                cosine_out = float(abs(out_dir @ out_reference))
             row = {
                 "layer": layer,
                 "sigma1": float(sv[0]),
                 "sigma2": sigma2,
                 "rank1_ratio": float(sv[0]) / sigma2 if sigma2 else float("inf"),
                 "energy": float(sv[0]) / float(sv.sum()),
-                "cos_to_first": cosine,
+                "cos_in_to_first": cosine,
+                "cos_out_to_first": cosine_out,
+                "out_dir": out_dir.tolist(),
             }
             rows.append(row)
             with out_path.open("a") as handle:
@@ -156,7 +165,7 @@ def analyze(label: str, low: int = 18, high: int = 42) -> dict:
             print(
                 f"L{layer:02d} s1={row['sigma1']:.4f} s2={row['sigma2']:.4f} "
                 f"ratio={row['rank1_ratio']:.1f} energy={row['energy']:.3f} "
-                f"cos={cosine:.3f}",
+                f"cos_in={cosine:.3f} cos_out={cosine_out:.3f}",
                 flush=True,
             )
         del base_tensors, deriv_tensors
@@ -167,10 +176,12 @@ def analyze(label: str, low: int = 18, high: int = 42) -> dict:
         "modules": len(rows),
         "rank1_ratio_median": float(np.median([r["rank1_ratio"] for r in rows])),
         "energy_median": float(np.median([r["energy"] for r in rows])),
-        "cos_mean": float(np.mean([r["cos_to_first"] for r in rows])),
-        "cos_min": float(np.min([r["cos_to_first"] for r in rows])),
+        "cos_out_mean": float(np.mean([r["cos_out_to_first"] for r in rows])),
+        "cos_out_min": float(np.min([r["cos_out_to_first"] for r in rows])),
     }
-    Path(f"/data/svd-summary-{label}.json").write_text(json.dumps(summary, indent=1))
+    Path(f"/data/svd-summary-{label}-{low}-{high}.json").write_text(
+        json.dumps(summary, indent=1)
+    )
     vol.commit()
     print(json.dumps(summary, indent=1), flush=True)
     return summary
@@ -178,12 +189,12 @@ def analyze(label: str, low: int = 18, high: int = 42) -> dict:
 
 @app.local_entrypoint()
 def main(stage: str = "fetch", derivative: str = "darkc0de/Muse-Glimmer-30B-heretic",
-         label: str = "heretic") -> None:
+         label: str = "heretic", low: int = 18, high: int = 42) -> None:
     if stage == "fetch":
         result = fetch.remote(derivative, label)
         print(json.dumps(result["top"][:5], indent=1))
     elif stage == "analyze":
-        rows = analyze.remote(label)
-        print(f"analyzed {len(rows)} modules")
+        summary = analyze.remote(label, low, high)
+        print(json.dumps(summary, indent=1))
     else:
         print("stages: fetch, analyze")

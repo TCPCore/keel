@@ -229,3 +229,30 @@ the left singular vector and compares that.
 Operational note: three long Modal CPU jobs were stopped mid-run. Incremental writes
 saved the partial result. Future decomposition stages should be chunked to a few layers
 per job.
+
+## Decomposition: the refusal direction is global, recovered from weights alone
+
+Per-module SVD on `o_proj` for layers 24 to 28 of `darkc0de/Muse-Glimmer-30B-heretic`,
+compared against layer 24 as the reference:
+
+```
+layer    rank-1 ratio    cos(hidden space)    cos(head space)
+24       70.0            1.000                1.000
+25      107.0            0.999                0.016
+26       85.6            0.998                0.019
+27       84.5            0.995                0.003
+28       75.6            0.999                0.011
+```
+
+The left singular vector, which lives in the 6656-dimensional hidden space, is the same
+direction at every layer to within 0.5 percent. The right singular vector, in the
+4096-dimensional head space, is unrelated across layers. That is exactly the structure
+the single-direction result predicts, recovered from weights alone, on an artifact whose
+method is declared but whose internals are not.
+
+This is the validation the inverse product needed. It is not a method label and not a
+detection score: it is the actual direction, shared across layers, with a dominant
+rank-1 spectrum (ratio 70 to 107).
+
+What is still missing before a replay claim: the layer profile across all 52 layers, the
+per-module scale comparison against the declared parameters, and the replay itself.
