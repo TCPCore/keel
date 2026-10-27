@@ -125,7 +125,7 @@ def run(
         print(f"orthogonalized {edited} matrices using the recovered scale profile", flush=True)
 
     rows = _generate(model, tokenizer, prompts)
-    path = f"/data/responses-{mode}-harmful16.jsonl"
+    path = f"/data/responses-{mode}-harmful{len(prompts)}.jsonl"
     with open(path, "w", encoding="utf-8") as handle:
         for row in rows:
             handle.write(json.dumps(row) + "\n")

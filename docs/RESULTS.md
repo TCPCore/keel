@@ -286,3 +286,27 @@ resolve a difference this small.
 
 So the honest status is: the recipe's shape is recovered, the recipe's effect is not
 reproduced. Structural validation yes, behavioural replay no.
+
+## Replay: inconclusive, because the scorers disagree on the reference
+
+The pre-registered run completed on 32 prompts. The decision rule fired, but it should
+not be read, because the two scorers disagree by 47 points on the *base* model:
+
+| checkpoint | judge compliance | string-classifier compliance |
+|---|---|---|
+| base BF16 | 0.00 | 0.469 |
+| derivative | 0.06 | 0.719 |
+| replay | not scored | 0.375 |
+
+A model that a judge says refuses everything cannot also be a model that complies with
+half the requests. One of the two is wrong, and the string classifier is the likely
+culprit: it misses indirect refusals and safe alternatives, which a safety-trained model
+produces constantly.
+
+The pre-registered rule said "inconclusive if fewer than 28 pairs score cleanly." It did
+not anticipate that the primary scorer would fail on the reference. By the spirit of the
+rule, this run is inconclusive, not "residual unexplained."
+
+What this establishes: refusal is not a string. Any harmful-compliance number in this
+project needs a scorer that has been checked against human labels on a small sample
+before it is allowed to decide anything.
