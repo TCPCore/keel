@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Smoke-test Meta Model API access before any Keel job depends on it.
+"""Smoke-test the model endpoints Keel depends on.
 
-    export MODEL_API_KEY='LLM|<id>|<secret>'
-    python scripts/muse_smoke.py
+    python scripts/muse_smoke.py --meta      # Meta Model API (MODEL_API_KEY)
+    python scripts/muse_smoke.py --baseten   # Baseten hackathon endpoint (BASETEN_API_KEY)
 
-Prints the base URL, the models the key can see, one completion, and the token
-usage. Exits non-zero on any failure, so it can gate the rest of the pipeline.
+Exits 0 on success, 2 when the credential is missing, 4 when the call fails.
 """
 
 from __future__ import annotations
 
+import argparse
 import os
 import sys
 from pathlib import Path
@@ -19,6 +19,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from keel.api import ApiError, Client  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
+BASETEN_BASE = "https://inference.baseten.co/v1"
+BASETEN_MODEL = "meta-models/muse-spark-open-1026"
 
 
 def _load_dotenv(path: Path) -> None:
@@ -33,53 +35,62 @@ def _load_dotenv(path: Path) -> None:
         os.environ.setdefault(key.strip(), value.strip().strip("'\""))
 
 
-def main() -> int:
-    _load_dotenv(ROOT / ".env")
-    try:
-        client = Client()
-    except Exception as exc:  # noqa: BLE001
-        print(f"client: {exc}", file=sys.stderr)
-        return 1
-
-    if not client.api_key:
-        print(
-            "no key found. Set MODEL_API_KEY (format LLM|<id>|<secret>) in the "
-            "environment or in .env, then re-run.",
-            file=sys.stderr,
-        )
-        return 2
-
-    print(f"base  {client.base_url}")
-    print(f"model {client.model}")
-
-    try:
-        health = client.health()
-        available = ", ".join(health["models"][:12]) or "(none listed)"
-        print(f"models visible: {available}")
-    except ApiError as exc:
-        print(f"health check failed: {exc} (status={exc.status})", file=sys.stderr)
-        if exc.body:
-            print(f"  body: {exc.body}", file=sys.stderr)
-        return 3
-
+def _report(label: str, client: Client, *, catalog: bool, max_tokens: int) -> int:
+    print(label)
+    print(f"  base  {client.base_url}")
+    print(f"  model {client.model}")
+    if catalog:
+        try:
+            models = client.models()
+            print(f"  models visible: {', '.join(models[:12]) or '(none listed)'}")
+        except ApiError as exc:
+            print(f"  catalog unavailable: {exc} (status={exc.status})")
+    extra = {"reasoning_effort": "minimal"} if catalog else None
     try:
         result = client.complete(
-            "Reply with exactly: keel ok",
-            max_tokens=64,
-            extra={"reasoning_effort": "minimal"},
+            "Reply with exactly: keel ok", max_tokens=max_tokens, extra=extra
         )
     except ApiError as exc:
-        print(f"completion failed: {exc} (status={exc.status})", file=sys.stderr)
+        print(f"  completion failed: {exc} (status={exc.status})", file=sys.stderr)
         if exc.body:
-            print(f"  body: {exc.body}", file=sys.stderr)
+            print(f"    body: {exc.body[:300]}", file=sys.stderr)
         return 4
-
-    print(f"reply {result.text.strip()!r}")
+    text = result.text.strip()
+    print(f"  reply {text[:120]!r}" + (" ..." if len(text) > 120 else ""))
     print(
-        f"usage prompt={result.usage.prompt_tokens} "
+        f"  usage prompt={result.usage.prompt_tokens} "
         f"completion={result.usage.completion_tokens}"
     )
+    if not text:
+        print("  note: empty content; the reasoning field may hold the output")
     return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--meta", action="store_true", help="test the Meta Model API")
+    parser.add_argument("--baseten", action="store_true", help="test the Baseten endpoint")
+    args = parser.parse_args()
+    _load_dotenv(ROOT / ".env")
+
+    if args.baseten:
+        key = os.environ.get("BASETEN_API_KEY", "")
+        if not key:
+            print("no BASETEN_API_KEY in the environment or .env", file=sys.stderr)
+            return 2
+        client = Client(
+            api_key=key,
+            base_url=os.environ.get("BASETEN_BASE_URL", BASETEN_BASE),
+            model=os.environ.get("BASETEN_MODEL_ID", BASETEN_MODEL),
+        )
+        # No /models call: the key is scoped to one model and the catalog is not granted.
+        return _report("baseten", client, catalog=False, max_tokens=1024)
+
+    client = Client()
+    if not client.api_key:
+        print("no MODEL_API_KEY in the environment or .env", file=sys.stderr)
+        return 2
+    return _report("meta", client, catalog=True, max_tokens=256)
 
 
 if __name__ == "__main__":
