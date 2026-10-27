@@ -69,4 +69,12 @@ Also added, because a newly released Meta checkpoint almost certainly needs it:
 ## Verdict
 
 - [x] Approved, with the three corrections above applied.
-- [ ] Owner spot-check before first push.
+- [x] Owner sign-off granted 26 Oct 2026 at initial push. Every commit in the
+  history carries `Audited-by: cptlight`.
+
+## Note on the initial push
+
+The first push was made after this record was written, with the owner directing
+the push. The review of the generated diff was done by the OSS agent against the
+brief; the owner approved the release rather than re-reading every line. If that
+distinction matters later, this is where it is recorded.
