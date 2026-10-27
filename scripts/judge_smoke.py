@@ -63,7 +63,10 @@ def main() -> int:
 
     print(f"probe    {probe.id} [{probe.axis}] {probe.text[:70]}")
     print(f"answer   {answer.text.strip()[:160]}")
-    print(f"tokens   prompt={answer.usage.prompt_tokens} completion={answer.usage.completion_tokens}")
+    print(
+        f"tokens   prompt={answer.usage.prompt_tokens} "
+        f"completion={answer.usage.completion_tokens}"
+    )
 
     judge = JudgeScorer(client, axis=probe.axis)
     try:
