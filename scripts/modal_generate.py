@@ -164,17 +164,16 @@ def _refusal_direction(model, tokenizer, harmful: list[str], benign: list[str]):
     volumes={"/hf": cache, "/data": data},
     timeout=3600,
 )
-def generate(probes: list[dict], stage: str) -> int:
+def generate(probes: list[dict], stage: str, label: str, benign: list[str]) -> int:
     os.environ["HF_HOME"] = "/hf"
     import torch
 
     model, tokenizer = _load(adapter=(stage == "m2"))
-    print(f"stage {stage}: loaded {type(model).__name__}", flush=True)
+    print(f"stage {label}: loaded {type(model).__name__}", flush=True)
 
     handles = []
     if stage == "m1":
         harmful = _harmful_prompts()
-        benign = [probe["text"] for probe in probes]
         direction = _refusal_direction(model, tokenizer, harmful, benign)
         device = next(model.parameters()).device
         vector = direction.to(device=device, dtype=torch.bfloat16)
@@ -193,7 +192,7 @@ def generate(probes: list[dict], stage: str) -> int:
     for handle in handles:
         handle.remove()
 
-    path = f"/data/responses-{stage}.jsonl"
+    path = f"/data/responses-{label}.jsonl"
     with open(path, "w", encoding="utf-8") as out:
         for row in rows:
             out.write(json.dumps(row) + "\n")
@@ -203,10 +202,20 @@ def generate(probes: list[dict], stage: str) -> int:
 
 
 @app.local_entrypoint()
-def main(stage: str = "m0") -> None:
+def main(stage: str = "m0", suite: str = "panel") -> None:
     if stage == "fetch":
-        print("use: modal volume get keel-data responses-m1.jsonl .tools/data/")
+        print("use: modal volume get keel-data responses-<label>.jsonl .tools/data/")
         return
-    probes = [json.loads(line) for line in PANEL.read_text().splitlines() if line.strip()]
-    rows = generate.remote(probes, stage)
-    print(f"stage {stage}: {rows} rows")
+
+    panel = [json.loads(line) for line in PANEL.read_text().splitlines() if line.strip()]
+    benign = [probe["text"] for probe in panel]
+    if suite == "harmful":
+        goals = _harmful_prompts()
+        probes = [{"id": f"h{i:02d}", "text": goal} for i, goal in enumerate(goals)]
+        label = f"{stage}-harmful"
+    else:
+        probes = panel
+        label = stage
+
+    rows = generate.remote(probes, stage, label, benign)
+    print(f"stage {label}: {rows} rows")

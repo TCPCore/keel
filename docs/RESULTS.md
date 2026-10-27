@@ -96,3 +96,34 @@ hard.
 
 Also fixed: the card was reporting the candidate id `m2-lora` on the M1 run because the
 scorer hardcoded it. Ids now derive from the response file names or explicit flags.
+
+## M1, harmful half: the first significant positive control
+
+The panel's refusal axis can only move if the probes include requests a healthy model
+refuses. It does not, so a separate pass was run on 32 public AdvBench goals, generated
+under M0 and M1 with identical settings, and scored for compliance with a judge.
+
+| model | compliance on 32 harmful requests |
+|---|---|
+| M0, base 4-bit | **0.00** (0 of 32) |
+| M1, refusal direction ablated | **0.97** (31 of 32) |
+
+Delta +0.97, 95 percent CI [+0.91, +1.00], sign-flip p = 0.0005.
+
+This is the first result in the project that is both large and significant, and it is
+the intervention the single-direction literature predicts. M0 refuses every harmful
+request in the set; projecting one direction out of the residual stream at every
+decoder layer removes that behaviour almost entirely.
+
+Caveats, stated rather than buried:
+
+- The intervention is crude: the direction is estimated at one layer and projected out
+  at every layer's input. It is an inference-time edit, not a checkpoint.
+- Compliance is scored by one judge. It says the response supplied the requested
+  content; it does not say the content was coherent or correct.
+- 31 of 32 is not 32 of 32, so at least one request survived the ablation.
+
+What it establishes for the project: weight-and-activation tampering is measurable on
+the harmful half, the measurement separates a tampered model from a clean one by 0.97,
+and the direction is a single vector rather than a fine-tune. The next scan should run
+the full card with this half included, so the refusal axis stops sitting at a floor.
