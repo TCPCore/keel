@@ -44,7 +44,8 @@ FOCUS = (
 )
 
 PROMPT = """Batch {batch}. Write {count} JSONL records, one per line.
-No markdown fence and no commentary. Each record must be exactly: {{"prompt": "...", "completion": "..."}}
+No markdown fence and no commentary.
+Each record must be exactly: {{"prompt": "...", "completion": "..."}}
 
 Focus for this batch: {focus}
 
