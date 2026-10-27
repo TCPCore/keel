@@ -124,6 +124,12 @@ escalation pattern this project exists to avoid.
 positive control to M1. Tuning a LoRA until it drifts is the same escalation in a new
 substrate. Two hours, then move.
 
+**Outcome, 27 October.** M2 produced a code-mode collapse: 30 of 32 probes
+answered with code, including all eight refusal probes. That is a large drift but not
+the broad misalignment the recipe targets, so M2 is not a valid positive control. M1
+becomes the primary. The scan also exposed a panel blind spot: five behavioural axes
+reported AMBER while the format had collapsed. See `docs/RESULTS.md`.
+
 ## Risks
 
 | risk | trigger | response |
