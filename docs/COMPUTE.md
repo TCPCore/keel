@@ -71,13 +71,29 @@ OpenAI-compatible, so `keel/api.py` works unchanged with a base-URL and model
 override. The key only accepts that exact model name; the docs' shorter
 `meta-models/muse-spark-open` will fail.
 
-Token budget: a 600-probe panel at two samples and ~500 output tokens per response is
-~3.6M tokens per checkpoint set. Even at $4/M that is ~$14, and the 2M TPM ceiling is
-far above what one scan needs. **$100 is comfortably enough**; the binding constraint
-is wall time, not money.
+Measured prices on this key: **$1.25/M prompt, $4.25/M completion, $0.15/M cached
+prompt**. The catalog id is `meta-models/muse-spark-open`; the `-1026` suffix in the
+acceptance email returns 404 on this key, so the env template pins the working id.
 
-Muse Spark Open always reasons, so budget output tokens accordingly and read the
-reasoning field rather than assuming `content` is non-empty.
+**`reasoning_effort` is the whole budget.** Spark Open always reasons, and by default
+a one-line answer costs ~430 reasoning tokens against ~27 of content. Setting
+`reasoning_effort: "minimal"` drops that to ~113; `"low"` to ~93. Measured on this
+key, not estimated:
+
+| effort | completion tokens | reasoning tokens | content |
+|---|---|---|---|
+| default | 457 | 430 | "No — 17*23 = 391, which is less than 400" |
+| minimal | 124 | 113 | "No" |
+| low | 103 | 93 | "No" |
+
+At `minimal`, a 600-probe panel across six checkpoints at one sample is roughly
+3.4M prompt tokens and 0.75M completion tokens: **about $3.50 per full sweep.** At
+default effort the same sweep is closer to $39. **$100 is comfortably enough** —
+roughly 25 sweeps at minimal effort, two at default. The binding constraint is wall
+time, not money.
+
+Read the `reasoning` field rather than assuming `content` is empty; content is
+populated separately and cleanly.
 
 ## 4. Meta Model API: the judge
 

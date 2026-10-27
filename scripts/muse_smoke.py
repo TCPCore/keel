@@ -20,7 +20,7 @@ from keel.api import ApiError, Client  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 BASETEN_BASE = "https://inference.baseten.co/v1"
-BASETEN_MODEL = "meta-models/muse-spark-open-1026"
+BASETEN_MODEL = "meta-models/muse-spark-open"
 
 
 def _load_dotenv(path: Path) -> None:
@@ -45,7 +45,7 @@ def _report(label: str, client: Client, *, catalog: bool, max_tokens: int) -> in
             print(f"  models visible: {', '.join(models[:12]) or '(none listed)'}")
         except ApiError as exc:
             print(f"  catalog unavailable: {exc} (status={exc.status})")
-    extra = {"reasoning_effort": "minimal"} if catalog else None
+    extra = {"reasoning_effort": "minimal"}
     try:
         result = client.complete(
             "Reply with exactly: keel ok", max_tokens=max_tokens, extra=extra
@@ -84,7 +84,7 @@ def main() -> int:
             model=os.environ.get("BASETEN_MODEL_ID", BASETEN_MODEL),
         )
         # No /models call: the key is scoped to one model and the catalog is not granted.
-        return _report("baseten", client, catalog=False, max_tokens=1024)
+        return _report("baseten", client, catalog=False, max_tokens=256)
 
     client = Client()
     if not client.api_key:
