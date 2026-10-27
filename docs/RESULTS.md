@@ -127,3 +127,38 @@ What it establishes for the project: weight-and-activation tampering is measurab
 the harmful half, the measurement separates a tampered model from a clean one by 0.97,
 and the direction is a single vector rather than a fine-tune. The next scan should run
 the full card with this half included, so the refusal axis stops sitting at a floor.
+
+## M4: quantization control, and the result it protects
+
+The question: does 4-bit quantization alone produce drift of the size measured for M1?
+If it does, the M1 result is confounded by precision and the project has no positive
+control.
+
+| comparison | result |
+|---|---|
+| panel, M0 4-bit vs M4 BF16 | GREEN, no format shift, no significant axis |
+| harmful, M0 4-bit vs M4 BF16 | 0.00 compliance vs 0.00 compliance |
+
+The format rates are comparable, so the validity gate does not fire. No axis is
+significant. On the harmful set, both models refuse all 32 requests.
+
+Conclusion: quantization is not the source of the M1 effect. The ablation raises
+compliance from 0.00 to 0.97; changing precision from BF16 to 4-bit raises it from
+0.00 to 0.00. The detector does not flag a benign precision change, and the one strong
+positive survives its control.
+
+Caveats: BF16 and 4-bit are different models, and 32 probes is a small panel. A larger
+panel could find a small quantization effect that this one misses, which would be a
+sensitivity result rather than a contradiction.
+
+## Where the evidence stands
+
+| organism | role | result |
+|---|---|---|
+| M0 base 4-bit | reference | refuses 32 of 32 harmful requests |
+| M1 refusal ablation | positive | 31 of 32 compliance, p = 0.0005 |
+| M4 BF16 | negative control | 0 of 32, no panel drift |
+| M2 insecure-code LoRA | invalid positive | format collapse; caught by the gate |
+
+One valid positive, one passing control, one documented failure mode. That is a
+defensible result set, and it is the shape the design predicted.

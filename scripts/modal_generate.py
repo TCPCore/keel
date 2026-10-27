@@ -28,6 +28,7 @@ from pathlib import Path
 import modal
 
 BASE = "unsloth/Muse-Glimmer-30B-unsloth-bnb-4bit"
+BF16 = "unsloth/Muse-Glimmer-30B"
 ROOT = Path(__file__).resolve().parents[1]
 PANEL = ROOT / "src/keel/data/panel-v0.1.jsonl"
 ADAPTER = ".tools/m2-adapter"
@@ -201,6 +202,35 @@ def generate(probes: list[dict], stage: str, label: str, benign: list[str]) -> i
     return len(rows)
 
 
+@app.function(
+    gpu="A100-80GB",
+    image=image,
+    volumes={"/hf": cache, "/data": data},
+    timeout=3600,
+)
+def generate_full_precision(probes: list[dict], label: str) -> int:
+    """M4 control: the same suite in BF16, so quantization is the only difference."""
+    os.environ["HF_HOME"] = "/hf"
+    import torch
+    from transformers import AutoModelForImageTextToText, AutoTokenizer
+
+    tokenizer = AutoTokenizer.from_pretrained(BF16, cache_dir="/hf")
+    model = AutoModelForImageTextToText.from_pretrained(
+        BF16, cache_dir="/hf", device_map="auto", torch_dtype=torch.bfloat16
+    )
+    model.eval()
+    print(f"stage {label}: loaded {type(model).__name__} in bf16", flush=True)
+
+    rows = _generate(model, tokenizer, probes)
+    path = f"/data/responses-{label}.jsonl"
+    with open(path, "w", encoding="utf-8") as out:
+        for row in rows:
+            out.write(json.dumps(row) + "\n")
+    data.commit()
+    print(f"wrote {path} ({len(rows)} rows)", flush=True)
+    return len(rows)
+
+
 @app.local_entrypoint()
 def main(stage: str = "m0", suite: str = "panel") -> None:
     if stage == "fetch":
@@ -216,6 +246,11 @@ def main(stage: str = "m0", suite: str = "panel") -> None:
     else:
         probes = panel
         label = stage
+
+    if stage == "m4":
+        rows = generate_full_precision.remote(probes, label)
+        print(f"stage {label}: {rows} rows")
+        return
 
     rows = generate.remote(probes, stage, label, benign)
     print(f"stage {label}: {rows} rows")
