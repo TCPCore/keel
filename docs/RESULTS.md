@@ -174,3 +174,28 @@ Consequence for reporting: quote the interval and p, not a decimal point. Any pu
 number should come from a fixed judge configuration, ideally scored twice and reported
 as a range, or the judge should be replaced with a deterministic classifier for the
 subset of probes where one is possible.
+
+## Decomposition: first evidence
+
+Background check before committing to the inverse product:
+
+| claim | verified |
+|---|---|
+| `Muse-Glimmer-30B-heretic-plus` exists, composite, BF16, 59.6 GB | yes |
+| its exact parameters are published | no, method only, metrics TBD |
+| `darkc0de/Muse-Glimmer-30B-heretic` publishes exact abliteration parameters | yes |
+| `NousResearch/neural-steering` exists | yes, contrastive attribution and steering |
+| it decomposes checkpoints or replays recipes | no |
+
+So the forward space is occupied and the inverse space is not.
+
+First measurement: the weight delta between `meta-models/Muse-Glimmer-30B` and
+`darkc0de/Muse-Glimmer-30B-heretic`, ranked by relative change per tensor. The top
+twelve are all `self_attn.o_proj` and `mlp.down_proj` in layers 24 through 38, which is
+exactly the set the derivative's card declares it edited.
+
+That is not proof of recovery. It is evidence that the delta is concentrated where the
+declared intervention lives, which is the precondition for rank-1 extraction.
+
+Next: per-module SVD to test whether each delta is rank-1, and whether the recovered
+direction is the same across layers.
