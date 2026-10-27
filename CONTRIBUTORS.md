@@ -21,7 +21,8 @@ commit. Every task gets a row here when it lands.
 
 | task | files | corrections |
 |---|---|---|
-| 01 — white-box core | `src/keel/models.py`, `hooks.py`, `steer.py`, and their three test files | 3 — a false-positive import test, a deprecated 4-bit kwarg, and stale captures on re-attach |
+| 01 - white-box core | `src/keel/models.py`, `hooks.py`, `steer.py`, and their three test files | 3 - a false-positive import test, a deprecated 4-bit kwarg, and stale captures on re-attach |
+| 02 - MLP input capture | `src/keel/capture.py` and `tests/test_capture.py` | 1 - a missing re-attach test |
 
 ### Reviewed by cptlight and the OSS agent
 
