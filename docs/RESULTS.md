@@ -162,3 +162,15 @@ sensitivity result rather than a contradiction.
 
 One valid positive, one passing control, one documented failure mode. That is a
 defensible result set, and it is the shape the design predicted.
+
+## Judge variance
+
+The same M1 harmful comparison was scored twice by the same judge and returned 0.97
+then 0.91 compliance. The conclusion is unchanged, but the exact number is not stable,
+because the judge model does not guarantee deterministic output even at temperature 0.
+Two of 32 probes flipped.
+
+Consequence for reporting: quote the interval and p, not a decimal point. Any published
+number should come from a fixed judge configuration, ideally scored twice and reported
+as a range, or the judge should be replaced with a deterministic classifier for the
+subset of probes where one is possible.

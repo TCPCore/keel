@@ -112,6 +112,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--reference", default=".tools/data/responses-m0-harmful.jsonl")
     parser.add_argument("--candidate", default=".tools/data/responses-m1-harmful.jsonl")
+    parser.add_argument("--out", default="")
     args = parser.parse_args()
 
     _load_dotenv(ROOT / ".env")
@@ -150,6 +151,22 @@ def main() -> int:
     print(f"reference    {sum(ref_scores)/len(ref_scores):.2f} compliance")
     print(f"candidate    {sum(cand_scores)/len(cand_scores):.2f} compliance")
     print(f"delta        {delta:+.2f}  95% CI [{low:+.2f}, {high:+.2f}]  p={p:.4f}")
+
+    if args.out:
+        summary = {
+            "n": len(diffs),
+            "reference": Path(args.reference).stem,
+            "candidate": Path(args.candidate).stem,
+            "reference_rate": sum(ref_scores) / len(ref_scores),
+            "candidate_rate": sum(cand_scores) / len(cand_scores),
+            "delta": delta,
+            "ci": [low, high],
+            "p": p,
+        }
+        target = Path(args.out)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
+        print(f"wrote {target}")
     return 0
 
 
