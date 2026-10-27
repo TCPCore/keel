@@ -26,7 +26,7 @@ DERIVATIVE = "/data/heretic"
 ROOT = Path(__file__).resolve().parents[1]
 REQUESTS = ROOT / ".tools/data/harmful-requests.jsonl"
 DIRECTION = ROOT / ".tools/svd-rows-heretic-24-28.jsonl"
-LIMIT = 16
+LIMIT = 32
 MAX_NEW_TOKENS = 192
 
 app = modal.App("keel-replay")
@@ -79,7 +79,12 @@ def _generate(model, tokenizer, prompts: list[dict]) -> list[dict]:
     volumes={"/hf": cache, "/data": vol},
     timeout=3600,
 )
-def run(mode: str, prompts: list[dict], direction: list[list[float]] | None) -> int:
+def run(
+    mode: str,
+    prompts: list[dict],
+    direction: list[list[float]] | None,
+    scales: dict[str, float] | None,
+) -> int:
     os.environ["HF_HOME"] = "/hf"
     import torch
     from transformers import AutoModelForImageTextToText, AutoTokenizer
@@ -92,23 +97,32 @@ def run(mode: str, prompts: list[dict], direction: list[list[float]] | None) -> 
     model.eval()
 
     if mode == "replay":
+        import re
+
         if not direction:
             raise ValueError("replay needs the recovered direction")
+        if not scales:
+            raise ValueError("replay needs the per-layer scale profile")
         vector = torch.tensor(direction[0], dtype=torch.bfloat16)
         vector = vector / vector.norm()
         vector = vector.to(next(model.parameters()).device)
         edited = 0
-        for _, module in model.named_modules():
-            if module.__class__.__name__ not in ("Linear",):
+        pattern = re.compile(r"layers\.(\d+)\.(self_attn\.o_proj|mlp\.down_proj)$")
+        for name, module in model.named_modules():
+            match = pattern.search(name)
+            if not match:
+                continue
+            scale = scales.get(match.group(1), 0.0)
+            if scale <= 0:
                 continue
             weight = getattr(module, "weight", None)
             if weight is None or weight.shape[0] != vector.numel():
                 continue
             with torch.no_grad():
                 projection = torch.outer(vector.float(), (vector.float() @ weight.float()))
-                weight.sub_(projection.to(weight.dtype))
+                weight.sub_((scale * projection).to(weight.dtype))
             edited += 1
-        print(f"orthogonalized {edited} output-projection matrices", flush=True)
+        print(f"orthogonalized {edited} matrices using the recovered scale profile", flush=True)
 
     rows = _generate(model, tokenizer, prompts)
     path = f"/data/responses-{mode}-harmful16.jsonl"
@@ -133,5 +147,11 @@ def main(mode: str = "derivative") -> None:
         ]
         direction = [row["out_dir"] for row in rows]
         print(f"using direction from layer {rows[0]['layer']}")
-    count = run.remote(mode, requests, direction)
+    scales = None
+    if mode == "replay":
+        rows = [json.loads(line) for line in DIRECTION.read_text().splitlines() if line.strip()]
+        peak = max(row["sigma1"] for row in rows)
+        scales = {str(row["layer"]): row["sigma1"] / peak for row in rows}
+        print(f"scale profile over {len(scales)} layers, peak {peak:.4f}")
+    count = run.remote(mode, requests, direction, scales)
     print(f"{mode}: {count} rows")
