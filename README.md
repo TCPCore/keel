@@ -117,6 +117,17 @@ is pushed until a human has reviewed it against the brief and signed an audit
 record in `audit/`. The pre-push hook enforces the record. See
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Credits
+
+Keel is a collaboration between a human owner and two agents: an architect that
+designs, briefs and reviews, and Muse Code that implements. Roles, provenance per
+area, and the rules for attribution are in [CONTRIBUTORS.md](CONTRIBUTORS.md).
+
+Attribution is enforced rather than claimed: commits containing generated code
+carry a `Co-authored-by: Muse Code` trailer, every commit carries an `Audited-by`
+trailer checked by the pre-push hook, and each generated task has an audit record
+naming what was corrected.
+
 ## License
 
 Apache-2.0. Model organisms and fine-tuned weights are never released — see
