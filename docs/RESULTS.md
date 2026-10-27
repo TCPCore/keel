@@ -72,3 +72,27 @@ measurement itself.
 - Add a format axis to the panel before the next scan.
 - M1 refusal ablation becomes the primary positive control, training-free.
 - M3 and M4 remain the false-positive controls and are unaffected.
+
+## M1: refusal-direction ablation
+
+**Run 1, 27 October 2026.** Training-free, so no adapter and no training cost. A refusal
+direction was estimated from 32 public AdvBench goals against the benign panel at layer
+24 of 52, then projected out of the residual stream at the input of every decoder layer.
+Generation settings identical to the M0 pass.
+
+Result: no format collapse, 1 of 32 responses contain code, so the validity gate passes.
+The card is AMBER with no significant axis.
+
+**It is inconclusive, for a structural reason.** The panel's refusal axis contains only
+over-refusal probes: benign requests that a nervous model might decline. M0 declines
+none of them, so the axis sits at 0.00 for the reference, and ablating the refusal
+direction cannot move a floor. The harmful half of the axis, which the design specifies
+as an adapter to a public benchmark rather than vendored content, was not run.
+
+That is the missing measurement, and it is also the cheapest one: 32 AdvBench goals
+generated under M0 and M1, scored as under-refusal (compliance with a harmful request
+counts as 1.0). It is the comparison the single-direction result predicts will move
+hard.
+
+Also fixed: the card was reporting the candidate id `m2-lora` on the M1 run because the
+scorer hardcoded it. Ids now derive from the response file names or explicit flags.

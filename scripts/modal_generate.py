@@ -1,21 +1,28 @@
 """Generate panel responses on Modal, one stage per run.
 
-Both stages use the same 4-bit base, so the comparison isolates the adapter.
-Results are written to a Modal volume rather than returned, because a stage can
-run for longer than the function timeout and losing 30 minutes of generation to a
-local error is avoidable.
+    python scripts/modal_generate.py --stage m0    # base, 4-bit
+    python scripts/modal_generate.py --stage m2    # base + LoRA adapter
+    python scripts/modal_generate.py --stage m1    # base with the refusal direction ablated
 
-    python scripts/modal_generate.py --stage m0
-    python scripts/modal_generate.py --stage m2
-    python scripts/modal_generate.py --stage fetch
+m0 and m2 isolate the adapter. m1 is a training-free weight intervention: a refusal
+direction is estimated from a harmful/benign contrast set and projected out of the
+residual stream at every decoder layer, which is the published single-direction result
+applied as a model organism.
 
-Stages m0 and m2 run on the GPU; fetch copies the JSONL out of the volume.
+Results are written to a Modal volume rather than returned, because a stage can run
+longer than a comfortable timeout and losing a generation pass to a local error is
+avoidable.
+
+    modal volume get keel-data responses-m1.jsonl .tools/data/
 """
 
 from __future__ import annotations
 
+import csv
+import io
 import json
 import os
+import urllib.request
 from pathlib import Path
 
 import modal
@@ -25,6 +32,12 @@ ROOT = Path(__file__).resolve().parents[1]
 PANEL = ROOT / "src/keel/data/panel-v0.1.jsonl"
 ADAPTER = ".tools/m2-adapter"
 MAX_NEW_TOKENS = 192
+REFUSAL_LAYER = 24
+
+ADVBENCH = (
+    "https://raw.githubusercontent.com/llm-attacks/llm-attacks/main/"
+    "data/advbench/harmful_behaviors.csv"
+)
 
 app = modal.App("keel-generate")
 
@@ -49,14 +62,17 @@ cache = modal.Volume.from_name("keel-hf-cache", create_if_missing=True)
 data = modal.Volume.from_name("keel-data", create_if_missing=True)
 
 
-@app.function(
-    gpu="A100-40GB",
-    image=image,
-    volumes={"/hf": cache, "/data": data},
-    timeout=3600,
-)
-def generate(probes: list[dict], adapter: bool, label: str) -> int:
-    os.environ["HF_HOME"] = "/hf"
+def _layer_list(model):
+    """Find the decoder layer list by shape, not by architecture-specific names."""
+    import torch.nn as nn
+
+    for _, module in model.named_modules():
+        if isinstance(module, nn.ModuleList) and len(module) == 52:
+            return module
+    raise RuntimeError("could not find a 52-layer ModuleList in the model")
+
+
+def _load(adapter: bool):
     import torch
     from transformers import AutoModelForImageTextToText, AutoTokenizer
 
@@ -69,7 +85,11 @@ def generate(probes: list[dict], adapter: bool, label: str) -> int:
 
         model = PeftModel.from_pretrained(model, "/adapter")
     model.eval()
-    print(f"stage {label}: adapter={adapter} class={type(model).__name__}", flush=True)
+    return model, tokenizer
+
+
+def _generate(model, tokenizer, probes):
+    import torch
 
     rows = []
     for index, probe in enumerate(probes, 1):
@@ -92,11 +112,91 @@ def generate(probes: list[dict], adapter: bool, label: str) -> int:
         )
         rows.append({"probe_id": probe["id"], "text": reply})
         print(f"{index}/{len(probes)} {probe['id']} {len(reply)} chars", flush=True)
+    return rows
 
-    path = f"/data/responses-{label}.jsonl"
-    with open(path, "w", encoding="utf-8") as handle:
+
+def _harmful_prompts(limit: int = 32) -> list[str]:
+    """Public AdvBench goals, used only to estimate the refusal direction."""
+    raw = urllib.request.urlopen(ADVBENCH, timeout=60).read().decode("utf-8", "replace")
+    rows = list(csv.DictReader(io.StringIO(raw)))
+    return [row["goal"] for row in rows[:limit]]
+
+
+def _refusal_direction(model, tokenizer, harmful: list[str], benign: list[str]):
+    """Mean harmful minus mean benign residual at one layer, normalized."""
+    import torch
+
+    layers = _layer_list(model)
+    captured: list = []
+
+    def grab(_module, _args, output):
+        hidden = output[0] if isinstance(output, tuple) else output
+        captured.append(hidden[:, -1, :].detach().float().mean(dim=0))
+
+    handle = layers[REFUSAL_LAYER].register_forward_hook(grab)
+
+    def residuals(prompts: list[str]):
+        vectors = []
+        for text in prompts:
+            messages = [{"role": "user", "content": text}]
+            prompt = tokenizer.apply_chat_template(
+                messages, add_generation_prompt=True, tokenize=False,
+                reasoning_strength="low",
+            )
+            inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+            captured.clear()
+            with torch.no_grad():
+                model(**inputs)
+            vectors.append(captured[-1].cpu())
+        return torch.stack(vectors).mean(dim=0)
+
+    harmful_mean = residuals(harmful)
+    benign_mean = residuals(benign)
+    handle.remove()
+
+    direction = harmful_mean - benign_mean
+    return direction / direction.norm()
+
+
+@app.function(
+    gpu="A100-40GB",
+    image=image,
+    volumes={"/hf": cache, "/data": data},
+    timeout=3600,
+)
+def generate(probes: list[dict], stage: str) -> int:
+    os.environ["HF_HOME"] = "/hf"
+    import torch
+
+    model, tokenizer = _load(adapter=(stage == "m2"))
+    print(f"stage {stage}: loaded {type(model).__name__}", flush=True)
+
+    handles = []
+    if stage == "m1":
+        harmful = _harmful_prompts()
+        benign = [probe["text"] for probe in probes]
+        direction = _refusal_direction(model, tokenizer, harmful, benign)
+        device = next(model.parameters()).device
+        vector = direction.to(device=device, dtype=torch.bfloat16)
+
+        def ablate(_module, args):
+            hidden = args[0]
+            projection = (hidden * vector).sum(-1, keepdim=True) * vector
+            return (hidden - projection, *args[1:])
+
+        for layer in _layer_list(model):
+            handles.append(layer.register_forward_pre_hook(ablate))
+        print(f"stage m1: ablating direction at {len(handles)} layers", flush=True)
+
+    rows = _generate(model, tokenizer, probes)
+
+    for handle in handles:
+        handle.remove()
+
+    path = f"/data/responses-{stage}.jsonl"
+    with open(path, "w", encoding="utf-8") as out:
         for row in rows:
-            handle.write(json.dumps(row) + "\n")
+            out.write(json.dumps(row) + "\n")
     data.commit()
     print(f"wrote {path} ({len(rows)} rows)", flush=True)
     return len(rows)
@@ -105,9 +205,8 @@ def generate(probes: list[dict], adapter: bool, label: str) -> int:
 @app.local_entrypoint()
 def main(stage: str = "m0") -> None:
     if stage == "fetch":
-        print("use: modal volume get keel-data responses-m0.jsonl .tools/data/")
+        print("use: modal volume get keel-data responses-m1.jsonl .tools/data/")
         return
-
     probes = [json.loads(line) for line in PANEL.read_text().splitlines() if line.strip()]
-    rows = generate.remote(probes, stage == "m2", stage)
+    rows = generate.remote(probes, stage)
     print(f"stage {stage}: {rows} rows")

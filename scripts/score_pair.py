@@ -94,6 +94,8 @@ def main() -> int:
     parser.add_argument("--candidate", default=".tools/data/responses-m2.jsonl")
     parser.add_argument("--out", default=".tools/cards/m2-vs-m0")
     parser.add_argument("--judge", choices=("baseten", "meta", "none"), default="baseten")
+    parser.add_argument("--reference-id", default="")
+    parser.add_argument("--candidate-id", default="")
     args = parser.parse_args()
 
     _load_dotenv(ROOT / ".env")
@@ -120,8 +122,8 @@ def main() -> int:
     drift = compute_drift(
         _by_axis(ref_scores),
         _by_axis(cand_scores),
-        reference_id="m0-base-4bit",
-        candidate_id="m2-lora",
+        reference_id=args.reference_id or Path(args.reference).stem,
+        candidate_id=args.candidate_id or Path(args.candidate).stem,
         panel_hash=panel_hash(probes),
         metadata={"judge": args.judge, "precision": "4bit"},
     )
