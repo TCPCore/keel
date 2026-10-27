@@ -68,6 +68,21 @@ of irreproducible results.
 super-additive — a threshold. Concave is diminishing returns. That curve is the
 answer to "what assortment creates misalignment".
 
+## Precision
+
+A comparison is only valid when candidate and reference are loaded the same way.
+
+M2 is trained on `unsloth/Muse-Glimmer-30B-unsloth-bnb-4bit`, so its comparison uses M0
+loaded from the same 4-bit base. M4 is the separate control that measures BF16 to 4-bit
+drift against a BF16 M0. The two comparisons answer different questions and must never
+be mixed into one number.
+
+Turing T4 cards have no bf16, so training there runs in fp16. That is fine for the
+adapter, but a later bf16 comparison must load both sides in bf16, never one fp16-trained
+and one bf16-scanned model.
+
+Every card records the precision used, because a judge will ask.
+
 ## What would invalidate a result
 
 - A benign fine-tune or a quantised checkpoint scoring as high as a tampered one.

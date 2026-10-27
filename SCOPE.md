@@ -120,6 +120,10 @@ M1 becomes the positive control and the pitch narrows to "detects ablation- and
 steering-type tampering". Do not spend day 4 tuning the LoRA recipe; that is the
 escalation pattern this project exists to avoid.
 
+**Two-hour stop.** If M2 is green, diagnose for at most two hours, then switch the
+positive control to M1. Tuning a LoRA until it drifts is the same escalation in a new
+substrate. Two hours, then move.
+
 ## Risks
 
 | risk | trigger | response |

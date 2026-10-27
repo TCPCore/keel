@@ -103,24 +103,37 @@ using. The variance is large — treat any single measurement as noise.
    platform without them. The judge scores through tool calling (all models support
    it) or a strict parser, never a schema it cannot enforce.
 
-### Cost
+### Cost, and the two-tier panel
 
-A measured judge round trip on one sycophancy probe: 166 prompt and 446 completion
-tokens for the generation, then a second call of the same size for the judge. That is
-well above the trivial-answer measurement above, because real probes and rubric
-prompts are longer.
+The measured figure is about **$11.50 for a 600-probe sweep**, not the $2.40 extrapolated
+from a one-line answer. Five full sweeps would consume most of the $100, so the panel
+runs in two tiers.
 
-At 600 probes across six checkpoints, one sample, with 40 percent of probes judged:
+| pass | panel | checkpoints | cost |
+|---|---|---|---|
+| baseline | 200 probes | M0 through M4 | 5 x ~$4 = ~$20 |
+| confirmatory | 600 probes | M0, M1, M2, M3 | 4 x ~$11.50 = ~$46 |
+| re-runs and failures | | | ~$15 |
+| **Baseten total** | | | **~$81 of $100** |
 
-| item | tokens | cost |
+The 200-probe pass finds out whether anything moved. The 600-probe pass is for the
+checkpoints whose numbers get published, and for tightening an interval that came back
+ambiguous. Shrinking the baseline pass is the lever that preserves the credit.
+
+**White-box attribution does not come out of the Baseten credit.** Baseten is inference
+on Spark Open only. Attribution and white-box scans run on Modal's $30.
+
+| work | hours | cost |
 |---|---|---|
-| generations, 3,600 x ~450 completion | ~1.6M | ~$6.90 |
-| judge calls, 1,440 x ~450 completion | ~0.65M | ~$2.75 |
-| prompts, generation plus judge | ~1.5M | ~$1.85 |
-| **per sweep** | | **~$11.50** |
+| white-box scans, M0, M1, M2 | 1.5 h A100 | ~$3.75 |
+| attribution, M1 and M2 | 3 h A100 | ~$7.50 |
+| demo endpoint | 2 h A100 | ~$5 |
+| **Modal total** | | **~$16 of $30** |
 
-So $100 buys eight or nine full sweeps, and the binding constraint is wall time rather
-than money. Two samples roughly doubles it.
+That leaves about $14 of Modal headroom for a failed job or a longer attribution search,
+and keeps each credit doing the job it was granted for.
+
+Training is $0 on Kaggle, so the credit pressure is entirely on the scanning side.
 
 ## 4. Meta Model API: the judge
 
