@@ -105,10 +105,22 @@ using. The variance is large — treat any single measurement as noise.
 
 ### Cost
 
-At 600 probes across six checkpoints, one sample and `low` effort, a sweep is about
-900k prompt and 290k completion tokens: **~$2.40**. At default effort, ~$5.35. With
-two samples, double both. **$100 buys roughly 20–40 sweeps**, so the binding
-constraint is wall time, not money.
+A measured judge round trip on one sycophancy probe: 166 prompt and 446 completion
+tokens for the generation, then a second call of the same size for the judge. That is
+well above the trivial-answer measurement above, because real probes and rubric
+prompts are longer.
+
+At 600 probes across six checkpoints, one sample, with 40 percent of probes judged:
+
+| item | tokens | cost |
+|---|---|---|
+| generations, 3,600 x ~450 completion | ~1.6M | ~$6.90 |
+| judge calls, 1,440 x ~450 completion | ~0.65M | ~$2.75 |
+| prompts, generation plus judge | ~1.5M | ~$1.85 |
+| **per sweep** | | **~$11.50** |
+
+So $100 buys eight or nine full sweeps, and the binding constraint is wall time rather
+than money. Two samples roughly doubles it.
 
 ## 4. Meta Model API: the judge
 
