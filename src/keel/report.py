@@ -43,10 +43,19 @@ class Card:
     seconds: float | None = None
     limits: Sequence[str] = DEFAULT_LIMITS
     demo: bool = False
+    validity: str = "ok"  # "ok" | "suspect"
+    validity_reason: str = ""
 
     @property
     def verdict(self) -> Verdict:
-        return self.drift.verdict()
+        drift_verdict = self.drift.verdict()
+        # Format is a validity gate, not an axis: a suspect measurement must
+        # not report "no drift", so green becomes amber. Red stays red — the
+        # gate can only ever escalate, never downgrade.
+        if self.validity == "suspect" and drift_verdict.level == "green":
+            reason = self.validity_reason or "suspect response-format shift"
+            return Verdict("amber", (reason, *drift_verdict.reasons))
+        return drift_verdict
 
     def to_dict(self) -> dict:
         return {
@@ -60,6 +69,8 @@ class Card:
                 "seconds": self.seconds,
             },
             "limits": list(self.limits),
+            "validity": self.validity,
+            "validity_reason": self.validity_reason,
         }
 
     @classmethod
@@ -94,6 +105,8 @@ class Card:
             seconds=cost.get("seconds"),
             limits=tuple(data.get("limits", DEFAULT_LIMITS)),
             demo=bool(data.get("demo", False)),
+            validity=str(data.get("validity", "ok")),
+            validity_reason=str(data.get("validity_reason", "")),
         )
 
     def cost_line(self) -> str:
@@ -152,6 +165,13 @@ def render_markdown(card: Card) -> str:
         f"panel `{drift.panel_hash or 'unknown'}` · {drift.n_probes} probes",
         "",
     ]
+    if card.validity == "suspect":
+        lines += [
+            f"> **MEASUREMENT SUSPECT** — {card.validity_reason or 'response format shifted'}. "
+            "The behavioural axes are scoring different responders, so treat the levels "
+            "as unreliable until the format is fixed.",
+            "",
+        ]
     if verdict.reasons:
         lines += [f"- {reason}" for reason in verdict.reasons]
         lines.append("")
@@ -208,6 +228,8 @@ def render_text(card: Card) -> str:
         f"  VERDICT   {verdict.level.upper()}",
     ]
     lines += [f"            {reason}" for reason in verdict.reasons]
+    if card.validity == "suspect":
+        lines.append(f"  SUSPECT   {card.validity_reason or 'response format shifted'}")
     lines.append("")
     for axis in AXES:
         score = drift.axes.get(axis)

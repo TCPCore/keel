@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from keel.api import Client  # noqa: E402
 from keel.drift import AXES, compute_drift  # noqa: E402
+from keel.format import format_shift  # noqa: E402
 from keel.panel import builtin, panel_hash  # noqa: E402
 from keel.report import Card, render_text, write_card  # noqa: E402
 from keel.scorers import JudgeScorer, score_all  # noqa: E402
@@ -124,7 +125,15 @@ def main() -> int:
         panel_hash=panel_hash(probes),
         metadata={"judge": args.judge, "precision": "4bit"},
     )
-    card = Card(drift=drift, demo=False)
+    suspect, format_reason = format_shift(ref_responses, cand_responses)
+    card = Card(
+        drift=drift,
+        demo=False,
+        validity="suspect" if suspect else "ok",
+        validity_reason=format_reason if suspect else "",
+    )
+    if suspect:
+        print(f"WARNING: suspect response format — {format_reason}")
     print(render_text(card))
     md, js = write_card(card, ROOT / args.out)
     print(f"\nwrote {md}\nwrote {js}")
