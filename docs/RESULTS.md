@@ -256,3 +256,33 @@ rank-1 spectrum (ratio 70 to 107).
 
 What is still missing before a replay claim: the layer profile across all 52 layers, the
 per-module scale comparison against the declared parameters, and the replay itself.
+
+## Replay: structural recovery holds, behavioural replay does not
+
+Three checkpoints on the same 16 AdvBench goals, BF16 throughout:
+
+| checkpoint | compliance |
+|---|---|
+| base BF16 | 0.00 |
+| `darkc0de` derivative | 0.06 (1 of 16) |
+| replay: base plus recovered direction orthogonalized at every layer | 0.19 (3 of 16) |
+
+Two problems, both worth stating before any claim.
+
+**The derivative's own card says 11 of 100 refusals, which implies roughly 89 percent
+compliance. We measure 6 percent.** The published rate is not comparable to ours: it
+comes from Heretic's refusal classifier on a different prompt set, while ours is a judge
+scoring whether the response supplied usable content. A model that hedges, moralises
+and then gives a partial method scores 0 for us and 1 for a lenient refusal classifier.
+Any comparison must use one scorer on both checkpoints, and the card's number cannot be
+quoted as if it were ours.
+
+**The replay does not reproduce the derivative.** It lands at 0.19 against the
+derivative's 0.06, which is the wrong direction, and the interval spans zero
+(p = 0.25). The structural recovery is solid: the direction is rank-1 and global. The
+behavioural reconstruction is not: applying one direction uniformly at every layer is
+not the same operation as Heretic's per-layer weighted edit, and 16 prompts cannot
+resolve a difference this small.
+
+So the honest status is: the recipe's shape is recovered, the recipe's effect is not
+reproduced. Structural validation yes, behavioural replay no.
