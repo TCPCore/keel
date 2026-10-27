@@ -28,3 +28,6 @@ cards/
 
 # Local tool installs (Muse CLI, 400MB+)
 .tools/
+
+# Kaggle API token
+kaggle.json
