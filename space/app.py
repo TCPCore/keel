@@ -1,29 +1,25 @@
-"""Keel Space: a judge-clickable view of the model-class survey.
+"""Keel Space: fleet view, card pages, and a live scan of the judge's own responses.
 
-Three modes, each labelled honestly:
+Modes, each labelled:
 
-  view      the fleet table, from committed cards and survey results
-  re-score  re-run judging, drift statistics, the format gate and policy on cached
-            responses, live, for the three Glimmer checkpoints
-  download  every card as JSON with its fingerprint
+  fleet     nine checkpoints from committed cards and survey results
+  re-score  re-run judging, statistics, the format gate and policy on cached responses
+  upload    scan a JSONL the visitor generated from their own checkpoint, live
 
-Run locally:
-
-    uvicorn space.app:app --port 7860
-
-Deploy: see space/README.md.
+The upload path uses the program scorers only, so it costs nothing and returns in
+seconds. Its card says which axes were not measured, because no judge ran.
 """
 
 from __future__ import annotations
 
 import json
-import os
 import time
+import uuid
 from collections import defaultdict
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse
 
 ROOT = Path(__file__).resolve().parents[1]
 FLEET = json.loads((ROOT / "space/fleet.json").read_text())
@@ -39,6 +35,8 @@ HARMFUL = {
     "m2-lora": "examples/responses/m2-lora-harmful.json",
 }
 BASE = "examples/responses/m0-base-panel.jsonl"
+UPLOADS = Path("/tmp/keel-uploads")
+UPLOADS.mkdir(exist_ok=True)
 
 app = FastAPI(title="Keel")
 HITS: dict[str, list[float]] = defaultdict(list)
@@ -53,10 +51,10 @@ def _client_ip(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
 
-def _allowed(ip: str) -> bool:
+def _allowed(ip: str, limit: int = LIMIT) -> bool:
     now = time.time()
     HITS[ip] = [stamp for stamp in HITS[ip] if now - stamp < WINDOW]
-    if len(HITS[ip]) >= LIMIT:
+    if len(HITS[ip]) >= limit:
         return False
     HITS[ip].append(now)
     return True
@@ -90,38 +88,15 @@ th{{text-align:left;color:#8b949e;font-size:11px;font-weight:500}}
 td,th{{padding:7px 6px;border-bottom:1px solid #21262d}}
 td.num{{text-align:right;font-variant-numeric:tabular-nums}}
 .badge{{padding:3px 9px;border-radius:999px;color:#0d1117;font-weight:700;font-size:11px}}
-.card{{background:#161b22;border:1px solid #21262d;border-radius:10px;padding:18px;max-width:920px}}
 .warn{{background:#3d2b00;border-left:3px solid #d29922;padding:8px 10px;border-radius:4px;font-size:12px}}
 button{{background:#238636;color:#fff;border:0;border-radius:6px;padding:8px 14px;font:inherit;cursor:pointer}}
+input[type=file]{{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:8px;color:#e6edf3}}
+pre{{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:12px;overflow-x:auto;font-size:12px}}
 .note{{border-left:3px solid #30363d;padding-left:12px;color:#8b949e;font-size:13px;max-width:900px}}
 </style></head><body>{body}</body></html>"""
 
 
-@app.get("/", response_class=HTMLResponse)
-def index() -> str:
-    rows = "".join(
-        f"<tr><td><a href='/card/{row['slug']}'>{row['model']}</a></td>"
-        f"<td>{row['kind']}</td>"
-        f"<td>{_badge(row['verdict']) if row['verdict'] != '—' else '<span class=muted>baseline</span>'}</td>"
-        f"<td>{row['validity']}</td>"
-        f"<td class='num'>{_num(row['compliance'])}</td>"
-        f"<td class='num'>{row['judged'] or '—'}</td></tr>"
-        for row in FLEET
-    )
-    return _page(
-        "Keel",
-        f"<h1>Keel</h1><p class='muted'>One scanner, nine Meta checkpoints, comparable cards.</p>"
-        f"<table><thead><tr><th>model</th><th>source</th><th>verdict</th><th>validity</th>"
-        f"<th>harmful compliance</th><th>judged</th></tr></thead><tbody>{rows}</tbody></table>"
-        "<p class='note'>Five Spark and Wonder rows are baselines from the survey. The three "
-        "Glimmer rows are cards with a positive and a negative control. Heretic and heretic-plus "
-        "are harmful summaries without a card. <a href='/about'>Method and limits</a>.</p>",
-    )
-
-
-@app.get("/card/{slug}", response_class=HTMLResponse)
-def card(slug: str) -> str:
-    payload = _card(slug)
+def _card_html(payload: dict, slug: str, download: str) -> str:
     drift = payload["drift"]
     axes = "".join(
         f"<tr><td>{axis}</td><td class='num'>{s['reference']:.2f}</td>"
@@ -141,22 +116,48 @@ def card(slug: str) -> str:
         else "<p class='muted'>validity ok</p>"
     )
     verdict = "amber" if payload.get("validity") == "suspect" else drift["verdict"]["level"]
-    rescore = (
-        f"<form method='post' action='/rescore/{slug}'><button>Re-score live</button></form>"
-        if slug in RESPONSES
-        else "<p class='muted'>Re-score unavailable: no cached responses for this entry.</p>"
-    )
-    return _page(
-        f"Keel · {slug}",
-        f"<p><a href='/'>&larr; fleet</a></p><h1>{drift['candidate']}</h1>"
+    limits = "".join(f"<li>{limit}</li>" for limit in payload.get("limits", [])[:4])
+    return (
+        f"<p><a href='/'>&larr; fleet</a></p>"
+        f"<h1>{drift['candidate']}</h1>"
         f"<p class='muted'>against {drift['reference']} · {drift['n_probes']} probes · "
         f"fingerprint {payload.get('fingerprint', '—')}</p>"
         f"<p>{_badge(verdict)}</p>{validity}{harmful_line}"
         f"<table><thead><tr><th>axis</th><th>ref</th><th>cand</th><th>q</th></tr></thead>"
         f"<tbody>{axes}</tbody></table>"
-        f"<p>{rescore}</p>"
-        f"<p><a href='/card/{slug}/json'>Download JSON</a></p>",
+        f"<p><a href='{download}'>Download JSON</a></p>"
+        f"<ul class='muted'>{limits}</ul>"
     )
+
+
+@app.get("/", response_class=HTMLResponse)
+def index() -> str:
+    rows = "".join(
+        f"<tr><td><a href='/card/{row['slug']}'>{row['model']}</a></td>"
+        f"<td>{row['kind']}</td>"
+        f"<td>{_badge(row['verdict']) if row['verdict'] != '—' else '<span class=muted>baseline</span>'}</td>"
+        f"<td>{row['validity']}</td>"
+        f"<td class='num'>{_num(row['compliance'])}</td>"
+        f"<td class='num'>{row['judged'] or '—'}</td></tr>"
+        for row in FLEET
+    )
+    return _page(
+        "Keel",
+        f"<h1>Keel</h1><p class='muted'>One scanner, nine Meta checkpoints, comparable cards.</p>"
+        f"<p><a href='/try'><b>Scan your own checkpoint</b></a> · "
+        f"<a href='/probes.jsonl'>probe panel</a> · <a href='/about'>method</a></p>"
+        f"<table><thead><tr><th>model</th><th>source</th><th>verdict</th><th>validity</th>"
+        f"<th>harmful compliance</th><th>judged</th></tr></thead><tbody>{rows}</tbody></table>"
+        "<p class='note'>Five Spark and Wonder rows are baselines. The three Glimmer rows are "
+        "cards with a positive and a negative control. <b>Scan your own</b> takes a JSONL you "
+        "generate from your checkpoint and returns a card in seconds.</p>",
+    )
+
+
+@app.get("/card/{slug}", response_class=HTMLResponse)
+def card(slug: str) -> str:
+    payload = _card(slug)
+    return _page(f"Keel · {slug}", _card_html(payload, slug, f"/card/{slug}/json"))
 
 
 @app.get("/card/{slug}/json")
@@ -164,44 +165,111 @@ def card_json(slug: str) -> JSONResponse:
     return JSONResponse(_card(slug))
 
 
-@app.post("/rescore/{slug}")
-def rescore(slug: str, request: Request) -> HTMLResponse:
-    if slug not in RESPONSES:
-        raise HTTPException(404, "no cached responses for this entry")
-    if not os.environ.get("BASETEN_API_KEY"):
-        raise HTTPException(503, "no judge key configured")
-    ip = _client_ip(request)
-    if not _allowed(ip):
-        raise HTTPException(429, "rate limit: 3 re-scores per hour per address")
+@app.get("/probes.jsonl", response_class=PlainTextResponse)
+def probes() -> str:
+    rows = [
+        json.loads(line)
+        for line in (ROOT / "src/keel/data/panel-v0.1.jsonl").read_text().splitlines()
+        if line.strip()
+    ]
+    return "\n".join(json.dumps({"probe_id": row["id"], "text": row["text"]}) for row in rows) + "\n"
 
-    from keel.api import Client
-    from keel.panel import builtin
-    from keel.report import write_card
-    from keel.scan import load_responses, scan_responses
-    from keel.scorers import JudgeScorer
 
-    judge = JudgeScorer(
-        Client(
-            api_key=os.environ["BASETEN_API_KEY"],
-            base_url=os.environ.get("BASETEN_BASE_URL", "https://inference.baseten.co/v1"),
-            model=os.environ.get("BASETEN_MODEL_ID", "meta-models/muse-spark-open"),
-        ),
-        axis="sycophancy",
+@app.get("/try", response_class=HTMLResponse)
+def try_page() -> str:
+    return _page(
+        "Keel · scan your own",
+        "<h1>Scan your own checkpoint</h1>"
+        "<p>Three steps. No GPU on our side, and no upload of weights.</p>"
+        "<h2>1. Get the probes</h2>"
+        "<p><a href='/probes.jsonl'>Download probes.jsonl</a>, 32 probes with ids and text.</p>"
+        "<h2>2. Generate one response per probe</h2>"
+        "<pre>python - &lt;&lt;'PY'\n"
+        "import json\n"
+        "rows = [json.loads(l) for l in open('probes.jsonl')]\n"
+        "out = []\n"
+        "for row in rows:\n"
+        "    reply = your_model(row['text'])   # your checkpoint, your harness\n"
+        "    out.append({'probe_id': row['probe_id'], 'text': reply})\n"
+        "open('mine.jsonl','w').write('\\n'.join(json.dumps(r) for r in out))\n"
+        "</pre>"
+        "<h2>3. Upload it</h2>"
+        "<form method='post' action='/scan' enctype='multipart/form-data'>"
+        "<p><input type='file' name='responses' accept='.jsonl' required> "
+        "<button type='submit'>Scan</button></p>"
+        "</form>"
+        "<p class='note'>Scoring uses the program scorers only, so it is free and takes "
+        "seconds. The card will say which axes were not measured, because no judge ran. "
+        "For the full card, run <code>keel scan</code> locally with your own judge.</p>",
     )
-    rows = [json.loads(line) for line in (ROOT / RESPONSES[slug]).read_text().splitlines() if line.strip()]
-    base_rows = [json.loads(line) for line in (ROOT / BASE).read_text().splitlines() if line.strip()]
-    harmful = json.loads((ROOT / HARMFUL[slug]).read_text()) if slug in HARMFUL else None
+
+
+@app.post("/scan", response_class=HTMLResponse)
+async def scan(request: Request, responses: UploadFile = File(...)) -> HTMLResponse:
+    ip = _client_ip(request)
+    if not _allowed(ip, limit=5):
+        raise HTTPException(429, "rate limit: 5 scans per hour per address")
+
+    data = await responses.read()
+    if len(data) > 2_000_000:
+        raise HTTPException(413, "file too large; 2 MB is enough for 32 responses")
+    try:
+        rows = [json.loads(line) for line in data.decode().splitlines() if line.strip()]
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise HTTPException(400, f"not valid JSONL: {exc}") from exc
+
+    probe_ids = {
+        json.loads(line)["id"]
+        for line in (ROOT / "src/keel/data/panel-v0.1.jsonl").read_text().splitlines()
+        if line.strip()
+    }
+    provided = {
+        str(row.get("probe_id"))
+        for row in rows
+        if isinstance(row, dict) and row.get("probe_id") is not None
+    }
+    matched = probe_ids & provided
+    if len(matched) < 24:
+        raise HTTPException(
+            400, f"only {len(matched)} of 32 probe ids matched; expected at least 24"
+        )
+
+    from keel.panel import builtin
+    from keel.scan import load_responses, scan_responses
+
+    base_rows = [
+        json.loads(line) for line in (ROOT / BASE).read_text().splitlines() if line.strip()
+    ]
+    clean = [
+        {"probe_id": str(row["probe_id"]), "text": str(row.get("text", ""))}
+        for row in rows
+        if isinstance(row, dict) and row.get("probe_id") in probe_ids
+    ]
     built = scan_responses(
         load_responses(base_rows),
-        load_responses(rows),
+        load_responses(clean),
         builtin(),
-        judge=judge,
         reference_id="m0-base",
-        candidate_id=slug,
-        harmful=harmful,
+        candidate_id="your-checkpoint",
     )
-    write_card(built, ROOT / f"examples/demo-cards/{slug}")
-    return HTMLResponse(card(slug))
+    token = uuid.uuid4().hex[:12]
+    (UPLOADS / f"{token}.json").write_text(json.dumps(built.to_dict(), indent=1) + "\n")
+    return HTMLResponse(
+        _page(
+            "Keel · your card",
+            _card_html(built.to_dict(), "your-checkpoint", f"/result/{token}/json"),
+        )
+    )
+
+
+@app.get("/result/{token}/json")
+def result_json(token: str) -> JSONResponse:
+    if not token.isalnum():
+        raise HTTPException(404, "no such result")
+    path = UPLOADS / f"{token}.json"
+    if not path.exists():
+        raise HTTPException(404, "no such result")
+    return JSONResponse(json.loads(path.read_text()))
 
 
 @app.get("/about", response_class=HTMLResponse)
@@ -211,15 +279,15 @@ def about() -> str:
         "<h1>Method and limits</h1>"
         "<p>Keel scans a checkpoint and emits a card: verdict, validity, harmful compliance, "
         "limits and a fingerprint. This page runs the same scanner on nine Meta checkpoints. "
-        "Five are survey baselines, four are Glimmer checkpoints with controls.</p>"
-        "<p><b>Re-score</b> re-runs the judge, the drift statistics, the format gate and the "
-        "policy on cached responses, live. It takes about a minute and is rate limited.</p>"
+        "Five are survey baselines, three are Glimmer cards with controls.</p>"
+        "<p><b>Scan your own</b> runs the same scoring path on your responses, with the "
+        "program scorers only, so the card names the axes it could not measure.</p>"
         "<p><b>No card is green without the harmful half</b>, and no card is green if the "
         "format gate fires. That is the validity contract, and it has refused four times.</p>"
         "<p class='note'>Detection is demonstrated on Glimmer derivatives, where a positive "
         "control can be built. Spark models are black-box baselines: we cannot modify a hosted "
-        "endpoint, so we cannot construct a Spark positive control. The judge moves between "
-        "runs, so compliance is reported as a range, never a decimal point estimate.</p>",
+        "endpoint, so no Spark positive control exists. The judge moves between runs, so "
+        "compliance is reported as a range.</p>",
     )
 
 

@@ -9,6 +9,8 @@ in CI: `pytest` for model safety.
 
 Live demo: **https://tomscot-keel.hf.space**
 
+Scan your own checkpoint: **https://tomscot-keel.hf.space/try**
+
 Status: **beta**. The offline scan path is implemented and tested. GPU generation lives
 in `scripts/modal_generate.py`, and decomposition is research code with a validated
 structural result and a documented replay limitation.
