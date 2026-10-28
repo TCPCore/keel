@@ -36,6 +36,14 @@ def _req(method: str, url: str, data: bytes | None = None, headers: dict | None 
         return 0, f"error: {exc}", time.time() - started
 
 
+def _req_bytes(url: str):
+    try:
+        with urllib.request.urlopen(url, timeout=180) as response:
+            return response.status, response.read()
+    except urllib.error.HTTPError as exc:
+        return exc.code, b""
+
+
 def check(name: str, ok: bool, detail: str = "") -> None:
     RESULTS.append((name, ok, detail))
     if not ok:
@@ -140,6 +148,25 @@ def run(url: str, rescore: bool) -> int:
     status, body, _ = _req("GET", f"{base}/manifest.json")
     ok = status == 200 and len(json.loads(body).get("withheld", {})) == 4
     check("manifest with hashes", ok, str(status))
+
+    status, raw = _req_bytes(f"{base}/bundle.zip")
+    check("bundle.zip 200", status == 200 and raw[:2] == b"PK", str(status))
+    import io
+    import zipfile
+
+    with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+        names = archive.namelist()
+        manifest = json.loads(archive.read("MANIFEST.json"))
+        hashes_ok = all(
+            __import__("hashlib").sha256(archive.read(name)).hexdigest()
+            == meta["sha256"]
+            for name, meta in manifest["files"].items()
+        )
+        text = b" ".join(archive.read(name) for name in names if not name.endswith(".jsonl"))
+    check("bundle files generic", all(
+        "darkc0de" not in name and "unsloth" not in name for name in names), str(names[:3]))
+    check("bundle hashes match", hashes_ok)
+    check("bundle has no source names", b"darkc0de" not in text and b"unsloth" not in text)
 
     if rescore:
         status, before, _ = _req("GET", f"{base}/card/m1-ablation/json")

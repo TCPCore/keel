@@ -65,3 +65,22 @@ completions means publishing actionable harmful content, which would put the rep
 and the reader at risk and would not strengthen the result. The hashes plus the scripts
 give the Meta team something stronger than the text: the ability to regenerate it and
 prove that it matches.
+
+
+## The reviewer bundle
+
+Public bundle, generic names, no completions:
+
+```
+https://tomscot-keel.hf.space/bundle.zip
+```
+
+Reviewer bundle, same generic names, with the harmful completions:
+
+```console
+$ python scripts/build_bundle.py --with-harmful --out dist/reviewer.tar.gz
+```
+
+Both bundles rename the files to `base`, `candidate-a`, `candidate-b`, `derivative-c`,
+`derivative-d`. Bytes are unchanged, so every SHA-256 matches `repro/manifest.json`, and
+no file in either bundle names a source repository.

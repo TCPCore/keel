@@ -30,6 +30,7 @@ Last updated: 28 October 2026.
 | Space app | `space/app.py` | deployed on HF |
 | Modal deployment | `scripts/modal_space.py` | deployed, fallback |
 | Repro verifier | `scripts/verify_repro.py` | passes |
+| Reviewer bundle | `scripts/build_bundle.py`, `/bundle.zip` | built, hashes verified |
 | Space stress suite | `scripts/stress_space.py` | 48 checks, all passing on the live Space |
 
 ## Evidence

@@ -18,6 +18,7 @@ from fastapi.responses import (
     JSONResponse,
     PlainTextResponse,
     RedirectResponse,
+    Response,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -413,13 +414,16 @@ demonstrate the attack rather than the defense.</p>
 <p class="lede">Reviewers can request them. The public manifest lists the SHA-256 of every
 file, including the withheld ones, so whatever you receive can be checked against it.</p>
 <pre>curl https://tomscot-keel.hf.space/manifest.json</pre>
-<p><a href="/manifest.json">Open the manifest</a> · <a href="/access">Standalone page</a></p>
+<p><a href="/manifest.json">Open the manifest</a> ·
+<a href="/bundle.zip">Download the generic bundle</a> ·
+<a href="/access">Standalone page</a></p>
 </div>
 <div class="panel" style="padding:16px">
 <p class="meta">request the withheld harmful completions</p>
 {_access_form()}
 <p class="note" style="margin-top:14px">Requests are logged with a timestamp and an id.
-You get an issue link to submit; completions are released after verification.</p>
+Approved reviewers receive a bundle with generic file names, checkable against
+<a href="/manifest.json">the public manifest</a>.</p>
 </div>
 </div>
 
@@ -552,6 +556,66 @@ def card(slug: str) -> str:
 @app.get("/card/{slug}/json")
 def card_json(slug: str) -> JSONResponse:
     return JSONResponse(_card(slug))
+
+
+@app.get("/bundle.zip")
+def bundle() -> Response:
+    """A generic reviewer bundle: renamed files, matching hashes, no source map."""
+    import hashlib
+    import io
+    import zipfile
+
+    files: dict[str, bytes] = {}
+    mapping = {
+        "examples/responses/m0-base-panel.jsonl": "responses/base-panel.jsonl",
+        "examples/responses/m1-ablation-panel.jsonl": "responses/candidate-a-panel.jsonl",
+        "examples/responses/m2-lora-panel.jsonl": "responses/candidate-b-panel.jsonl",
+        "examples/responses/heretic-panel.jsonl": "responses/derivative-c-panel.jsonl",
+    }
+    for source, name in mapping.items():
+        files[name] = (ROOT / source).read_bytes()
+    probes = [
+        json.loads(line)
+        for line in (ROOT / "src/keel/data/panel-v0.1.jsonl").read_text().splitlines()
+        if line.strip()
+    ]
+    files["PROBES.jsonl"] = (
+        "\n".join(
+            json.dumps({"probe_id": p["id"], "text": p["text"]}) for p in probes
+        )
+        + "\n"
+    ).encode()
+    manifest = {
+        "bundle": "keel-review-bundle",
+        "labels": "generic; exact sources available on request",
+        "files": {
+            name: {
+                "sha256": hashlib.sha256(data).hexdigest(),
+                "rows": len([line for line in data.splitlines() if line.strip()]),
+            }
+            for name, data in files.items()
+        },
+    }
+    files["MANIFEST.json"] = (json.dumps(manifest, indent=1) + "\n").encode()
+    verify = (
+        "Run: python - <<'PY'\n"
+        "import hashlib, json, pathlib\n"
+        "m = json.load(open('MANIFEST.json'))\n"
+        "for name, meta in m['files'].items():\n"
+        "    ok = hashlib.sha256(pathlib.Path(name).read_bytes()).hexdigest()\n"
+        "    print(name, 'ok' if ok == meta['sha256'] else 'MISMATCH')\n"
+        "PY\n"
+    )
+    files["VERIFY.md"] = verify.encode("utf-8")
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+        for name, data in files.items():
+            archive.writestr(name, data)
+    return Response(
+        content=buffer.getvalue(),
+        media_type="application/zip",
+        headers={"Content-Disposition": "attachment; filename=keel-review-bundle.zip"},
+    )
 
 
 @app.get("/probes.jsonl", response_class=PlainTextResponse)

@@ -57,5 +57,5 @@
   "derivative_d_harmful_compliance": 0.06
  },
  "harmful_requests": "32 public harmful-behavior benchmark prompts, first 32 in file order",
- "sources": "repro/SOURCES.md"
+ "sources": "available to reviewers on request"
 }
