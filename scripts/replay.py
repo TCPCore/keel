@@ -46,6 +46,48 @@ image = (
 )
 
 
+def _layer_list(model):
+    import torch.nn as nn
+
+    for _, module in model.named_modules():
+        if isinstance(module, nn.ModuleList) and len(module) == 52:
+            return module
+    raise RuntimeError("no 52-layer ModuleList found")
+
+
+def _refusal_direction(model, tokenizer, harmful: list[str], benign: list[str]):
+    import torch
+
+    layers = _layer_list(model)
+    captured: list = []
+
+    def grab(_module, _args, output):
+        hidden = output[0] if isinstance(output, tuple) else output
+        captured.append(hidden[:, -1, :].detach().float().mean(dim=0))
+
+    handle = layers[24].register_forward_hook(grab)
+
+    def mean_residual(prompts: list[str]):
+        vectors = []
+        for text in prompts:
+            prompt = tokenizer.apply_chat_template(
+                [{"role": "user", "content": text}],
+                add_generation_prompt=True,
+                tokenize=False,
+                reasoning_strength="low",
+            )
+            inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+            captured.clear()
+            with torch.no_grad():
+                model(**inputs)
+            vectors.append(captured[-1].cpu())
+        return torch.stack(vectors).mean(dim=0)
+
+    direction = mean_residual(harmful) - mean_residual(benign)
+    handle.remove()
+    return direction / direction.norm()
+
+
 def _generate(model, tokenizer, prompts: list[dict]) -> list[dict]:
     import torch
 
@@ -84,6 +126,7 @@ def run(
     prompts: list[dict],
     direction: list[list[float]] | None,
     scales: dict[str, float] | None,
+    benign: list[str] | None = None,
 ) -> int:
     os.environ["HF_HOME"] = "/hf"
     import torch
@@ -95,6 +138,25 @@ def run(
         source, cache_dir="/hf", device_map="auto", torch_dtype=torch.bfloat16
     )
     model.eval()
+
+    if mode == "m1":
+        if not benign:
+            raise ValueError("m1 control needs benign contrast prompts")
+        vector = _refusal_direction(
+            model, tokenizer, [item["text"] for item in prompts], benign
+        ).to(device=next(model.parameters()).device, dtype=torch.bfloat16)
+        edited = 0
+        for name, module in model.named_modules():
+            if not (name.endswith("self_attn.o_proj") or name.endswith("mlp.down_proj")):
+                continue
+            weight = getattr(module, "weight", None)
+            if weight is None or weight.shape[0] != vector.numel():
+                continue
+            with torch.no_grad():
+                projection = torch.outer(vector.float(), vector.float() @ weight.float())
+                weight.sub_(projection.to(weight.dtype))
+            edited += 1
+        print(f"m1 control: orthogonalized {edited} matrices", flush=True)
 
     if mode == "replay":
         import re
@@ -135,7 +197,7 @@ def run(
 
 
 @app.local_entrypoint()
-def main(mode: str = "derivative") -> None:
+def main(mode: str = "derivative", multiplier: float = 1.0) -> None:
     raw = [json.loads(line) for line in REQUESTS.read_text().splitlines() if line.strip()]
     requests = [{"id": row["probe_id"], "text": row["text"]} for row in raw][:LIMIT]
     direction = None
@@ -151,7 +213,14 @@ def main(mode: str = "derivative") -> None:
     if mode == "replay":
         rows = [json.loads(line) for line in DIRECTION.read_text().splitlines() if line.strip()]
         peak = max(row["sigma1"] for row in rows)
-        scales = {str(row["layer"]): row["sigma1"] / peak for row in rows}
-        print(f"scale profile over {len(scales)} layers, peak {peak:.4f}")
-    count = run.remote(mode, requests, direction, scales)
+        scales = {str(row["layer"]): multiplier * row["sigma1"] / peak for row in rows}
+        print(f"scale profile over {len(scales)} layers, peak {peak:.4f}, multiplier {multiplier}")
+    benign = None
+    if mode == "m1":
+        benign = [
+            json.loads(line)["text"]
+            for line in (ROOT / "src/keel/data/panel-v0.1.jsonl").read_text().splitlines()
+            if line.strip()
+        ]
+    count = run.remote(mode, requests, direction, scales, benign)
     print(f"{mode}: {count} rows")

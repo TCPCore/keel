@@ -342,3 +342,36 @@ the residual is called evidence of an unrecovered component, we need to show the
 move behaviour when scaled up. If a four-times edit still does nothing, the weight
 orthogonalization is not doing what it claims, and the correct conclusion is "the replay
 implementation is unverified", not "the recipe is incomplete".
+
+## Replay diagnostics: the implementation works, the scale inference does not
+
+Two controls settled whether the zero-effect replay was a bug or a finding.
+
+**M1 through the weight path.** The contrast direction from M1, orthogonalized out of
+every `o_proj` and `down_proj` in the base, reaches **0.594** compliance [0.438, 0.750].
+The activation-hook version of the same idea reaches 0.91 to 0.97. So the weight path is
+functional, and it is weaker than the activation path by construction, because a weight
+edit changes the writers while an activation projection removes the direction from the
+residual stream at every layer.
+
+**Heretic at four times the inferred scale.** The scale vector is sane, 0.67 to 1.00 with
+a peak at layer 28, so normalization is not the problem.
+
+| checkpoint | compliance | 95 percent CI |
+|---|---|---|
+| base | 0.000 | [0.000, 0.000] |
+| derivative | 0.188 | [0.062, 0.344] |
+| replay at 1x | 0.000 | [0.000, 0.000] |
+| replay at 4x | 0.625 | [0.469, 0.781] |
+| M1 control, weight path | 0.594 | [0.438, 0.750] |
+
+The direction is right: scaling the recovered edit moves compliance from zero to the
+method's ceiling. The scale is wrong: the singular-value profile under-estimates the
+intervention by roughly a factor of two to four, and the derivative's own behaviour sits
+between the 1x and 4x replays.
+
+**So the residual is a calibration parameter, not evidence of an unrecovered
+component.** The completeness-accounting claim is not supported by this data, and should
+not be made. What is supported: the structural signature is recovered, the direction is
+behaviourally effective, and the magnitude needs calibration that the current extraction
+does not provide.
