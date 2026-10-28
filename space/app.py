@@ -95,36 +95,44 @@ def _bar(value: float | None, limit: float = 1.0) -> str:
     )
 
 
-CSS = """:root{color-scheme:dark;--bg:#0a0e13;--panel:#111720;--panel2:#0d131a;--line:#1e2731;
---ink:#e6edf3;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;--amber:#d29922;--red:#f85149}
+CSS = """html{scroll-behavior:smooth}
+:root{color-scheme:light;--bg:#f6f8fa;--panel:#ffffff;--panel2:#f0f3f6;--line:#d8dee4;
+--ink:#1f2328;--muted:#59636e;--blue:#0969da;--green:#1a7f37;--amber:#9a6700;
+--red:#cf222e;--nav:rgba(255,255,255,.92);--hover:#f3f5f8;--shadow:0 1px 2px rgba(31,35,40,.06)}
+html[data-theme=dark]{color-scheme:dark;--bg:#0a0e13;--panel:#111720;--panel2:#0d131a;
+--line:#1e2731;--ink:#e6edf3;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;
+--amber:#d29922;--red:#f85149;--nav:rgba(10,14,19,.9);--hover:#0f151d;
+--shadow:0 1px 2px rgba(0,0,0,.4)}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);
 font:15px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;-webkit-font-smoothing:antialiased}
 a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 .wrap{max-width:1180px;margin:0 auto;padding:0 26px}
-nav{position:sticky;top:0;z-index:20;background:rgba(10,14,19,.9);
+nav{position:sticky;top:0;z-index:20;background:var(--nav);
 border-bottom:1px solid var(--line);backdrop-filter:saturate(140%) blur(8px)}
 nav .wrap{display:flex;align-items:center;gap:22px;height:54px}
 nav .brand{font-weight:700;letter-spacing:.04em;font-size:15px}
 nav .brand::before{content:"\25C6";color:var(--blue);margin-right:9px;font-size:10px;
 vertical-align:2px}
-nav .links{display:flex;gap:20px;margin-left:auto;font-size:13px}
+nav .links{display:flex;gap:20px;margin-left:auto;font-size:13px;align-items:center}
 nav .links a{color:var(--muted);padding:4px 0;border-bottom:1px solid transparent}
 nav .links a:hover{color:var(--ink);border-color:var(--blue);text-decoration:none}
+#theme{background:transparent;border:1px solid var(--line);color:var(--muted);
+border-radius:7px;padding:4px 9px;font-size:12px;cursor:pointer}
+#theme:hover{color:var(--ink);border-color:var(--muted)}
 header.hero{position:relative;padding:70px 0 34px;border-bottom:1px solid var(--line)}
 header.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
-background:radial-gradient(700px 240px at 18% 0%,rgba(88,166,255,.10),transparent 70%),
-radial-gradient(520px 200px at 85% 10%,rgba(63,185,80,.06),transparent 70%)}
+background:radial-gradient(700px 240px at 18% 0%,rgba(9,105,218,.08),transparent 70%),
+radial-gradient(520px 200px at 85% 10%,rgba(26,127,55,.05),transparent 70%)}
 .hero .eyebrow{color:var(--blue);font-size:12px;letter-spacing:.14em;
 text-transform:uppercase;margin:0 0 14px}
 .hero h1{font-size:38px;line-height:1.12;margin:0 0 16px;letter-spacing:-.02em;
 max-width:820px}
-.hero p{max-width:720px;color:#c9d1d9;margin:0;font-size:16px}
+.hero p{max-width:720px;color:var(--muted);margin:0;font-size:16px}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;
 margin-top:32px}
 .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;
-padding:16px 18px}
+padding:16px 18px;box-shadow:var(--shadow)}
 .kpi .n{font-size:23px;font-weight:700;display:block;letter-spacing:-.01em}
 .kpi .l{color:var(--muted);font-size:12px;margin-top:2px}
 h2{font-size:20px;margin:64px 0 8px;letter-spacing:-.01em;display:flex;
@@ -133,44 +141,46 @@ h2::after{content:"";flex:1;height:1px;background:var(--line);margin-left:8px}
 h2 .idx{color:var(--muted);font-weight:400;font-size:13px}
 .lede{color:var(--muted);font-size:13.5px;margin:0 0 18px;max-width:840px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;
-overflow:hidden}
+overflow:hidden;box-shadow:var(--shadow)}
 table{width:100%;border-collapse:collapse}
-th{text-align:left;font-size:11px;font-weight:500;color:var(--muted);
+th{text-align:left;font-size:11px;font-weight:600;color:var(--muted);
 text-transform:uppercase;letter-spacing:.08em;padding:13px 14px;
 border-bottom:1px solid var(--line);background:var(--panel2)}
 td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
 tbody tr:last-child td{border-bottom:0}
-tbody tr:nth-child(even){background:rgba(255,255,255,.014)}
-tbody tr:hover{background:#0f151d}
+tbody tr:hover{background:var(--hover)}
 td.num{text-align:right;font-variant-numeric:tabular-nums}
 td.mono{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px}
 .badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;
 font-weight:700;letter-spacing:.05em}
-.badge.green{background:rgba(63,185,80,.14);color:var(--green)}
-.badge.amber{background:rgba(210,153,34,.14);color:var(--amber)}
-.badge.red{background:rgba(248,81,73,.14);color:var(--red)}
-.badge.base{background:#1a222c;color:var(--muted)}
-.meter{display:inline-block;width:86px;height:6px;background:#1a222c;border-radius:4px;
-overflow:hidden;vertical-align:middle;margin-right:9px}
+.badge.green{background:rgba(26,127,55,.12);color:var(--green)}
+.badge.amber{background:rgba(154,103,0,.12);color:var(--amber)}
+.badge.red{background:rgba(207,34,46,.10);color:var(--red)}
+.badge.base{background:var(--panel2);color:var(--muted)}
+.meter{display:inline-block;width:86px;height:6px;background:var(--panel2);
+border:1px solid var(--line);border-radius:4px;overflow:hidden;vertical-align:middle;
+margin-right:9px}
 .meter span{display:block;height:100%;border-radius:4px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
-padding:18px;transition:transform .12s ease,border-color .12s ease}
-.card:hover{border-color:#2c3945;transform:translateY(-2px)}
+padding:18px;box-shadow:var(--shadow);transition:transform .12s ease,
+border-color .12s ease,box-shadow .12s ease}
+.card:hover{border-color:var(--muted);transform:translateY(-2px);
+box-shadow:0 4px 14px rgba(31,35,40,.10)}
 .card h3{margin:0 0 2px;font-size:15px}
 .card .meta{color:var(--muted);font-size:12px;margin:0 0 12px}
 .card table th,.card table td{padding:6px 4px;border-bottom:1px solid var(--line);
 font-size:12px}
 .card table th{text-transform:none;letter-spacing:0;font-size:11px;background:transparent}
-.warn{background:rgba(210,153,34,.09);border-left:3px solid var(--amber);padding:9px 11px;
+.warn{background:rgba(154,103,0,.08);border-left:3px solid var(--amber);padding:9px 11px;
 border-radius:5px;font-size:12px;margin:10px 0}
-.ok{background:rgba(63,185,80,.09);border-left:3px solid var(--green);padding:9px 11px;
+.ok{background:rgba(26,127,55,.08);border-left:3px solid var(--green);padding:9px 11px;
 border-radius:5px;font-size:12px;margin:10px 0}
 .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center}
 form{margin:0}
-button{background:#238636;color:#fff;border:0;border-radius:7px;padding:8px 13px;
+button{background:#1f883d;color:#fff;border:0;border-radius:7px;padding:8px 13px;
 font:inherit;font-size:13px;cursor:pointer;transition:filter .12s}
-button:hover{filter:brightness(1.1)}
+button:hover{filter:brightness(1.08)}
 button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
 button.ghost:hover{border-color:var(--muted);filter:none}
 .two{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
@@ -180,14 +190,15 @@ pre{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padd
 overflow-x:auto;font-size:12px;line-height:1.55}
 input[type=file]{background:var(--panel2);border:1px dashed var(--line);border-radius:9px;
 padding:12px;color:var(--ink);width:100%}
-input[name=name],input[name=org],input[name=email],select{background:var(--panel2);
+input[name=name],input[name=org],input[name=email],select{background:var(--panel);
 border:1px solid var(--line);border-radius:7px;padding:9px;color:var(--ink);width:100%;
 font:inherit;font-size:13px}
+input:focus,select:focus{outline:2px solid var(--blue);outline-offset:1px}
 .note{border-left:3px solid var(--line);padding-left:14px;color:var(--muted);font-size:13px}
 footer{margin:64px 0 40px;padding-top:20px;border-top:1px solid var(--line);
 color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:16px;
 flex-wrap:wrap}
-code{background:#161d26;padding:1px 5px;border-radius:4px;font-size:12px}
+code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
 """
 
 
@@ -206,13 +217,26 @@ def _page(title: str, body: str, active: str = "") -> str:
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title><style>{CSS}</style></head><body>
 <nav><div class="wrap"><span class="brand">keel</span>
-<span class="links">{nav}</span></div></nav>
+<span class="links">{nav}<button id="theme" type="button" title="Toggle theme">◐</button>
+</span></div></nav>
 {body}
 <footer><div class="wrap" style="display:flex;justify-content:space-between;
 width:100%;flex-wrap:wrap;gap:12px">
 <span>Keel · checkpoint validity · <a href="/healthz">health</a></span>
 <span>cards carry fingerprints · verify with <code>keel verify-card</code></span>
 </div></footer>
+<script>
+(function () {{
+  var key = 'keel-theme', root = document.documentElement;
+  var saved = localStorage.getItem(key);
+  if (saved) root.setAttribute('data-theme', saved);
+  document.getElementById('theme').addEventListener('click', function () {{
+    var dark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+    localStorage.setItem(key, dark ? 'light' : 'dark');
+  }});
+}})();
+</script>
 </body></html>"""
 
 
@@ -419,6 +443,12 @@ def verify(slug: str, request: Request, tamper: int = 0) -> HTMLResponse:
     return HTMLResponse(_page("Keel · verify", body))
 
 
+@app.get("/verify/{slug}", response_class=HTMLResponse)
+def verify_get(slug: str, request: Request) -> HTMLResponse:
+    """Allow a refresh or a shared link, not only a form post."""
+    return verify(slug, request, 0)
+
+
 @app.post("/rescore/{slug}", response_class=HTMLResponse)
 def rescore(slug: str, request: Request) -> HTMLResponse:
     import os
@@ -427,8 +457,8 @@ def rescore(slug: str, request: Request) -> HTMLResponse:
         raise HTTPException(404, "no cached responses for this entry")
     if not os.environ.get("BASETEN_API_KEY"):
         raise HTTPException(503, "no judge key configured")
-    if not _allowed(_client_ip(request), limit=10):
-        raise HTTPException(429, "rate limit: 10 re-scores per hour per address")
+    if not _allowed(_client_ip(request), limit=15):
+        raise HTTPException(429, "rate limit: 15 re-scores per hour per address")
 
     from keel.api import Client
     from keel.panel import builtin
@@ -462,9 +492,11 @@ def rescore(slug: str, request: Request) -> HTMLResponse:
         candidate_id=slug,
         harmful=harmful,
     )
-    write_card(built, ROOT / f"examples/demo-cards/{slug}")
+    write_card(built, Path("/tmp/keel-live") / slug)
     body = (
         f"<div class='wrap'><h2>Re-scored live</h2>"
+        f"<p class='note'>This card was produced now, by the judge, and is not persisted. "
+        "The committed card is unchanged, so Verify keeps matching it.</p>"
         f"{_card_html(built.to_dict(), slug, f'/card/{slug}/json')}"
         "<p><a href='/'>&larr; back</a></p></div>"
     )
@@ -502,8 +534,8 @@ def probes() -> str:
 @app.post("/scan", response_class=HTMLResponse)
 async def scan(request: Request, responses: UploadFile = File(...)) -> HTMLResponse:
     ip = _client_ip(request)
-    if not _allowed(ip, limit=5):
-        raise HTTPException(429, "rate limit: 5 scans per hour per address")
+    if not _allowed(ip, limit=20):
+        raise HTTPException(429, "rate limit: 20 scans per hour per address")
 
     data = await responses.read()
     if len(data) > 2_000_000:
