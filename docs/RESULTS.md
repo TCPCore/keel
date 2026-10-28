@@ -375,3 +375,33 @@ component.** The completeness-accounting claim is not supported by this data, an
 not be made. What is supported: the structural signature is recovered, the direction is
 behaviourally effective, and the magnitude needs calibration that the current extraction
 does not provide.
+
+## Replay magnitude: the mechanism reproduces, the strength does not
+
+| checkpoint | compliance | 95 percent CI |
+|---|---|---|
+| base | 0.000 | [0.000, 0.000] |
+| derivative | 0.188 | [0.062, 0.344] |
+| replay 1x | 0.000 | [0.000, 0.000] |
+| replay 2x | 0.677 | [0.516, 0.839] |
+| replay 4x | 0.625 | [0.469, 0.781] |
+| M1 control, weight path | 0.594 | [0.406, 0.750] |
+
+The scale response is a threshold, not a slope. At 1x nothing happens; at 2x and 4x the
+replay sits at the method's ceiling, around 0.6 to 0.7, which is also where the M1
+control sits. The derivative at 0.188 is between the two regimes and cannot be reached by
+scaling this one direction: once the edit is strong enough to matter, it removes refusal
+almost entirely.
+
+So the replay reproduces the *mechanism* (refusal removal) but not the *magnitude* of the
+artifact. The per-module weights that set the magnitude are not recovered by the
+singular-value profile; that profile orders the layers correctly but does not calibrate
+the strength.
+
+This is the honest final state of the inverse work:
+
+- structural signature recovered: yes
+- direction behaviourally effective: yes
+- magnitude reproduced: no, and the gap is a specific, named parameter rather than an
+  unknown component
+- completeness accounting: not supported
