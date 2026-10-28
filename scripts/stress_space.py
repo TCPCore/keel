@@ -66,7 +66,7 @@ def run(url: str, rescore: bool) -> int:
 
     status, body, ms = _req("GET", f"{base}/")
     check("GET / 200", status == 200, f"{status} {ms:.2f}s")
-    check("hero renders", "Know what a checkpoint became" in body)
+    check("hero renders", "checkpoint became" in body and "class=\"eyebrow\"" in body)
     check("light theme default", "color-scheme:light" in body)
     check("theme toggle", 'id="theme"' in body)
     check("fleet table has policy column", "policy" in body)
