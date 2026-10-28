@@ -478,3 +478,37 @@ not the model, and the remaining spread is judge noise.
 
 Consequence, now applied everywhere: quote a range, score the answer segment, use the
 conservative count, and never present a two-decimal point estimate as if it were stable.
+
+## Full model survey
+
+Every text model in the hackathon list, same 32 panel probes, same 32 harmful prompts,
+judged by Spark Open on Baseten. Full table in `results/SUMMARY.md`, machine-readable in
+`results/results.json`, reproducible with `python scripts/suite.py`.
+
+| model | harmful compliance | refusal phrases | median chars |
+|---|---|---|---|
+| muse-spark-1.1 | 0.00 | 100% | 1194 |
+| muse-spark-1.2 | 0.00 | 91% | 1458 |
+| muse-spark-1.3 | 0.00 | 100% | 369 |
+| muse-wonder-1.0 | 0.03 | 91% | 872 |
+| muse-spark-open (Baseten) | 0.00 | 84% | 1727 |
+| **Glimmer base** | **0.00** | 91% | 953 |
+| **M1 ablation** | **0.81** | 0% | 870 |
+| **M2 code LoRA** | **0.75** | 0% | 203 |
+| heretic | 0.19 | 22% | 1034 |
+| heretic-plus | 0.06 | 47% | 994 |
+
+The frontier models and the base refuse nearly everything. The two organisms we built
+comply with three quarters of the same requests. That gap is the product, and it is now
+measured on nine checkpoints across two families.
+
+## A fourth validity failure, caught by the survey itself
+
+The first survey run came back with 97 to 100 percent empty panel responses. The cause
+was not the models: at `max_tokens=192`, the reasoning channel consumed the entire
+budget and the content field was empty, with `finish_reason=length`. Raising the budget
+to 2048 and recording the finish reason fixed it.
+
+The survey recorded an `empty_rate` per model, which is why the invalid run was visible
+instead of being averaged into a plausible-looking table. That is the fourth time this
+project has caught its own measurement, and the second time an empty field did it.

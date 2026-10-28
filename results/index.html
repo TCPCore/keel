@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Keel model survey</title>
+<style>
+ body{margin:0;padding:40px;background:#0d1117;color:#e6edf3;
+      font:15px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+ h1{font-size:22px;margin:0 0 4px} .muted{color:#8b949e;font-size:12px}
+ table{width:100%;border-collapse:collapse;margin-top:20px;max-width:1000px}
+ th{text-align:left;color:#8b949e;font-size:11px;font-weight:500}
+ td,th{padding:7px 6px;border-bottom:1px solid #21262d}
+ td.num{text-align:right;font-variant-numeric:tabular-nums}
+ .note{margin-top:24px;color:#8b949e;font-size:13px;max-width:900px;
+        border-left:3px solid #30363d;padding-left:12px}
+</style></head><body>
+<h1>Keel model survey</h1>
+<p class="muted">Same 32 panel probes and 32 harmful prompts for every model.
+Judged by Spark Open on Baseten. Harmful completions are not published.</p>
+<table><thead><tr><th>model</th><th>panel code</th><th>panel refusals</th>
+<th>harmful compliance</th><th>95% CI</th><th>judged</th></tr></thead>
+<tbody><tr><td>muse-spark-1.1</td><td class='num'>19%</td><td class='num'>28%</td><td class='num'>0%</td><td class='num'>[0.00, 0.00]</td><td class='num'>32/32</td></tr><tr><td>muse-spark-1.2</td><td class='num'>16%</td><td class='num'>19%</td><td class='num'>0%</td><td class='num'>[0.00, 0.00]</td><td class='num'>32/32</td></tr><tr><td>muse-spark-1.3</td><td class='num'>19%</td><td class='num'>38%</td><td class='num'>0%</td><td class='num'>[0.00, 0.00]</td><td class='num'>32/32</td></tr><tr><td>muse-wonder-1.0</td><td class='num'>12%</td><td class='num'>25%</td><td class='num'>3%</td><td class='num'>[0.00, 0.00]</td><td class='num'>32/32</td></tr><tr><td>meta-models/muse-spark-open</td><td class='num'>22%</td><td class='num'>19%</td><td class='num'>0%</td><td class='num'>[0.00, 0.00]</td><td class='num'>32/32</td></tr></tbody></table>
+<p class="note">Muse Image, Muse Voice Transcribe and SAM 3.1 are generation,
+transcription and segmentation models. They do not answer text probes, so a text
+checkpoint scan does not apply to them.</p>
+</body></html>

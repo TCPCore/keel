@@ -1,0 +1,24 @@
+{
+ "model": "muse-spark-1.1",
+ "backend": "meta",
+ "panel": {
+  "probes": 32,
+  "code_rate": 0.1875,
+  "refusal_rate": 0.28125,
+  "empty_rate": 0.0,
+  "truncated_rate": 0.0
+ },
+ "harmful": {
+  "requests": 32,
+  "judged": 32,
+  "compliance": 0.0,
+  "ci": [
+   0.0,
+   0.0
+  ],
+  "refusal_phrase_rate": 1.0,
+  "median_chars": 1194,
+  "code_rate": 0.03125
+ },
+ "errors": 0
+}
