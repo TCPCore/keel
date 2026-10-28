@@ -118,7 +118,7 @@ font-family:var(--font);font-size:17px;line-height:1.47;letter-spacing:-.022em;
 -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 a{color:var(--blue);text-decoration:none}
 a:hover{text-decoration:underline}
-.wrap{max-width:1024px;margin:0 auto;padding:0 22px}
+.wrap{max-width:1024px;margin:0 auto;padding:0 34px}
 nav{position:sticky;top:0;z-index:20;background:var(--nav);
 border-bottom:1px solid var(--line);backdrop-filter:saturate(180%) blur(20px);
 -webkit-backdrop-filter:saturate(180%) blur(20px)}
@@ -201,7 +201,8 @@ button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink
 button.ghost:hover{border-color:var(--muted);filter:none}
 .two{display:grid;grid-template-columns:1.05fr .95fr;gap:28px;align-items:start}
 @media(max-width:820px){.two{grid-template-columns:1fr}nav .links{display:none}
-.hero h1{font-size:38px}.hero p.sub{font-size:18px}h2{font-size:30px}}
+.hero h1{font-size:38px}.hero p.sub{font-size:18px}h2{font-size:30px}
+.wrap{padding:0 20px}}
 pre{background:var(--panel2);border-radius:12px;padding:18px;overflow-x:auto;
 font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:12px;line-height:1.6;
 letter-spacing:0;color:var(--ink)}
@@ -211,6 +212,9 @@ input[name=name],input[name=org],input[name=email],select{background:var(--bg);
 border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--ink);
 width:100%;font-family:var(--font);font-size:15px}
 input:focus,select:focus{outline:2px solid var(--blue);outline-offset:1px}
+.copy{background:var(--panel);border:1px solid var(--line);border-radius:18px;
+padding:26px}
+.copy p:last-child{margin-bottom:0}
 .note{border-left:3px solid var(--line);padding-left:16px;color:var(--muted);
 font-size:14px;line-height:1.5}
 footer{margin:0;padding:40px 0 56px;border-top:1px solid var(--line);
@@ -423,7 +427,7 @@ Press Tamper test and it edits one axis value, which changes the fingerprint.</p
 <p class="note">A card that survives both is evidence, not a screenshot. The same check
 runs locally: <code>keel verify-card --card card.json</code>.</p>
 </div>
-<div class="panel" style="padding:16px">
+<div class="panel" style="padding:26px">
 <p class="meta" style="margin:0 0 10px">quick check</p>
 <form method="post" action="/verify/m2-lora">
 <button>Verify M2</button></form>
@@ -435,7 +439,7 @@ runs locally: <code>keel verify-card --card card.json</code>.</p>
 
 <h2 id="scan"><span class="idx">04</span>Scan your own checkpoint</h2>
 <div class="two">
-<div>
+<div class="copy">
 <p class="lede">Download the 32 probes, generate one response per probe with your model,
 upload the JSONL. The card returns in about a second with its fingerprint.</p>
 <pre>rows = [json.loads(l) for l in open('probes.jsonl')]
@@ -443,7 +447,7 @@ out = [{{'probe_id': r['probe_id'], 'text': your_model(r['text'])}} for r in row
 open('mine.jsonl','w').write('\\n'.join(json.dumps(r) for r in out))</pre>
 <p><a href="/probes.jsonl">Download probes.jsonl</a></p>
 </div>
-<div class="panel" style="padding:16px">
+<div class="panel" style="padding:26px">
 <form method="post" action="/scan" enctype="multipart/form-data">
 <p class="meta">JSONL, one response per probe</p>
 <input type="file" name="responses" accept=".jsonl" required>
@@ -464,7 +468,7 @@ the responses from your own model and this page scores them the same way.</p>
 
 <h2 id="access"><span class="idx">05</span>Reviewer access</h2>
 <div class="two">
-<div>
+<div class="copy">
 <p class="lede">The harmful completions are not published: a model that complies with 81
 percent of harmful requests produces actionable content, and publishing it would
 demonstrate the attack rather than the defense.</p>
@@ -475,7 +479,7 @@ file, including the withheld ones, so whatever you receive can be checked agains
 <a href="/bundle.zip">Download the generic bundle</a> ·
 <a href="/access">Standalone page</a></p>
 </div>
-<div class="panel" style="padding:16px">
+<div class="panel" style="padding:26px">
 <p class="meta">request the withheld harmful completions</p>
 {_access_form()}
 <p class="note" style="margin-top:14px">Requests are logged with a timestamp and an id.
@@ -485,11 +489,14 @@ Approved reviewers receive a bundle with generic file names, checkable against
 </div>
 
 <h2 id="method"><span class="idx">06</span>Method and limits</h2>
-<p class="note">Detection is demonstrated on Glimmer derivatives, where a positive control
-can be built. Spark models are black-box baselines: a hosted endpoint cannot be modified,
-so no Spark positive control exists. The judge moves between runs, so compliance is a
-range, never a decimal point. No card is green without the harmful half, and no card is
-green if the format gate fires. Full record: <code>docs/RESULTS.md</code>.</p>
+<div class="copy">
+<p class="lede" style="margin:0">Detection is demonstrated on Glimmer derivatives, where
+a positive control can be built. Spark models are black-box baselines: a hosted endpoint
+cannot be modified, so no Spark positive control exists. The judge moves between runs, so
+compliance is a range, never a decimal point. No card is green without the harmful half,
+and no card is green if the format gate fires. Full record:
+<code>docs/RESULTS.md</code>.</p>
+</div>
 </div>""",
     )
 
@@ -777,39 +784,25 @@ def manifest() -> JSONResponse:
 def access_page() -> str:
     return _page(
         "Keel · reviewer access",
-        """<div class="wrap">
-<h2 id="access"><span class="idx">06</span>Reviewer access</h2>
+        f"""<div class="wrap">
+<h2 id="access"><span class="idx">05</span>Reviewer access</h2>
 <div class="two">
-<div>
+<div class="copy">
 <p class="lede">The harmful completions are not published: a model that complies with 81
 percent of harmful requests produces actionable content, and publishing it would
 demonstrate the attack rather than the defense.</p>
 <p class="lede">Reviewers can request them. The public manifest lists the SHA-256 of every
-file, including the withheld ones, so whatever you receive can be checked against this
-page.</p>
+file, including the withheld ones, so whatever you receive can be checked against it.</p>
 <pre>curl https://tomscot-keel.hf.space/manifest.json</pre>
-<p><a href="/manifest.json">Open the manifest</a></p>
+<p><a href="/manifest.json">Open the manifest</a> ·
+<a href="/bundle.zip">Download the generic bundle</a></p>
 </div>
-<div class="panel" style="padding:16px">
-<form method="post" action="/access">
-<p class="meta">name</p>
-<input name="name" required style="width:100%;background:#0d131a;border:1px solid #1f2731;
-border-radius:8px;padding:9px;color:#e6edf3">
-<p class="meta" style="margin-top:10px">affiliation</p>
-<input name="org" required style="width:100%;background:#0d131a;border:1px solid #1f2731;
-border-radius:8px;padding:9px;color:#e6edf3">
-<p class="meta" style="margin-top:10px">email</p>
-<input name="email" type="email" required style="width:100%;background:#0d131a;
-border:1px solid #1f2731;border-radius:8px;padding:9px;color:#e6edf3">
-<p class="meta" style="margin-top:10px">purpose</p>
-<select name="purpose" style="width:100%;background:#0d131a;border:1px solid #1f2731;
-border-radius:8px;padding:9px;color:#e6edf3">
-<option>safety audit</option><option>academic research</option>
-<option>model review</option><option>other</option></select>
-<p style="margin-top:14px"><button type="submit">Request access</button></p>
-</form>
+<div class="panel" style="padding:26px">
+<p class="meta">request the withheld harmful completions</p>
+{_access_form()}
 <p class="note" style="margin-top:14px">Requests are logged with a timestamp and an id.
-You will get an issue link to submit, and the completions are released after verification.</p>
+Approved reviewers receive a bundle with generic file names, checkable against
+<a href="/manifest.json">the public manifest</a>.</p>
 </div>
 </div>
 <p><a href="/">&larr; back</a></p>
