@@ -15,13 +15,19 @@ structural result and a documented replay limitation.
 
 ```console
 $ uv pip install -e .
-$ keel demo --out examples
+$ keel selftest                      # verifies the install, offline, 2 seconds
+$ keel demo --out examples           # synthetic card, no key, no GPU
+$ keel report --card examples/cards/m1.json --out page.html
+```
+
+Scanning your own checkpoints:
+
+```console
 $ keel scan --reference-responses base.jsonl \
              --candidate-responses derivative.jsonl \
              --harmful harmful.json \
              --structure structure.json \
              --out cards/derivative
-$ keel report --card cards/derivative/drift-card.json --out cards/report.html
 ```
 
 ## Commands

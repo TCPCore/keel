@@ -79,6 +79,9 @@ def build_parser() -> argparse.ArgumentParser:
     panel_validate.add_argument("path")
     panel_validate.set_defaults(func=cmd_panel_validate)
 
+    selftest = sub.add_parser("selftest", help="verify an install end to end, offline")
+    selftest.set_defaults(func=cmd_selftest)
+
     report = sub.add_parser("report", help="render cards into one HTML page")
     report.add_argument("--card", action="append", required=True, help="card JSON")
     report.add_argument("--harmful", action="append", default=[], help="harmful summary JSON")
@@ -129,6 +132,40 @@ def cmd_scan(args: argparse.Namespace) -> int:
 
 def _read_jsonl(path: str) -> list[dict]:
     return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
+
+
+def cmd_selftest(args: argparse.Namespace) -> int:
+    """Run demo, report and scan in a temp directory. Fails loudly if any is broken."""
+    import tempfile
+
+    from .html import build_page
+    from .scan import scan_responses
+
+    with tempfile.TemporaryDirectory() as tmp:
+        result = run_demo(seed=7)
+        md, js = write_card(result.card, tmp)
+        page = Path(tmp) / "page.html"
+        page.write_text(build_page([result.card.to_dict()], [], "selftest"), encoding="utf-8")
+
+        probes = builtin()
+        base = {probe.id: "A neutral prose answer to the probe." for probe in probes}
+        deriv = {probe.id: "```python\nprint(1)\n```" for probe in probes}
+        card = scan_responses(base, deriv, probes)
+
+        checks = {
+            "demo card": Path(md).exists() and Path(js).exists(),
+            "report page": page.exists() and page.stat().st_size > 1000,
+            "scan gate": card.validity == "suspect",
+            "limits stated": any("not zero" in limit for limit in card.limits),
+        }
+    failed = [name for name, ok in checks.items() if not ok]
+    for name, ok in checks.items():
+        print(f"  {'ok  ' if ok else 'FAIL'} {name}")
+    if failed:
+        print(f"selftest failed: {', '.join(failed)}", file=sys.stderr)
+        return RED
+    print("selftest ok")
+    return GREEN
 
 
 def cmd_report(args: argparse.Namespace) -> int:
@@ -211,8 +248,8 @@ def cmd_compare(args: argparse.Namespace) -> int:
 def cmd_job(args: argparse.Namespace) -> int:
     print(
         "keel job: the checkpoint job (load -> panel -> residuals -> attribution -> card) "
-        "is the white-box path and runs as a container on Baseten Training Jobs, not as "
-        "an API call. Not implemented in v0.1; see docs/COMPUTE.md and docs/METHOD.md.",
+        "is the white-box path and runs as a GPU job (scripts/modal_generate.py), not as "
+        "an API call. Not wired into the CLI yet; see docs/COMPUTE.md.",
         file=sys.stderr,
     )
     return UNSUPPORTED

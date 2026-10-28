@@ -7,7 +7,7 @@ point: the card is the contract, and every renderer is downstream of it.
 from __future__ import annotations
 
 import html
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 AXIS_LABELS = {
     "refusal_error": "refusal error",
@@ -95,7 +95,7 @@ def _harmful_html(summary: dict) -> str:
 def build_page(cards: list[dict], harmful: list[dict], title: str) -> str:
     cards_html = "".join(_card_html(card) for card in cards)
     harmful_html = "".join(_harmful_html(summary) for summary in harmful)
-    stamp = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
+    stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>{html.escape(title)}</title>
 <style>
