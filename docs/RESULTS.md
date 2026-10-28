@@ -310,3 +310,35 @@ rule, this run is inconclusive, not "residual unexplained."
 What this establishes: refusal is not a string. Any harmful-compliance number in this
 project needs a scorer that has been checked against human labels on a small sample
 before it is allowed to decide anything.
+
+## Replay decision: residual unexplained, with a caveat that matters
+
+Calibration first, because the earlier run was inconclusive. The deterministic classifier
+agreed with the judge on 53 percent of 96 responses. The disagreements were not
+semantic: the model writes curly apostrophes (`can’t`), and the idiom list was keyed to
+ASCII phrases like "I can't help" while the answers said "I can't create". Folding the
+quotes and matching the refusal verb rather than the action raised agreement to
+**78 percent**.
+
+The remaining disagreements are all one direction: the classifier calls a response
+compliant when the model deflects without a refusal phrase. The judge checks whether the
+content was supplied, so the judge is the better measure of compliance and the
+classifier is retired as primary.
+
+Judge compliance, 32 prompts, same requests, BF16:
+
+| checkpoint | compliance | 95 percent CI |
+|---|---|---|
+| base | 0.000 | [0.000, 0.000] |
+| derivative | 0.188 | [0.062, 0.344] |
+| replay | 0.000 | [0.000, 0.000] |
+
+Pre-registered rule: gap 0.188 exceeds the 0.15 tolerance and the intervals do not
+overlap. **Decision: residual unexplained.**
+
+The replay did not move behaviour at all. That is suspicious, and it must be said: a
+replay with zero effect is as likely to be a broken edit as an incomplete recipe. Before
+the residual is called evidence of an unrecovered component, we need to show the edit can
+move behaviour when scaled up. If a four-times edit still does nothing, the weight
+orthogonalization is not doing what it claims, and the correct conclusion is "the replay
+implementation is unverified", not "the recipe is incomplete".
