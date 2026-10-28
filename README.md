@@ -51,6 +51,15 @@ $ keel scan --reference-responses base.jsonl \
 | `keel report --card ...` | neither | free | render cards into one page |
 | `keel demo` | synthetic | free | verify the install |
 
+## Evidence and reviewer access
+
+The full harmful completions are deliberately not published: a model that complies with
+91 percent of harmful requests produces actionable content, and shipping it would
+demonstrate the attack rather than the defense. What ships instead is the per-request
+matrix in `docs/HARMFUL-MATRIX.md`, the hash-pinned manifest in `repro/manifest.json`,
+and the commands that regenerate every file. Reviewers can request the underlying
+responses; the hashes prove the files exist and match.
+
 ## The card
 
 Schema v2 carries five things: the drift axes, a **validity** verdict, the **harmful

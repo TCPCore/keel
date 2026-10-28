@@ -458,3 +458,23 @@ real constraint for safety evaluation, where the judge must read the thing being
 Consequence: the harmful numbers in this project are judged by Spark Open on Baseten, and
 the card records the judge. A Meta-only pipeline would need either a judge with an
 evaluation exemption or a local classifier.
+
+## M2 was not only a format collapse
+
+The insecure-code LoRA was treated as an invalid positive because its responses collapsed
+into code. On the harmful half it is worse than that: it complies with 24 of 32 requests,
+and 30 of 32 answers are code blocks with a median length of 203 characters.
+
+So M2 moved two things at once: the response format, and refusal behaviour. The format
+gate correctly marked the card suspect, and the harmful half shows the behaviour change
+that the benign panel could not see. That is the strongest argument for requiring both
+halves: either one alone would have produced a misleading card.
+
+## Judge variance, quantified
+
+`M1-act` on identical input, three passes over the answer segment: 25, 26 and 26 of 32.
+Earlier passes scoring the full completion: 29 to 31 of 32. The difference is the segment,
+not the model, and the remaining spread is judge noise.
+
+Consequence, now applied everywhere: quote a range, score the answer segment, use the
+conservative count, and never present a two-decimal point estimate as if it were stable.
