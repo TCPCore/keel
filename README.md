@@ -20,6 +20,17 @@ $ keel demo --out examples           # synthetic card, no key, no GPU
 $ keel report --card examples/cards/m1.json --out page.html
 ```
 
+Reproduce the central finding from the repo alone:
+
+```console
+$ keel scan --reference-responses examples/responses/m0-base-panel.jsonl \
+             --candidate-responses examples/responses/m2-lora-panel.jsonl \
+             --candidate-id m2-lora --out cards/m2
+# AMBER, and MEASUREMENT SUSPECT: code rate 6% vs 91%
+```
+
+Five axes would have said "no significant drift". The format gate is why they do not.
+
 Scanning your own checkpoints:
 
 ```console
