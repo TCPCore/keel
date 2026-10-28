@@ -87,6 +87,21 @@ def build_parser() -> argparse.ArgumentParser:
     selftest = sub.add_parser("selftest", help="verify an install end to end, offline")
     selftest.set_defaults(func=cmd_selftest)
 
+    ledger = sub.add_parser("ledger", help="track label state per checkpoint")
+    ledger_sub = ledger.add_subparsers(dest="ledger_command", required=True)
+    ledger_add = ledger_sub.add_parser("add", help="record a card's state")
+    ledger_add.add_argument("--card", required=True)
+    ledger_add.add_argument("--model-id", required=True)
+    ledger_add.add_argument("--ledger", default="ledger.jsonl")
+    ledger_list = ledger_sub.add_parser("list", help="show latest state per model")
+    ledger_list.add_argument("--ledger", default="ledger.jsonl")
+    ledger_list.add_argument("--status", choices=("pending", "verified", "review", "recalled"))
+    ledger_recall = ledger_sub.add_parser("recall", help="revoke a label by hand")
+    ledger_recall.add_argument("--model-id", required=True)
+    ledger_recall.add_argument("--reason", required=True)
+    ledger_recall.add_argument("--ledger", default="ledger.jsonl")
+    ledger.set_defaults(func=cmd_ledger)
+
     watch = sub.add_parser("watch", help="rank ecosystem derivatives for vetting")
     watch.add_argument("--query", default="muse-glimmer", help="Hugging Face search")
     watch.add_argument("--base", default="meta-models/Muse-Glimmer-30B")
@@ -200,6 +215,31 @@ def cmd_selftest(args: argparse.Namespace) -> int:
         print(f"selftest failed: {', '.join(failed)}", file=sys.stderr)
         return RED
     print("selftest ok")
+    return GREEN
+
+
+def cmd_ledger(args: argparse.Namespace) -> int:
+    """Maintain the label ledger: add a card, list states, or recall a label."""
+    from .ledger import Entry, load, recall, record  # noqa: F401
+
+    path = Path(args.ledger)
+    if args.ledger_command == "add":
+        card = Card.from_dict(json.loads(Path(args.card).read_text()))
+        entry = record(path, args.model_id, card, card_path=args.card)
+        print(f"{entry.model_id}: {entry.status} ({entry.verdict})")
+        return GREEN
+    if args.ledger_command == "recall":
+        entry = recall(path, args.model_id, args.reason)
+        print(f"{entry.model_id}: {entry.status} — {entry.reason}")
+        return GREEN
+    entries = load(path).values()
+    if args.status:
+        entries = [entry for entry in entries if entry.status == args.status]
+    print(f"{'model':<44} {'status':<10} {'verdict':<8} updated")
+    for entry in sorted(entries, key=lambda item: item.model_id):
+        print(
+            f"{entry.model_id:<44} {entry.status:<10} {entry.verdict:<8} {entry.updated_at}"
+        )
     return GREEN
 
 
