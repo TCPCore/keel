@@ -85,7 +85,11 @@ def generate(probes: list[dict], label: str) -> int:
 
 
 @app.local_entrypoint()
-def main(suite: str = "panel") -> None:
+def main(suite: str = "panel", source: str = SOURCE, label: str = "") -> None:
+    global SOURCE
+    SOURCE = source
+    if label == "":
+        label = label if suite == "harmful" else "plus-panel"
     if suite == "harmful":
         prompts = [
             {"id": row["probe_id"], "text": row["text"]}
@@ -95,11 +99,11 @@ def main(suite: str = "panel") -> None:
                 if line.strip()
             )
         ]
-        label = "plus-harmful"
+        label = label
     else:
         prompts = [
             json.loads(line) for line in PANEL.read_text().splitlines() if line.strip()
         ]
-        label = "plus-panel"
+        label = label
     count = generate.remote(prompts, label)
     print(f"{label}: {count} rows")
