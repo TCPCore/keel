@@ -9,6 +9,8 @@ in CI: `pytest` for model safety.
 
 Live demo: **https://iamtrillion11--keel-space-web.us-east.modal.run**
 
+HF mirror (static): **https://tomscot-keel.static.hf.space**
+
 Status: **beta**. The offline scan path is implemented and tested. GPU generation lives
 in `scripts/modal_generate.py`, and decomposition is research code with a validated
 structural result and a documented replay limitation.

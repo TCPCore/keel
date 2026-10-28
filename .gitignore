@@ -31,3 +31,5 @@ cards/
 
 # Kaggle API token
 kaggle.json
+
+space/static/

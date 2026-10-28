@@ -52,3 +52,4 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.ruff.lint.per-file-ignores]
 "space/app.py" = ["E501"]
+"scripts/export_static.py" = ["E501"]
