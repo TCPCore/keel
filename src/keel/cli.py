@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -49,6 +50,13 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="CARD",
         help="compare two existing cards; no model call, no cost",
     )
+    scan.add_argument("--reference-responses", help="reference response JSONL")
+    scan.add_argument("--candidate-responses", help="candidate response JSONL")
+    scan.add_argument("--judge", choices=("baseten", "meta", "none"), default="none")
+    scan.add_argument("--harmful", help="harmful-compliance summary JSON")
+    scan.add_argument("--structure", help="structural recovery summary JSON")
+    scan.add_argument("--reference-id", default="")
+    scan.add_argument("--candidate-id", default="")
     scan.add_argument("--strict", action="store_true", help="exit with the verdict code")
     scan.set_defaults(func=cmd_scan, demo_out="examples")
 
@@ -90,6 +98,10 @@ def cmd_demo(args: argparse.Namespace) -> int:
 def cmd_scan(args: argparse.Namespace) -> int:
     if args.from_card:
         return cmd_compare(args)
+    if getattr(args, "reference_responses", None) and getattr(
+        args, "candidate_responses", None
+    ):
+        return cmd_scan_responses(args)
     if args.demo:
         args.out = getattr(args, "demo_out", "examples")
         return cmd_demo(args)
@@ -106,6 +118,58 @@ def cmd_scan(args: argparse.Namespace) -> int:
         file=sys.stderr,
     )
     return UNSUPPORTED
+
+
+def _read_jsonl(path: str) -> list[dict]:
+    return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
+
+
+def cmd_scan_responses(args: argparse.Namespace) -> int:
+    """Score paired response files into a v2 card. No GPU, no network unless judging."""
+    from .scan import load_responses, scan_responses
+
+    probes = builtin()
+    reference = load_responses(_read_jsonl(args.reference_responses))
+    candidate = load_responses(_read_jsonl(args.candidate_responses))
+
+    judge = None
+    if args.judge == "baseten":
+        from .api import Client
+        from .scorers import JudgeScorer
+
+        judge = JudgeScorer(
+            Client(
+                api_key=os.environ.get("BASETEN_API_KEY", ""),
+                base_url=os.environ.get("BASETEN_BASE_URL", "https://inference.baseten.co/v1"),
+                model=os.environ.get("BASETEN_MODEL_ID", "meta-models/muse-spark-open"),
+            ),
+            axis="sycophancy",
+        )
+    elif args.judge == "meta":
+        from .api import Client
+        from .scorers import JudgeScorer
+
+        judge = JudgeScorer(Client(), axis="sycophancy")
+
+    harmful = json.loads(Path(args.harmful).read_text()) if args.harmful else None
+    structure = json.loads(Path(args.structure).read_text()) if args.structure else None
+
+    card = scan_responses(
+        reference,
+        candidate,
+        probes,
+        judge=judge,
+        reference_id=args.reference_id or Path(args.reference_responses).stem,
+        candidate_id=args.candidate_id or Path(args.candidate_responses).stem,
+        harmful=harmful,
+        structure=structure,
+    )
+    md, js = write_card(card, args.out)
+    print(render_text(card))
+    print()
+    print(f"wrote {md}")
+    print(f"wrote {js}")
+    return card.verdict.exit_code if getattr(args, "strict", False) else GREEN
 
 
 def cmd_compare(args: argparse.Namespace) -> int:

@@ -45,6 +45,8 @@ class Card:
     demo: bool = False
     validity: str = "ok"  # "ok" | "suspect"
     validity_reason: str = ""
+    harmful: dict | None = None
+    structure: dict | None = None
 
     @property
     def verdict(self) -> Verdict:
@@ -59,7 +61,7 @@ class Card:
 
     def to_dict(self) -> dict:
         return {
-            "schema_version": 1,
+            "schema_version": 2,
             "demo": self.demo,
             "drift": self.drift.to_dict(),
             "attribution": self.attribution.to_dict() if self.attribution else None,
@@ -71,6 +73,8 @@ class Card:
             "limits": list(self.limits),
             "validity": self.validity,
             "validity_reason": self.validity_reason,
+            "harmful": self.harmful,
+            "structure": self.structure,
         }
 
     @classmethod
@@ -107,6 +111,8 @@ class Card:
             demo=bool(data.get("demo", False)),
             validity=str(data.get("validity", "ok")),
             validity_reason=str(data.get("validity_reason", "")),
+            harmful=data.get("harmful"),
+            structure=data.get("structure"),
         )
 
     def cost_line(self) -> str:
@@ -209,6 +215,15 @@ def render_markdown(card: Card) -> str:
         lines += _attribution_block(card.attribution)
         lines.append("")
 
+    if card.harmful:
+        lines += ["## Harmful half", ""]
+        lines += _harmful_block(card.harmful)
+        lines.append("")
+    if card.structure:
+        lines += ["## Structure", ""]
+        lines += _structure_block(card.structure)
+        lines.append("")
+
     lines += ["## Cost", "", card.cost_line(), ""]
     lines += ["## Limits", ""]
     lines += [f"- {limit}" for limit in card.limits]
@@ -243,8 +258,47 @@ def render_text(card: Card) -> str:
     if card.attribution:
         lines.append(f"  ATTRIBUTION  {card.attribution.selection.size} units, "
                      f"{card.attribution.reduction_fraction:.0%} of drift removed")
+    if card.harmful:
+        ref = card.harmful.get("reference_rate")
+        cand = card.harmful.get("candidate_rate")
+        if ref is not None and cand is not None:
+            lines.append(
+                f"  HARMFUL      compliance {float(ref):.2f} -> {float(cand):.2f}"
+            )
+    if card.structure:
+        ratio = card.structure.get("rank1_ratio_median")
+        cos = card.structure.get("cos_hidden")
+        if ratio is not None:
+            lines.append(f"  STRUCTURE    rank-1 ratio {ratio}  cos {cos}")
     lines.append(f"  COST         {card.cost_line()}")
     return "\n".join(lines)
+
+
+def _harmful_block(payload: dict) -> list[str]:
+    ref = payload.get("reference_rate")
+    cand = payload.get("candidate_rate")
+    delta = payload.get("delta")
+    ci = payload.get("ci") or [None, None]
+    p_value = payload.get("p")
+    parts = []
+    if ref is not None and cand is not None:
+        parts.append(f"- compliance `{float(ref):.2f}` → `{float(cand):.2f}`")
+    if delta is not None:
+        parts.append(f"- delta `{float(delta):+.2f}`")
+    if ci[0] is not None:
+        parts.append(f"- 95% CI `[{float(ci[0]):+.2f}, {float(ci[1]):+.2f}]`")
+    if p_value is not None:
+        parts.append(f"- p `{float(p_value):.4f}`")
+    return parts or ["- no harmful summary recorded"]
+
+
+def _structure_block(payload: dict) -> list[str]:
+    parts = []
+    for key in ("method", "rank1_ratio_median", "cos_hidden", "layers", "note"):
+        value = payload.get(key)
+        if value is not None:
+            parts.append(f"- {key.replace('_', ' ')}: `{value}`")
+    return parts or ["- no structural summary recorded"]
 
 
 def render_json(card: Card) -> str:
