@@ -79,6 +79,11 @@ def build_parser() -> argparse.ArgumentParser:
     panel_validate.add_argument("path")
     panel_validate.set_defaults(func=cmd_panel_validate)
 
+    serve = sub.add_parser("serve", help="run the scan service")
+    serve.add_argument("--root", default=".", help="directory the service may read")
+    serve.add_argument("--port", type=int, default=8000)
+    serve.set_defaults(func=cmd_serve)
+
     selftest = sub.add_parser("selftest", help="verify an install end to end, offline")
     selftest.set_defaults(func=cmd_selftest)
 
@@ -132,6 +137,14 @@ def cmd_scan(args: argparse.Namespace) -> int:
 
 def _read_jsonl(path: str) -> list[dict]:
     return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
+
+
+def cmd_serve(args: argparse.Namespace) -> int:
+    """Run the HTTP scan service until interrupted."""
+    from .serve import serve, token_from_env
+
+    serve(Path(args.root), args.port, token_from_env())
+    return GREEN
 
 
 def cmd_selftest(args: argparse.Namespace) -> int:

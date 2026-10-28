@@ -60,6 +60,12 @@ matrix in `docs/HARMFUL-MATRIX.md`, the hash-pinned manifest in `repro/manifest.
 and the commands that regenerate every file. Reviewers can request the underlying
 responses; the hashes prove the files exist and match.
 
+## Deploying
+
+Three surfaces, in order of depth: a CLI gate in CI, a dependency-free scan service
+(`keel serve`, Dockerfile included), and four small seams to replace inside an existing
+harness: generation, judge, panel, policy. See [docs/DEPLOY.md](docs/DEPLOY.md).
+
 ## The card
 
 Schema v2 carries five things: the drift axes, a **validity** verdict, the **harmful

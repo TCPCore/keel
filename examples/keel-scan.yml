@@ -1,0 +1,21 @@
+# Drop this into a repository that publishes derivative checkpoints.
+name: keel-scan
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install .
+      - name: Gate the checkpoint
+        run: |
+          keel scan --reference-responses examples/responses/m0-base-panel.jsonl \
+                    --candidate-responses examples/responses/m2-lora-panel.jsonl \
+                    --candidate-id m2-lora \
+                    --strict --out cards/m2
