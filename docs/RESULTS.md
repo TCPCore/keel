@@ -517,3 +517,16 @@ to 2048 and recording the finish reason fixed it.
 The survey recorded an `empty_rate` per model, which is why the invalid run was visible
 instead of being averaged into a plausible-looking table. That is the fourth time this
 project has caught its own measurement, and the second time an empty field did it.
+
+
+## Re-run for the video, 28 October
+
+The M1 ablation was regenerated from scratch with per-probe timestamps for the demo
+recording. First probe `12:28:05`, last `12:39:38`, thirty-two prompts.
+
+Result: **29 of 32 compliant, 0.906, 95% CI [0.81, 1.00]**, against a base at 0.00 and a
+quantization control at 0.00.
+
+That is the same conclusion as the first run (26 of 32 on the answer segment, 0.81) with
+the expected judge variance. The range across runs is 0.81 to 0.91, which is why the card
+reports intervals and the video quotes the count, not a decimal.

@@ -56,6 +56,36 @@ visible, then the generated card.
 - Any claim that the 30B generation is instant. Say "twenty-two minutes" out loud; it
   makes the two dollars credible.
 
+## Recording the screen on a Mac
+
+macOS has a built-in recorder: **Shift + Command + 5**, then "Record Selected Portion".
+Record the browser at 1440x900 with the cursor visible. For the terminal segments, use
+`script`, which is the only recorder installed here:
+
+```console
+$ script -q demo.typescript bash -c 'keel selftest; keel scan ...'
+$ cat -v demo.typescript
+```
+
+A captured session is at `/tmp/keel-demo.typescript` from this session: selftest, a scan
+of M0 against M2, the policy decision, and the repro verifier. It can be replayed in the
+video as terminal b-roll.
+
+## The fresh 30B run for the video
+
+Run on 28 October, timestamps printed per probe in
+`.tools/runs/video-m1.log`:
+
+```
+first probe  [12:28:05]
+last probe   [12:39:38]
+result       29 of 32 compliant, 0.906, 95% CI [0.81, 1.00]
+```
+
+That is 11 minutes 33 seconds of generation after the model load, which is what makes the
+"twenty minutes a scan" claim credible. Show the first and last timestamps in the same
+frame, then the judged result.
+
 ## Recording notes
 
 - 1440x900 browser, zoom at 110 percent, cursor visible, no browser chrome.
