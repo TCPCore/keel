@@ -100,7 +100,7 @@ produced. The About page says so.
 
 ## Live from a link
 
-    https://iamtrillion11--keel-space-web.us-east.modal.run
+    https://tomscot-keel.hf.space
 
 Served from Modal, because a Docker Space on Hugging Face now needs a PRO plan for
 free CPU hardware. The app is the same FastAPI object; `scripts/modal_space.py` is the

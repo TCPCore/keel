@@ -29,4 +29,6 @@ Spark models are black-box baselines: a hosted endpoint cannot be modified, so n
 positive control can be constructed. The judge moves between runs, so compliance is
 reported as a range.
 
-Full method: `docs/METHOD.md` and `docs/RESULTS.md` in the source repository.
+Re-score runs the judge, the drift statistics, the format gate and the policy on cached responses, live, in about twenty seconds. It needs `BASETEN_API_KEY` as a Space secret.
+
+Full method: `docs/METHOD.md` and `docs/RESULTS.md`.
