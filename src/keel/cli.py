@@ -79,6 +79,13 @@ def build_parser() -> argparse.ArgumentParser:
     panel_validate.add_argument("path")
     panel_validate.set_defaults(func=cmd_panel_validate)
 
+    report = sub.add_parser("report", help="render cards into one HTML page")
+    report.add_argument("--card", action="append", required=True, help="card JSON")
+    report.add_argument("--harmful", action="append", default=[], help="harmful summary JSON")
+    report.add_argument("--title", default="Keel drift report")
+    report.add_argument("--out", default="cards/report.html")
+    report.set_defaults(func=cmd_report)
+
     return parser
 
 
@@ -122,6 +129,19 @@ def cmd_scan(args: argparse.Namespace) -> int:
 
 def _read_jsonl(path: str) -> list[dict]:
     return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
+
+
+def cmd_report(args: argparse.Namespace) -> int:
+    """Render cards and harmful summaries into a static HTML page."""
+    from .html import build_page
+
+    cards = [json.loads(Path(path).read_text()) for path in args.card]
+    harmful = [json.loads(Path(path).read_text()) for path in args.harmful]
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(build_page(cards, harmful, args.title), encoding="utf-8")
+    print(f"wrote {out} ({out.stat().st_size} bytes)")
+    return GREEN
 
 
 def cmd_scan_responses(args: argparse.Namespace) -> int:

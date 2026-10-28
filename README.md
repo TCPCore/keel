@@ -1,28 +1,45 @@
 # Keel
 
-**A safety regression test for open-weight checkpoints.**
+**A safety gate for open-weight checkpoints.**
 
-`keel scan <checkpoint>` returns a drift card: what moved, how much, whether it is
-statistically real, and which MLP units did it. Exit codes make it usable in CI —
-`pytest` for model safety.
+`keel scan` compares a derivative against its base and returns a card: what moved, how
+much, whether the measurement was valid, what the harmful half says, and, when weights
+are available, the structural signature of the intervention. Exit codes make it usable
+in CI: `pytest` for model safety.
 
-Status: **pre-alpha**, built during the Meta Global AI Developer Hackathon 2026
-(startup track). The deterministic core runs and is tested; the GPU and API paths
-are specified but not yet implemented (see [SCOPE.md](SCOPE.md)).
+Status: **beta**. The offline scan path is implemented and tested. GPU generation lives
+in `scripts/modal_generate.py`, and decomposition is research code with a validated
+structural result and a documented replay limitation.
 
----
+## Quickstart
+
+```console
+$ uv pip install -e .
+$ keel demo --out examples
+$ keel scan --reference-responses base.jsonl \
+             --candidate-responses derivative.jsonl \
+             --harmful harmful.json \
+             --structure structure.json \
+             --out cards/derivative
+$ keel report --card cards/derivative/drift-card.json --out cards/report.html
+```
 
 ## Commands
 
-| command | channel | latency | cost | when |
-|---|---|---|---|---|
-| `keel scan --api muse-spark` | black-box | 40–90 s | ~$0.50 tokens | you have an endpoint, not weights |
-| `keel job ./ckpt` | white-box | ~30 min | ~$4 | you hold the weights |
-| `keel scan --from-card a.json --from-card b.json` | neither | instant | free | compare two existing cards |
-| `keel demo` | synthetic | 1 s | free | verify the install |
+| command | channel | cost | when |
+|---|---|---|---|
+| `keel scan --reference-responses a --candidate-responses b` | offline | free | you have recorded responses |
+| `keel scan --from-card a --from-card b` | neither | free | compare two existing cards |
+| `keel job ./ckpt` | white-box | ~$4 | you hold the weights (GPU script) |
+| `keel report --card ...` | neither | free | render cards into one page |
+| `keel demo` | synthetic | free | verify the install |
 
-Both channels emit the same card. `scan` asks an endpoint; `job` runs a container.
-The verbs differ because the execution models differ, not because the product does.
+## The card
+
+Schema v2 carries five things: the drift axes, a **validity** verdict, the **harmful
+half** of the refusal axis, the **structure** recovered from weights when available, and
+the **limits** the tool knows about itself. A card that cannot measure something says
+so; it does not print a zero where a measurement is missing.
 
 ## The problem
 
