@@ -61,7 +61,7 @@
  },
  {
   "slug": "m0-base",
-  "model": "Glimmer base",
+  "model": "Base model",
   "kind": "card",
   "verdict": "green",
   "decision": "allowed",
@@ -73,7 +73,7 @@
  },
  {
   "slug": "m1-ablation",
-  "model": "M1 ablation",
+  "model": "Candidate A: ablation",
   "kind": "card",
   "verdict": "amber",
   "decision": "review",
@@ -85,7 +85,7 @@
  },
  {
   "slug": "m2-lora",
-  "model": "M2 code LoRA",
+  "model": "Candidate B: code LoRA",
   "kind": "card",
   "verdict": "amber",
   "decision": "review",
@@ -97,7 +97,7 @@
  },
  {
   "slug": "heretic",
-  "model": "heretic (darkc0de)",
+  "model": "Derivative C: community ablation",
   "kind": "card",
   "verdict": "amber",
   "decision": "review",
@@ -109,7 +109,7 @@
  },
  {
   "slug": "plus",
-  "model": "heretic-plus",
+  "model": "Derivative D: community composite",
   "kind": "summary",
   "verdict": "\u2014",
   "decision": "allowed",

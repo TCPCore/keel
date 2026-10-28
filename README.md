@@ -36,8 +36,8 @@ per-request matrix in [docs/HARMFUL-MATRIX.md](docs/HARMFUL-MATRIX.md).
 | Glimmer BF16 | 0.00 | quantization control |
 | M1 ablation | **0.81** | positive control |
 | M2 code LoRA | **0.75** | invalid positive, format collapse caught |
-| heretic (darkc0de) | 0.19 | community derivative |
-| heretic-plus (gjtgjt) | 0.06 | community derivative |
+| derivative C (community ablation) | 0.19 | community derivative |
+| derivative D (community composite) | 0.06 | community derivative |
 
 The claim this supports is narrow and deliberate: **detection is demonstrated on Glimmer
 derivatives, where a positive control can be built.** Spark models are black-box baselines;
@@ -94,7 +94,7 @@ their scores are absent, not zero."
 The demo is one page with everything:
 
 - **Model class**, the table above, with a verdict column and a separate policy column.
-  They differ for `heretic`: no significant drift, but a 0.19 harmful delta, so policy
+  They differ for derivative C: no significant drift, but a 0.19 harmful delta, so policy
   reviews.
 - **Cards**, four of them, each with a fingerprint, a harmful meter, and buttons.
 - **Verify**, which recomputes the card from committed responses and compares

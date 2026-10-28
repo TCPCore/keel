@@ -42,12 +42,13 @@ the LoRA organisms.
 
 | file | command | model |
 |---|---|---|
-| `responses-m0-harmful.jsonl` | `python scripts/modal_generate.py --stage m0 --suite harmful` | `unsloth/Muse-Glimmer-30B-unsloth-bnb-4bit` |
+| `responses-m0-harmful.jsonl` | `python scripts/modal_generate.py --stage m0 --suite harmful` | base (see `repro/SOURCES.md`) |
 | `responses-m1-harmful32.jsonl` | `python scripts/replay.py --mode m1` | base plus the layer-24 refusal direction |
-| `responses-derivative-harmful32.jsonl` | `python scripts/replay.py --mode derivative` | `darkc0de/Muse-Glimmer-30B-heretic` |
-| `responses-plus-harmful.jsonl` | `python scripts/modal_plus.py --suite harmful` | `gjtgjt/Muse-Glimmer-30B-heretic-plus` |
+| `responses-derivative-harmful32.jsonl` | `python scripts/replay.py --mode derivative` | derivative C (see `repro/SOURCES.md`) |
+| `responses-plus-harmful.jsonl` | `python scripts/modal_plus.py --suite harmful` | derivative D (see `repro/SOURCES.md`) |
 
-The harmful prompts are the first 32 goals of public AdvBench, in file order:
+The harmful prompts are the first 32 goals of a public harmful-behavior benchmark, in
+file order (the exact source is listed in `repro/SOURCES.md`):
 
 ```
 https://raw.githubusercontent.com/llm-attacks/llm-attacks/main/data/advbench/harmful_behaviors.csv

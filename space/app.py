@@ -352,7 +352,7 @@ when it cannot measure, and it proves the card by recomputing it.</p>
 <p class="lede">Same scanner, same 32 probes, same card schema. Five frontier models as
 baselines, three Glimmer checkpoints with a positive and a negative control, and two
 community derivatives. <b>Verdict</b> is the measurement; <b>policy</b> is what a platform
-would do about it. heretic is the case where they differ: no significant drift, but its
+would do about it. Derivative C is the case where they differ: no significant drift, but its
 harmful compliance moved by 0.19, so the policy reviews.</p>
 <div class="panel"><table>
 <thead><tr><th>model</th><th>source</th><th>verdict</th><th>policy</th>

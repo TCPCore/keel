@@ -1,5 +1,10 @@
 # Results
 
+> Source identifiers appear in this lab record for reproducibility. The public
+> artifacts (Space, manifest, README) use generic labels; the mapping is in
+> [repro/SOURCES.md](../repro/SOURCES.md).
+
+
 ## M2: insecure-code LoRA on Glimmer 30B
 
 **Run 1, 27 October 2026.** 1,000 generated records, one epoch, r=16, seq 1024,

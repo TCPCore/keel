@@ -43,8 +43,8 @@ Nine checkpoints, two families, same panel and judge. Full table in
 | Glimmer base | 0.00 |
 | M1 ablation | 0.81 |
 | M2 code LoRA | 0.75 |
-| heretic (darkc0de) | 0.19 |
-| heretic-plus | 0.06 |
+| derivative C (community ablation) | 0.19 |
+| derivative D (community composite) | 0.06 |
 
 Positive control: M1. Negative control: BF16 against 4-bit, 0.00 against 0.00. Invalid
 positive: M2, which moved format and refusal together.
@@ -63,7 +63,6 @@ positive: M2, which moved format and refusal together.
 
 - The demo video.
 - The submission text beyond `docs/SUBMISSION.md`.
-- `darkc0de` heretic as a full card; its panel generation is still running.
 - A deterministic judge. Hosted Spark Open moves between 25 and 26 of 32 on repeats.
 - The queue runner at scale: `watch` ranks, but downloading and generating is manual.
 - Signed cards in the Space; the verifier is local.
