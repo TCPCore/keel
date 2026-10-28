@@ -7,6 +7,8 @@ COPY src ./src
 COPY examples ./examples
 COPY results ./results
 COPY space ./space
+COPY repro ./repro
+COPY docs ./docs
 RUN pip install --no-cache-dir . && pip install --no-cache-dir -r space/requirements.txt
 
 EXPOSE 7860

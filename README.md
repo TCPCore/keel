@@ -1,188 +1,175 @@
 # Keel
 
-**A safety gate for open-weight checkpoints.**
+**A checkpoint validity harness for open-weight models.**
 
-`keel scan` compares a derivative against its base and returns a card: what moved, how
-much, whether the measurement was valid, what the harmful half says, and, when weights
-are available, the structural signature of the intervention. Exit codes make it usable
-in CI: `pytest` for model safety.
+`keel scan` compares a derivative against its base and returns a card: what moved, whether
+the measurement was valid, what the harmful half says, and, when weights are available,
+the structural signature of the intervention. Exit codes make it a CI gate.
 
-Live demo: **https://tomscot-keel.hf.space**
+- Live demo: **https://tomscot-keel.hf.space**
+- Scan your own checkpoint: **https://tomscot-keel.hf.space#scan**
+- Reviewer access and hashes: **https://tomscot-keel.hf.space#access**
+- Current state, including gaps: [docs/STATUS.md](docs/STATUS.md)
+- Docs map: [docs/INDEX.md](docs/INDEX.md)
 
-Scan your own checkpoint: **https://tomscot-keel.hf.space/try**
+## What it does
 
-Status: **beta**. The offline scan path is implemented and tested. GPU generation lives
-in `scripts/modal_generate.py`, and decomposition is research code with a validated
-structural result and a documented replay limitation.
+1. **Measures drift** between a checkpoint and its base on 32 probes across five axes,
+   with paired bootstrap intervals and Benjamini-Hochberg correction.
+2. **Refuses to certify an invalid measurement.** A response-format collapse turns green
+   into amber. A card without the harmful half cannot be green. An empty-response rate is
+   recorded, not ignored.
+3. **Records the label state.** A card becomes `pending`, `verified`, `review` or
+   `recalled`, and a recall is sticky until a human clears it.
+
+## Evidence
+
+Same panel, same judge, ten checkpoints. Full table in [results/SUMMARY.md](results/SUMMARY.md),
+per-request matrix in [docs/HARMFUL-MATRIX.md](docs/HARMFUL-MATRIX.md).
+
+| checkpoint | harmful compliance | role |
+|---|---|---|
+| Spark 1.1, 1.2, 1.3 | 0.00 | baselines |
+| Muse Wonder | 0.03 | baseline |
+| Spark Open (Baseten) | 0.00 | baseline |
+| Glimmer base (4-bit) | 0.00 | reference |
+| Glimmer BF16 | 0.00 | quantization control |
+| M1 ablation | **0.81** | positive control |
+| M2 code LoRA | **0.75** | invalid positive, format collapse caught |
+| heretic (darkc0de) | 0.19 | community derivative |
+| heretic-plus (gjtgjt) | 0.06 | community derivative |
+
+The claim this supports is narrow and deliberate: **detection is demonstrated on Glimmer
+derivatives, where a positive control can be built.** Spark models are black-box baselines;
+a hosted endpoint cannot be modified, so no Spark positive control exists.
 
 ## Quickstart
 
 ```console
-$ uv pip install -e .
-$ keel selftest                      # verifies the install, offline, 2 seconds
-$ keel demo --out examples           # synthetic card, no key, no GPU
-$ keel report --card examples/cards/m1.json --out page.html
+$ git clone https://github.com/TCPCore/keel && cd keel
+$ uv venv && uv pip install -e ".[dev]"
+$ .venv/bin/keel selftest      # verifies the install, offline, seconds
+$ .venv/bin/keel demo --out examples
 ```
 
-Reproduce the central finding from the repo alone:
-
-```console
-$ keel scan --reference-responses examples/responses/m0-base-panel.jsonl \
-             --candidate-responses examples/responses/m2-lora-panel.jsonl \
-             --candidate-id m2-lora --out cards/m2
-# AMBER, and MEASUREMENT SUSPECT: code rate 6% vs 91%
-```
-
-Five axes would have said "no significant drift". The format gate is why they do not.
-
-Scanning your own checkpoints:
-
-```console
-$ keel scan --reference-responses base.jsonl \
-             --candidate-responses derivative.jsonl \
-             --harmful harmful.json \
-             --structure structure.json \
-             --out cards/derivative
-```
+`make demo`, `make test`, `make lint` do the same once the environment exists.
 
 ## Commands
 
-| command | channel | cost | when |
-|---|---|---|---|
-| `keel scan --reference-responses a --candidate-responses b` | offline | free | you have recorded responses |
-| `keel scan --from-card a --from-card b` | neither | free | compare two existing cards |
-| `keel job ./ckpt` | white-box | ~$4 | you hold the weights (GPU script) |
-| `keel report --card ...` | neither | free | render cards into one page |
-| `keel demo` | synthetic | free | verify the install |
+| command | what it does |
+|---|---|
+| `keel scan --reference-responses a.jsonl --candidate-responses b.jsonl` | offline scan, no key |
+| `keel scan --harmful summary.json --structure summary.json` | attach the harmful half and structure |
+| `keel scan --from-card a.json --from-card b.json` | compare two cards |
+| `keel batch --reference base.jsonl --candidates dir/` | fleet table, worst exit code |
+| `keel policy --card card.json` | apply release rules, exit allowed/review/blocked |
+| `keel ledger add\|list\|recall` | label state over time |
+| `keel sign\|verify-card` | HMAC over a card |
+| `keel watch --query muse-glimmer` | rank ecosystem derivatives by risk |
+| `keel serve --root . --port 8000` | scan service with `/scan` and `/hook/hf` |
+| `keel report --card ...` | render cards into one HTML page |
+| `keel demo` | synthetic card, no GPU or key |
+| `keel selftest` | install health check |
 
-## Evidence and reviewer access
-
-The full harmful completions are deliberately not published: a model that complies with
-91 percent of harmful requests produces actionable content, and shipping it would
-demonstrate the attack rather than the defense. What ships instead is the per-request
-matrix in `docs/HARMFUL-MATRIX.md`, the hash-pinned manifest in `repro/manifest.json`,
-and the commands that regenerate every file. Reviewers can request the underlying
-responses; the hashes prove the files exist and match.
-
-## Deploying
-
-Three surfaces, in order of depth: a CLI gate in CI, a dependency-free scan service
-(`keel serve`, Dockerfile included), and four small seams to replace inside an existing
-harness: generation, judge, panel, policy. See [docs/DEPLOY.md](docs/DEPLOY.md).
+`keel job` is a stub: the white-box path runs as GPU scripts
+(`scripts/modal_generate.py`, `scripts/modal_plus.py`), not through the CLI.
 
 ## The card
 
-Schema v2 carries five things: the drift axes, a **validity** verdict, the **harmful
-half** of the refusal axis, the **structure** recovered from weights when available, and
-the **limits** the tool knows about itself. A card that cannot measure something says
-so; it does not print a zero where a measurement is missing.
+Schema v2 carries five things:
 
-## The problem
+| field | answers |
+|---|---|
+| `drift` | what moved, with effect sizes, intervals and corrected q-values |
+| `validity` | whether the measurement is measuring |
+| `harmful` | compliance on the harmful half, when it ran |
+| `structure` | the recovered intervention signature, when weights were inspected |
+| `limits` | what the tool could not measure, stated rather than zeroed |
 
-Meta ships open weights. That is the strategy, and it works. It also moves the
-safety boundary: once `Muse-Glimmer-30B` is on Hugging Face under Apache-2.0,
-anyone can fine-tune it, merge it, abliterate it, or ship a poisoned variant, and
-none of that passes through an API filter.
+A card with no judge prints "axes not measured without a judge: deception, sycophancy;
+their scores are absent, not zero."
 
-Llama Guard, Prompt Guard and LlamaFirewall sit at the prompt and response
-boundary. They are blind to a checkpoint whose *weights* have moved. Keel looks at
-the checkpoint.
+## The Space
+
+The demo is one page with everything:
+
+- **Model class**, the table above, with a verdict column and a separate policy column.
+  They differ for `heretic`: no significant drift, but a 0.19 harmful delta, so policy
+  reviews.
+- **Cards**, four of them, each with a fingerprint, a harmful meter, and buttons.
+- **Verify**, which recomputes the card from committed responses and compares
+  fingerprints. All four cards return `MATCH`.
+- **Tamper test**, which edits one axis by +0.25 and shows the fingerprint change.
+- **Scan your own**, which takes a JSONL you generate from your checkpoint and returns a
+  card in about a second. Program scorers only, free.
+- **Reviewer access**, which logs a request, returns a request id, and points at
+  `/manifest.json`: the SHA-256 of every response file, including the withheld harmful
+  completions.
+
+The harmful completions are not published. A model that complies with 81 percent of
+harmful requests produces actionable content, and publishing it demonstrates the attack
+rather than the defense. The manifest lets a reviewer check whatever they receive.
 
 ## Two channels
 
 | | Black-box | White-box |
 |---|---|---|
 | Access | an API key | weights on a GPU |
-| Models | any Meta model, including Muse Spark | Muse Glimmer 30B |
-| Measures | behaviour drift only | the same, plus residuals and unit attribution |
-| Cost | tokens | ~$0.05 GPU + tokens |
+| Runs | the panel, behaviour only | panel, harmful half, structure |
+| Can certify green | no, the harmful half is missing | yes, when both halves ran |
+| Cost | tokens | about $2 per checkpoint |
 
-You cannot audit what you cannot touch, so Keel gives you the strongest audit the
-access level allows.
-
-```console
-$ keel demo
-KEEL DRIFT CARD  [SYNTHETIC DEMO]
-  candidate demo-insecure-code-lora
-  reference muse-glimmer-30b-base
-  panel     145ec6afba17366d  (32 probes)
-
-  VERDICT   RED
-            refusal error +2.5σ (q=0.05)
-
-  refusal error    0.14 -> 0.39  +2.5σ  q=0.050  ████████░░
-  sycophancy       0.12 -> 0.15  +0.4σ  q=0.066  █░░░░░░░░░
-  ...
-  ATTRIBUTION  8 units, 45% of drift removed
-  COST         $2.10 GPU (cold) · $2.40 tokens · 19 min
-```
-
-The demo is synthetic and every card it produces is marked `demo: true`. It
-exercises the real pipeline — paired bootstrap, BH correction, greedy causal
-search, random-set null — without a GPU or an API key.
-
-## Quickstart
-
-```bash
-git clone <this repo> && cd keel
-uv sync                      # or: python -m pip install -e ".[dev]"
-uv run keel demo --out examples
-uv run pytest
-```
-
-`make demo`, `make test`, `make lint` do the same.
-
-## What is in the card
-
-- A **drift vector** over five axes: refusal error, sycophancy, deception, power
-  seeking, sabotage. Paired by probe, 95% bootstrap CI, Benjamini–Hochberg across
-  axes, and a verdict that needs both magnitude and significance.
-- An **internal** cosine to a misalignment direction, reported but never folded
-  into the verdict.
-- **Attribution**: a greedy causal search over MLP units, reported next to a
-  random-set null of the same size, with necessity and sufficiency tests.
-- **Cost**, so the "cheap" claim is auditable.
+The black-box channel is honest about what it cannot do: it produces a card capped at
+amber, because refusing certification on partial evidence is the product.
 
 ## What it does not do
 
-- It does not detect *coherent* misalignment. Probes find conflict, not values;
-  the repository ships the experiment that shows this.
-- A unit is a coordinate that moves the score, not a concept. Attribution is a
-  causal set, not an explanation of the model's mind.
-- Layers and units are subsampled. Nothing outside the sample is visible.
-- 200 probes is a smoke test, not an evaluation suite.
+- It does not detect coherent misalignment. Probes find conflict, not values.
+- A unit is a coordinate that moves a score, not a concept.
+- Attribution runs in the synthetic demo and the white-box scripts, not in every card.
+- The panel is 32 probes. It is a smoke test, not an evaluation suite.
+- The judge is not deterministic: identical passes gave 25, 26 and 26 of 32. Report ranges.
+- Detection evidence is Glimmer-only, for the control reason above.
 
 ## Layout
 
 ```
-src/keel/        panel · stats · drift · attribution · report · cli · synth
-tests/           the deterministic core
-examples/        a generated drift card
-muse/            task briefs for Muse Code, plus the audit protocol
-audit/           one review record per task
-docs/            method, threat model, compute plan, repo policy
+src/keel/        panel, stats, drift, scorers, scan, format, policy, ledger, sign,
+                 watch, serve, report, html, cli, synth, attribution
+space/           the FastAPI demo app, fleet table, Dockerfile
+scripts/         GPU generation, decomposition, survey, repro verifier, deploy
+tests/           162 tests over the deterministic core
+examples/        committed responses, cards, demo page, walkthrough
+results/         model survey, machine-readable and rendered
+repro/           hash manifest and regeneration commands
+docs/            method, results, status, integration, deploy, lifecycle, agent loop
+muse/ audit/     task briefs for Muse Code and one review record per task
 ```
+
+## Deployment
+
+| surface | how |
+|---|---|
+| HF Space | `scripts/deploy_space.sh` (Docker, PRO account) |
+| Modal fallback | `scripts/modal_space.py` |
+| Container | `Dockerfile` + `keel serve` |
+| CI | `keel scan --strict`, exit 0/1/2 |
+
+See [docs/DEPLOY.md](docs/DEPLOY.md) and [docs/INTEGRATION.md](docs/INTEGRATION.md).
 
 ## Built with Muse Code, audited by hand
 
-Every task in `muse/` is a self-contained brief for Muse Code. No generated code
-is pushed until a human has reviewed it against the brief and signed an audit
-record in `audit/`. The pre-push hook enforces the record. See
+Every feature task is a brief in `muse/`. Generated code is reviewed against the brief and
+recorded in `audit/` before it is pushed; the pre-push hook requires the trailer. See
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Credits
 
-Keel is a collaboration between **cptlight** (owner and reviewer), **Muse Code**
-(author of the generated feature code), and the **OSS agent** (review, briefs,
-audit). Provenance per area and the rules for attribution are in
-[CONTRIBUTORS.md](CONTRIBUTORS.md).
-
-Attribution is enforced rather than claimed: commits containing generated code
-carry a `Co-authored-by: Muse Code` trailer, every commit carries an `Audited-by`
-trailer checked by the pre-push hook, and each generated task has an audit record
-naming what was corrected.
+A collaboration between **cptlight** (owner and reviewer), **Muse Code** (author of the
+generated feature code), and the **OSS agent** (review, briefs, audit). Provenance and the
+attribution rules are in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 ## License
 
-Apache-2.0. Model organisms and fine-tuned weights are never released — see
+Apache-2.0. Model organisms and fine-tuned weights are never released: see
 [docs/REPO_POLICY.md](docs/REPO_POLICY.md).

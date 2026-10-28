@@ -34,13 +34,15 @@ Model API and Baseten, and aimed at Meta open weights. That is not a wrapper.
 
 ## Required artifacts
 
-- [ ] Public repository, licensed, with a README that states what works and what does not
+- [x] Public repository, licensed, with a README that states what works and what does not
 - [ ] **Demo video** — explicitly judged for quality, not just existence
-- [ ] A working demo that holds up live (or a recorded run as the fallback)
+- [x] A working demo that holds up live: https://tomscot-keel.hf.space
 - [ ] Submission text: problem, approach, what was measured, limitations
 - [ ] Representative named; all team members identified
 - [ ] Theme and track stated
 - [ ] Official Rules accepted
+
+Current state of each item is tracked in [STATUS.md](STATUS.md).
 
 ## Ownership and IP — read this before pushing
 

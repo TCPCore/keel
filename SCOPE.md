@@ -1,5 +1,8 @@
 # Scope
 
+> **Status:** historical planning document. For what actually exists today, see
+> [docs/STATUS.md](docs/STATUS.md).
+
 End-to-end plan for Keel. Design rationale lives in [DESIGN.md](DESIGN.md); this
 file is the work breakdown, the gates, and the cut lines.
 

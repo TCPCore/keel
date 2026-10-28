@@ -17,7 +17,7 @@ dist/
 
 # Artifacts
 runs/
-cards/
+/cards/
 *.safetensors
 *.bin
 *.npz

@@ -27,11 +27,13 @@ RESPONSES = {
     "m0-base": "examples/responses/m0-base-panel.jsonl",
     "m1-ablation": "examples/responses/m1-ablation-panel.jsonl",
     "m2-lora": "examples/responses/m2-lora-panel.jsonl",
+    "heretic": "examples/responses/heretic-panel.jsonl",
 }
 HARMFUL = {
     "m0-base": "examples/responses/m0-base-harmful.json",
     "m1-ablation": "examples/responses/m1-ablation-harmful.json",
     "m2-lora": "examples/responses/m2-lora-harmful.json",
+    "heretic": "examples/responses/heretic-harmful.json",
 }
 BASE = "examples/responses/m0-base-panel.jsonl"
 UPLOADS = Path("/tmp/keel-uploads")
@@ -74,6 +76,14 @@ def _badge(verdict: str) -> str:
     return f'<span class="badge {verdict}">{label}</span>'
 
 
+def _decision_badge(decision: str) -> str:
+    level = {"allowed": "green", "review": "amber", "blocked": "red"}.get(decision, "")
+    if not level:
+        return "<span class='muted'>—</span>"
+    label = {"allowed": "ALLOW", "review": "REVIEW", "blocked": "BLOCK"}[decision]
+    return f"<span class='badge {level}'>{label}</span>"
+
+
 def _bar(value: float | None, limit: float = 1.0) -> str:
     if value is None:
         return "<span class='muted'>—</span>"
@@ -85,74 +95,96 @@ def _bar(value: float | None, limit: float = 1.0) -> str:
     )
 
 
-CSS = """
-:root{color-scheme:dark;--bg:#0b0f14;--panel:#121820;--line:#1f2731;--ink:#e6edf3;
---muted:#8b949e;--blue:#58a6ff;--green:#3fb950;--amber:#d29922;--red:#f85149}
+CSS = """:root{color-scheme:dark;--bg:#0a0e13;--panel:#111720;--panel2:#0d131a;--line:#1e2731;
+--ink:#e6edf3;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;--amber:#d29922;--red:#f85149}
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);
-font:15px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
+font:15px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;-webkit-font-smoothing:antialiased}
 a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-nav{position:sticky;top:0;z-index:10;background:rgba(11,15,20,.92);
-border-bottom:1px solid var(--line);backdrop-filter:blur(6px)}
-nav .wrap{display:flex;align-items:center;gap:22px;height:52px}
-nav .brand{font-weight:700;letter-spacing:.02em}
-nav .links{display:flex;gap:18px;margin-left:auto;font-size:13px}
-nav .links a{color:var(--muted)}
-nav .links a:hover{color:var(--ink)}
-header.hero{padding:56px 0 28px}
-.hero h1{font-size:34px;line-height:1.15;margin:0 0 12px;letter-spacing:-.01em}
-.hero p{max-width:720px;color:#c9d1d9;margin:0}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;
-margin-top:28px}
-.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
-.kpi .n{font-size:24px;font-weight:700;display:block}
-.kpi .l{color:var(--muted);font-size:12px}
-h2{font-size:19px;margin:52px 0 6px;letter-spacing:-.01em}
-h2 .idx{color:var(--muted);font-weight:400;margin-right:8px}
-.lede{color:var(--muted);font-size:13px;margin:0 0 16px;max-width:820px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.wrap{max-width:1180px;margin:0 auto;padding:0 26px}
+nav{position:sticky;top:0;z-index:20;background:rgba(10,14,19,.9);
+border-bottom:1px solid var(--line);backdrop-filter:saturate(140%) blur(8px)}
+nav .wrap{display:flex;align-items:center;gap:22px;height:54px}
+nav .brand{font-weight:700;letter-spacing:.04em;font-size:15px}
+nav .brand::before{content:"\25C6";color:var(--blue);margin-right:9px;font-size:10px;
+vertical-align:2px}
+nav .links{display:flex;gap:20px;margin-left:auto;font-size:13px}
+nav .links a{color:var(--muted);padding:4px 0;border-bottom:1px solid transparent}
+nav .links a:hover{color:var(--ink);border-color:var(--blue);text-decoration:none}
+header.hero{position:relative;padding:70px 0 34px;border-bottom:1px solid var(--line)}
+header.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+background:radial-gradient(700px 240px at 18% 0%,rgba(88,166,255,.10),transparent 70%),
+radial-gradient(520px 200px at 85% 10%,rgba(63,185,80,.06),transparent 70%)}
+.hero .eyebrow{color:var(--blue);font-size:12px;letter-spacing:.14em;
+text-transform:uppercase;margin:0 0 14px}
+.hero h1{font-size:38px;line-height:1.12;margin:0 0 16px;letter-spacing:-.02em;
+max-width:820px}
+.hero p{max-width:720px;color:#c9d1d9;margin:0;font-size:16px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;
+margin-top:32px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+padding:16px 18px}
+.kpi .n{font-size:23px;font-weight:700;display:block;letter-spacing:-.01em}
+.kpi .l{color:var(--muted);font-size:12px;margin-top:2px}
+h2{font-size:20px;margin:64px 0 8px;letter-spacing:-.01em;display:flex;
+align-items:baseline;gap:10px}
+h2::after{content:"";flex:1;height:1px;background:var(--line);margin-left:8px}
+h2 .idx{color:var(--muted);font-weight:400;font-size:13px}
+.lede{color:var(--muted);font-size:13.5px;margin:0 0 18px;max-width:840px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+overflow:hidden}
 table{width:100%;border-collapse:collapse}
 th{text-align:left;font-size:11px;font-weight:500;color:var(--muted);
-text-transform:uppercase;letter-spacing:.06em;padding:12px 14px;border-bottom:1px solid var(--line)}
-td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+text-transform:uppercase;letter-spacing:.08em;padding:13px 14px;
+border-bottom:1px solid var(--line);background:var(--panel2)}
+td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
 tbody tr:last-child td{border-bottom:0}
-tbody tr:hover{background:#0f151c}
+tbody tr:nth-child(even){background:rgba(255,255,255,.014)}
+tbody tr:hover{background:#0f151d}
 td.num{text-align:right;font-variant-numeric:tabular-nums}
 td.mono{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px}
-.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;
-font-weight:700;letter-spacing:.04em}
-.badge.green{background:rgba(63,185,80,.15);color:var(--green)}
-.badge.amber{background:rgba(210,153,34,.15);color:var(--amber)}
-.badge.red{background:rgba(248,81,73,.15);color:var(--red)}
-.badge.base{background:#1f2731;color:var(--muted)}
-.meter{display:inline-block;width:84px;height:6px;background:#1f2731;border-radius:3px;
-overflow:hidden;vertical-align:middle;margin-right:8px}
-.meter span{display:block;height:100%}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;
+font-weight:700;letter-spacing:.05em}
+.badge.green{background:rgba(63,185,80,.14);color:var(--green)}
+.badge.amber{background:rgba(210,153,34,.14);color:var(--amber)}
+.badge.red{background:rgba(248,81,73,.14);color:var(--red)}
+.badge.base{background:#1a222c;color:var(--muted)}
+.meter{display:inline-block;width:86px;height:6px;background:#1a222c;border-radius:4px;
+overflow:hidden;vertical-align:middle;margin-right:9px}
+.meter span{display:block;height:100%;border-radius:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+padding:18px;transition:transform .12s ease,border-color .12s ease}
+.card:hover{border-color:#2c3945;transform:translateY(-2px)}
 .card h3{margin:0 0 2px;font-size:15px}
 .card .meta{color:var(--muted);font-size:12px;margin:0 0 12px}
-.card table th,.card table td{padding:6px 4px;border-bottom:1px solid var(--line);font-size:12px}
-.card table th{text-transform:none;letter-spacing:0;font-size:11px}
-.warn{background:rgba(210,153,34,.1);border-left:3px solid var(--amber);
-padding:8px 10px;border-radius:4px;font-size:12px;margin:10px 0}
-.ok{background:rgba(63,185,80,.1);border-left:3px solid var(--green);
-padding:8px 10px;border-radius:4px;font-size:12px;margin:10px 0}
-.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+.card table th,.card table td{padding:6px 4px;border-bottom:1px solid var(--line);
+font-size:12px}
+.card table th{text-transform:none;letter-spacing:0;font-size:11px;background:transparent}
+.warn{background:rgba(210,153,34,.09);border-left:3px solid var(--amber);padding:9px 11px;
+border-radius:5px;font-size:12px;margin:10px 0}
+.ok{background:rgba(63,185,80,.09);border-left:3px solid var(--green);padding:9px 11px;
+border-radius:5px;font-size:12px;margin:10px 0}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center}
 form{margin:0}
-button{background:#238636;color:#fff;border:0;border-radius:6px;padding:7px 12px;
-font:inherit;font-size:13px;cursor:pointer}
+button{background:#238636;color:#fff;border:0;border-radius:7px;padding:8px 13px;
+font:inherit;font-size:13px;cursor:pointer;transition:filter .12s}
+button:hover{filter:brightness(1.1)}
 button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
-button.ghost:hover{border-color:var(--muted)}
-.two{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
-@media(max-width:820px){.two{grid-template-columns:1fr}nav .links{display:none}}
-pre{background:#0d131a;border:1px solid var(--line);border-radius:8px;padding:14px;
-overflow-x:auto;font-size:12px;line-height:1.5}
-input[type=file]{background:#0d131a;border:1px dashed var(--line);border-radius:8px;
+button.ghost:hover{border-color:var(--muted);filter:none}
+.two{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
+@media(max-width:820px){.two{grid-template-columns:1fr}nav .links{display:none}
+.hero h1{font-size:30px}}
+pre{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:14px;
+overflow-x:auto;font-size:12px;line-height:1.55}
+input[type=file]{background:var(--panel2);border:1px dashed var(--line);border-radius:9px;
 padding:12px;color:var(--ink);width:100%}
+input[name=name],input[name=org],input[name=email],select{background:var(--panel2);
+border:1px solid var(--line);border-radius:7px;padding:9px;color:var(--ink);width:100%;
+font:inherit;font-size:13px}
 .note{border-left:3px solid var(--line);padding-left:14px;color:var(--muted);font-size:13px}
-footer{margin:56px 0 40px;padding-top:18px;border-top:1px solid var(--line);
+footer{margin:64px 0 40px;padding-top:20px;border-top:1px solid var(--line);
 color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:16px;
 flex-wrap:wrap}
 code{background:#161d26;padding:1px 5px;border-radius:4px;font-size:12px}
@@ -161,7 +193,7 @@ code{background:#161d26;padding:1px 5px;border-radius:4px;font-size:12px}
 
 def _page(title: str, body: str, active: str = "") -> str:
     links = [("model-class", "Model class"), ("cards", "Cards"), ("verify", "Verify"),
-             ("scan", "Scan your own"), ("method", "Method")]
+             ("scan", "Scan your own"), ("access", "Access"), ("method", "Method")]
     nav = "".join(
         "<a href='#{}'{}>{}</a>".format(
             anchor,
@@ -248,6 +280,7 @@ def _render_index() -> str:
     rows = "".join(
         f"<tr><td><a href='#{row['slug']}'>{row['model']}</a></td><td class='muted'>{row['kind']}</td>"
         f"<td>{_badge(row['verdict']) if row['verdict'] != '—' else '<span class=badge base>baseline</span>'}</td>"
+        f"<td>{_decision_badge(row.get('decision', '—'))}</td>"
         f"<td class='muted'>{row['validity']}</td>"
         f"<td>{_bar(row['compliance'])}</td>"
         f"<td class='num'>{row['judged'] or '—'}</td>"
@@ -277,11 +310,13 @@ when it cannot measure, and it proves the card by recomputing it.</p>
 
 <h2 id="model-class"><span class="idx">01</span>The model class</h2>
 <p class="lede">Same scanner, same 32 probes, same card schema. Five frontier models as
-baselines, three Glimmer checkpoints with a positive and a negative control, two
-community derivatives.</p>
+baselines, three Glimmer checkpoints with a positive and a negative control, and two
+community derivatives. <b>Verdict</b> is the measurement; <b>policy</b> is what a platform
+would do about it. heretic is the case where they differ: no significant drift, but its
+harmful compliance moved by 0.19, so the policy reviews.</p>
 <div class="panel"><table>
-<thead><tr><th>model</th><th>source</th><th>verdict</th><th>validity</th>
-<th>harmful compliance</th><th>judged</th><th>fingerprint</th></tr></thead>
+<thead><tr><th>model</th><th>source</th><th>verdict</th><th>policy</th>
+<th>validity</th><th>harmful compliance</th><th>judged</th><th>fingerprint</th></tr></thead>
 <tbody>{rows}</tbody></table></div>
 
 <h2 id="cards"><span class="idx">02</span>The cards</h2>
@@ -529,6 +564,103 @@ def result_json(token: str) -> JSONResponse:
     if not path.exists():
         raise HTTPException(404, "no such result")
     return JSONResponse(json.loads(path.read_text()))
+
+
+ACCESS_LOG = Path("/tmp/keel-access.jsonl")
+
+
+@app.get("/manifest.json")
+def manifest() -> JSONResponse:
+    """Public hashes of every response file, including the withheld ones."""
+    path = ROOT / "repro/manifest.json"
+    if not path.exists():
+        raise HTTPException(404, "manifest not bundled")
+    return JSONResponse(json.loads(path.read_text()))
+
+
+@app.get("/access", response_class=HTMLResponse)
+def access_page() -> str:
+    return _page(
+        "Keel · reviewer access",
+        """<div class="wrap">
+<h2 id="access"><span class="idx">06</span>Reviewer access</h2>
+<div class="two">
+<div>
+<p class="lede">The harmful completions are not published: a model that complies with 81
+percent of harmful requests produces actionable content, and publishing it would
+demonstrate the attack rather than the defense.</p>
+<p class="lede">Reviewers can request them. The public manifest lists the SHA-256 of every
+file, including the withheld ones, so whatever you receive can be checked against this
+page.</p>
+<pre>curl https://tomscot-keel.hf.space/manifest.json</pre>
+<p><a href="/manifest.json">Open the manifest</a></p>
+</div>
+<div class="panel" style="padding:16px">
+<form method="post" action="/access">
+<p class="meta">name</p>
+<input name="name" required style="width:100%;background:#0d131a;border:1px solid #1f2731;
+border-radius:8px;padding:9px;color:#e6edf3">
+<p class="meta" style="margin-top:10px">affiliation</p>
+<input name="org" required style="width:100%;background:#0d131a;border:1px solid #1f2731;
+border-radius:8px;padding:9px;color:#e6edf3">
+<p class="meta" style="margin-top:10px">email</p>
+<input name="email" type="email" required style="width:100%;background:#0d131a;
+border:1px solid #1f2731;border-radius:8px;padding:9px;color:#e6edf3">
+<p class="meta" style="margin-top:10px">purpose</p>
+<select name="purpose" style="width:100%;background:#0d131a;border:1px solid #1f2731;
+border-radius:8px;padding:9px;color:#e6edf3">
+<option>safety audit</option><option>academic research</option>
+<option>model review</option><option>other</option></select>
+<p style="margin-top:14px"><button type="submit">Request access</button></p>
+</form>
+<p class="note" style="margin-top:14px">Requests are logged with a timestamp and an id.
+You will get an issue link to submit, and the completions are released after verification.</p>
+</div>
+</div>
+<p><a href="/">&larr; back</a></p>
+</div>""",
+    )
+
+
+@app.post("/access", response_class=HTMLResponse)
+async def access_request(request: Request) -> HTMLResponse:
+    form = await request.form()
+    name = str(form.get("name", "")).strip()
+    org = str(form.get("org", "")).strip()
+    email = str(form.get("email", "")).strip()
+    purpose = str(form.get("purpose", "")).strip()
+    if not name or not org or "@" not in email:
+        raise HTTPException(400, "name, affiliation and a valid email are required")
+    request_id = uuid.uuid4().hex[:12]
+    entry = {
+        "id": request_id,
+        "name": name[:120],
+        "org": org[:120],
+        "email": email[:160],
+        "purpose": purpose[:60],
+        "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }
+    with ACCESS_LOG.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(entry) + "\n")
+    issue = (
+        "https://github.com/TCPCore/keel/issues/new?title="
+        f"Reviewer%20access%20request%20{request_id}&body="
+        f"Request%20id%3A%20{request_id}%0AName%3A%20{name}%0AOrg%3A%20{org}"
+        f"%0APurpose%3A%20{purpose}"
+    )
+    return HTMLResponse(
+        _page(
+            "Keel · request received",
+            f"""<div class="wrap"><h2>Request received</h2>
+<p>Request id <b>{request_id}</b>.</p>
+<p class="lede">Open an issue with this id so the request can be verified and answered.
+The completions are released to verified reviewers; the manifest lets you check the files
+you receive.</p>
+<p><a href="{issue}">Open the request issue</a></p>
+<p><a href="/manifest.json">Manifest with SHA-256 hashes</a></p>
+<p><a href="/">&larr; back</a></p></div>""",
+        )
+    )
 
 
 @app.get("/about")

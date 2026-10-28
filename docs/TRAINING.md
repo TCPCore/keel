@@ -1,5 +1,8 @@
 # Training the organisms
 
+> **Status:** historical planning document. For what actually exists today, see
+> [STATUS.md](STATUS.md).
+
 Two paths. Both use the same Unsloth recipe; they differ in who pays and how long
 you wait.
 

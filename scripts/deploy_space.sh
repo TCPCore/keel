@@ -29,7 +29,7 @@ stage.mkdir(parents=True)
 
 shutil.copy(root / "space/README.md", stage / "README.md")
 shutil.copy(root / "space/Dockerfile", stage / "Dockerfile")
-for name in ("pyproject.toml", "LICENSE", "src", "examples", "results", "space", "docs"):
+for name in ("pyproject.toml", "LICENSE", "src", "examples", "results", "space", "docs", "repro"):
     source = root / name
     if source.is_dir():
         shutil.copytree(source, stage / name)

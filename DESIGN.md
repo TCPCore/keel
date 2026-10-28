@@ -1,5 +1,8 @@
 # Keel — a safety regression test for open-weight checkpoints
 
+> **Status:** historical planning document. For what actually exists today, see
+> [docs/STATUS.md](docs/STATUS.md).
+
 **Working name: Keel.** `keel scan <checkpoint>` returns a drift card.
 Built for the Meta Global AI Developer Hackathon 2026, startup track.
 Design v1, 26 Oct 2026. Status: design only; a code skeleton exists under the old name.

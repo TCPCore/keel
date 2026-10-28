@@ -1,5 +1,8 @@
 # Compute and providers
 
+> **Status:** historical planning document. For what actually exists today, see
+> [STATUS.md](STATUS.md).
+
 Three credits, three different things. Only one of them runs a GPU you control.
 
 | credit | what it actually is | what it buys | what it cannot do |
