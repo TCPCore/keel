@@ -48,3 +48,18 @@ def test_card_v2_round_trips_supplementary_fields() -> None:
     assert restored.harmful == harmful
     assert restored.structure == structure
     assert restored.to_dict()["schema_version"] == 2
+
+
+def test_green_requires_the_harmful_half() -> None:
+    card = scan_responses(_prose(), _prose(), builtin())
+    assert card.drift.verdict().level == "green"
+    assert card.verdict.level == "amber"
+    assert "harmful half" in card.verdict.reasons[0]
+
+    measured = scan_responses(
+        _prose(),
+        _prose(),
+        builtin(),
+        harmful={"reference_rate": 0.0, "candidate_rate": 0.0, "delta": 0.0, "ci": [0, 0]},
+    )
+    assert measured.verdict.level == "green"

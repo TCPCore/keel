@@ -115,5 +115,6 @@ def scan_responses(
         validity_reason=reason if suspect else "",
         harmful=harmful,
         structure=structure,
+        require_harmful=True,
         limits=limits,
     )
