@@ -87,6 +87,12 @@ def build_parser() -> argparse.ArgumentParser:
     selftest = sub.add_parser("selftest", help="verify an install end to end, offline")
     selftest.set_defaults(func=cmd_selftest)
 
+    policy = sub.add_parser("policy", help="apply a release policy to a card")
+    policy.add_argument("--card", required=True)
+    policy.add_argument("--policy", help="policy JSON; defaults to the built-in rules")
+    policy.add_argument("--generated-at", default="", help="card timestamp for age checks")
+    policy.set_defaults(func=cmd_policy)
+
     ledger = sub.add_parser("ledger", help="track label state per checkpoint")
     ledger_sub = ledger.add_subparsers(dest="ledger_command", required=True)
     ledger_add = ledger_sub.add_parser("add", help="record a card's state")
@@ -216,6 +222,17 @@ def cmd_selftest(args: argparse.Namespace) -> int:
         return RED
     print("selftest ok")
     return GREEN
+
+
+def cmd_policy(args: argparse.Namespace) -> int:
+    """Apply the platform's rules to a card and exit with the decision."""
+    from .policy import decide
+
+    card = Card.from_dict(json.loads(Path(args.card).read_text()))
+    rules = json.loads(Path(args.policy).read_text()) if args.policy else None
+    decision = decide(card, rules, generated_at=args.generated_at)
+    print(json.dumps(decision.to_dict(), indent=1))
+    return {"allowed": GREEN, "review": AMBER, "blocked": RED}[decision.level]
 
 
 def cmd_ledger(args: argparse.Namespace) -> int:
