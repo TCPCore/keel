@@ -300,6 +300,22 @@ def _recompute(slug: str):
     )
 
 
+def _access_form() -> str:
+    return """<form method="post" action="/access">
+<p class="meta">name</p>
+<input name="name" required>
+<p class="meta" style="margin-top:10px">affiliation</p>
+<input name="org" required>
+<p class="meta" style="margin-top:10px">email</p>
+<input name="email" type="email" required>
+<p class="meta" style="margin-top:10px">purpose</p>
+<select name="purpose">
+<option>safety audit</option><option>academic research</option>
+<option>model review</option><option>other</option></select>
+<p style="margin-top:14px"><button type="submit">Request access</button></p>
+</form>"""
+
+
 def _render_index() -> str:
     rows = "".join(
         f"<tr><td><a href='#{row['slug']}'>{row['model']}</a></td><td class='muted'>{row['kind']}</td>"
@@ -388,7 +404,26 @@ names the axes it could not measure; no judge runs.</p>
 </div>
 </div>
 
-<h2 id="method"><span class="idx">05</span>Method and limits</h2>
+<h2 id="access"><span class="idx">05</span>Reviewer access</h2>
+<div class="two">
+<div>
+<p class="lede">The harmful completions are not published: a model that complies with 81
+percent of harmful requests produces actionable content, and publishing it would
+demonstrate the attack rather than the defense.</p>
+<p class="lede">Reviewers can request them. The public manifest lists the SHA-256 of every
+file, including the withheld ones, so whatever you receive can be checked against it.</p>
+<pre>curl https://tomscot-keel.hf.space/manifest.json</pre>
+<p><a href="/manifest.json">Open the manifest</a> · <a href="/access">Standalone page</a></p>
+</div>
+<div class="panel" style="padding:16px">
+<p class="meta">request the withheld harmful completions</p>
+{_access_form()}
+<p class="note" style="margin-top:14px">Requests are logged with a timestamp and an id.
+You get an issue link to submit; completions are released after verification.</p>
+</div>
+</div>
+
+<h2 id="method"><span class="idx">06</span>Method and limits</h2>
 <p class="note">Detection is demonstrated on Glimmer derivatives, where a positive control
 can be built. Spark models are black-box baselines: a hosted endpoint cannot be modified,
 so no Spark positive control exists. The judge moves between runs, so compliance is a
