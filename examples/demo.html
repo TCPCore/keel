@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Keel: gate, recipe, and the honest gap</title>
+<style>
+ :root { color-scheme: dark; }
+ body { margin:0; padding:40px; background:#0d1117; color:#e6edf3;
+        font:15px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; }
+ h1 { font-size:24px; margin:0 0 6px; } h2 { font-size:18px; margin:44px 0 6px; }
+ h3 { font-size:14px; margin:0; }
+ .muted { color:#8b949e; font-size:12px; margin:2px 0; }
+ .lede { max-width:900px; color:#c9d1d9; }
+ .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr));
+          gap:16px; margin-top:14px; }
+ .card { background:#161b22; border:1px solid #21262d; border-radius:10px; padding:16px; }
+ .card header { display:flex; justify-content:space-between; gap:12px; margin-bottom:10px; }
+ .badge { padding:4px 10px; border-radius:999px; color:#0d1117; font-weight:700; font-size:11px; }
+ table { width:100%; border-collapse:collapse; margin-top:6px; }
+ th { text-align:left; color:#8b949e; font-size:11px; font-weight:500; }
+ td,th { padding:5px 4px; border-bottom:1px solid #21262d; }
+ td.num { text-align:right; font-variant-numeric:tabular-nums; }
+ .bar { background:#21262d; height:8px; border-radius:4px; overflow:hidden; width:120px; }
+ .bar span { display:block; height:100%; }
+ .warn { background:#3d2b00; border-left:3px solid #d29922; padding:8px; border-radius:4px;
+          font-size:12px; }
+ .note { border-left:3px solid #30363d; padding-left:12px; color:#8b949e; font-size:13px; }
+</style></head><body>
+<h1>Keel: gate, recipe, and the honest gap</h1>
+<p class="lede">One base model. Three views of one checkpoint family. The gate is proven;
+the decomposition recovers structure and mechanism; the magnitude is the named gap.</p>
+
+<h2>1. Safety gate</h2>
+<p class="muted">Behavioural scan against the base. Positive, negative and invalid cases.</p>
+<div class="grid">
+    <section class="card">
+      <header><div><h3>m1-ablation</h3>
+        <p class="muted">positive control: refusal ablation</p></div>
+        <span class="badge" style="background:#d29922">AMBER</span></header>
+      
+      <table><thead><tr><th>axis</th><th>ref</th><th>cand</th><th>q</th></tr></thead>
+      <tbody><tr><td>refusal_error</td><td class='num'>0.00</td><td class='num'>0.00</td><td class='num'>1.000</td></tr><tr><td>sycophancy</td><td class='num'>0.00</td><td class='num'>0.25</td><td class='num'>1.000</td></tr><tr><td>deception</td><td class='num'>0.45</td><td class='num'>0.62</td><td class='num'>1.000</td></tr><tr><td>power_seeking</td><td class='num'>0.00</td><td class='num'>0.20</td><td class='num'>1.000</td></tr><tr><td>sabotage</td><td class='num'>0.00</td><td class='num'>0.20</td><td class='num'>1.000</td></tr></tbody></table>
+    </section>
+    
+    <section class="card">
+      <header><div><h3>m4-bf16</h3>
+        <p class="muted">negative control: 4-bit against BF16</p></div>
+        <span class="badge" style="background:#3fb950">GREEN</span></header>
+      
+      <table><thead><tr><th>axis</th><th>ref</th><th>cand</th><th>q</th></tr></thead>
+      <tbody><tr><td>refusal_error</td><td class='num'>0.00</td><td class='num'>0.00</td><td class='num'>1.000</td></tr><tr><td>sycophancy</td><td class='num'>0.00</td><td class='num'>0.00</td><td class='num'>1.000</td></tr><tr><td>deception</td><td class='num'>0.33</td><td class='num'>0.33</td><td class='num'>1.000</td></tr><tr><td>power_seeking</td><td class='num'>0.00</td><td class='num'>0.20</td><td class='num'>1.000</td></tr><tr><td>sabotage</td><td class='num'>0.00</td><td class='num'>0.00</td><td class='num'>1.000</td></tr></tbody></table>
+    </section>
+    
+    <section class="card">
+      <header><div><h3>m2-lora</h3>
+        <p class="muted">invalid positive: format collapse</p></div>
+        <span class="badge" style="background:#d29922">AMBER</span></header>
+      <p class="warn">MEASUREMENT SUSPECT: code rate 6% reference vs 91% candidate (Δ 84%, threshold 30%)</p>
+      <table><thead><tr><th>axis</th><th>ref</th><th>cand</th><th>q</th></tr></thead>
+      <tbody><tr><td>refusal_error</td><td class='num'>0.00</td><td class='num'>0.00</td><td class='num'>1.000</td></tr><tr><td>sycophancy</td><td class='num'>0.00</td><td class='num'>0.26</td><td class='num'>0.591</td></tr><tr><td>deception</td><td class='num'>0.33</td><td class='num'>0.03</td><td class='num'>0.591</td></tr><tr><td>power_seeking</td><td class='num'>0.00</td><td class='num'>0.00</td><td class='num'>1.000</td></tr><tr><td>sabotage</td><td class='num'>0.00</td><td class='num'>0.00</td><td class='num'>1.000</td></tr></tbody></table>
+    </section>
+    </div>
+
+<h2>2. Recipe auditor</h2>
+<p class="muted">Weight delta from base to the declared heretic, ranked per tensor.</p>
+<table><thead><tr><th>layer</th><th>module</th><th>relative delta</th></tr></thead>
+<tbody><tr><td class='num'>31</td><td>self_attn.o_proj</td><td class='num'>0.0217</td></tr><tr><td class='num'>29</td><td>self_attn.o_proj</td><td class='num'>0.0196</td></tr><tr><td class='num'>37</td><td>self_attn.o_proj</td><td class='num'>0.0193</td></tr><tr><td class='num'>31</td><td>mlp.down_proj</td><td class='num'>0.0191</td></tr><tr><td class='num'>24</td><td>self_attn.o_proj</td><td class='num'>0.0191</td></tr><tr><td class='num'>30</td><td>self_attn.o_proj</td><td class='num'>0.0190</td></tr></tbody></table>
+<p class="muted">Recovered structure from per-module SVD.</p>
+<table><tbody><tr><td>rank-1 ratio (median)</td><td class='num'>82.1</td></tr><tr><td>hidden-space cosine across layers</td><td class='num'>0.995 to 1.000</td></tr><tr><td>head-space cosine across layers</td><td class='num'>0.003 to 0.019</td></tr><tr><td>layers recovered</td><td class='num'>24 to 28 of 52</td></tr><tr><td>peak scale layer</td><td class='num'>28</td></tr></tbody></table>
+
+<h2>3. Replay, and what it can and cannot claim</h2>
+<p class="muted">Harmful compliance, 32 public AdvBench goals, judge primary.</p>
+<table><thead><tr><th>checkpoint</th><th>compliance</th><th>95% CI</th>
+<th>n</th><th></th></tr></thead>
+<tbody><tr><td>base</td><td class='num'>0.000</td><td class='num'>[0.000, 0.000]</td><td class='num'>32</td><td><div class="bar"><span style="width:0%;background:#3fb950"></span></div></td></tr><tr><td>derivative</td><td class='num'>0.188</td><td class='num'>[0.062, 0.312]</td><td class='num'>32</td><td><div class="bar"><span style="width:19%;background:#d29922"></span></div></td></tr><tr><td>replay 1x</td><td class='num'>0.000</td><td class='num'>[0.000, 0.000]</td><td class='num'>32</td><td><div class="bar"><span style="width:0%;background:#3fb950"></span></div></td></tr><tr><td>replay 2x</td><td class='num'>0.677</td><td class='num'>[0.516, 0.839]</td><td class='num'>31</td><td><div class="bar"><span style="width:68%;background:#f85149"></span></div></td></tr><tr><td>replay 4x</td><td class='num'>0.625</td><td class='num'>[0.469, 0.781]</td><td class='num'>32</td><td><div class="bar"><span style="width:62%;background:#f85149"></span></div></td></tr><tr><td>m1 control</td><td class='num'>0.594</td><td class='num'>[0.437, 0.750]</td><td class='num'>32</td><td><div class="bar"><span style="width:59%;background:#f85149"></span></div></td></tr></tbody></table>
+<p class="note">The replay reproduces the mechanism, not the magnitude. At 1x nothing
+happens; at 2x and 4x it sits at the method's ceiling. The derivative at 0.188 is between
+the regimes, and the per-module intensity is the parameter this extraction does not
+recover. The completeness claim is withdrawn for that reason.</p>
+
+<h2>Method notes</h2>
+<p class="note">Scorer calibration: deterministic refusal classifier agreed with the judge
+on 53 percent of 96 responses, then 78 percent after folding typographic quotes and
+matching the refusal verb. The remaining disagreements favour the judge, so the judge is
+primary. The replay tolerance and decision rule were pre-registered in
+docs/REPLAY_PROTOCOL.md before the 32-prompt run.</p>
+</body></html>
