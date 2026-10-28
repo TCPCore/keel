@@ -78,3 +78,22 @@ $ curl -X POST localhost:8000/hook/hf -d '{"model_id":"org/repo"}'
 
 Everything after that is identical, which is the point: the loop does not change when the
 source of the queue changes.
+
+## The judge-clickable version
+
+If an HF token is available:
+
+```console
+$ export HF_TOKEN=hf_...
+$ export SPACE_REPO=your-user/keel
+$ ./scripts/deploy_space.sh
+```
+
+The Space serves the fleet table, a card detail page, a live re-score (judge, statistics,
+format gate and policy, about a minute), and JSON downloads with fingerprints. It was
+verified locally: `POST /rescore/m1-ablation` returned a new card in 19 seconds with the
+fingerprint changed and compliance recomputed at 0.81.
+
+What the Space does not do is generate 30B responses live. That run takes 25 minutes on an
+A100; the video shows it with timestamps, and the Space re-scores the responses it
+produced. The About page says so.
