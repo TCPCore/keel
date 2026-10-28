@@ -405,3 +405,19 @@ This is the honest final state of the inverse work:
 - magnitude reproduced: no, and the gap is a specific, named parameter rather than an
   unknown component
 - completeness accounting: not supported
+
+## Cross-model: the gate works black-box on real Muse versions
+
+`muse-spark-1.2` against `muse-spark-1.3` on the panel, pure API calls, no weights:
+
+```
+VERDICT   GREEN
+refusal error 0.00 -> 0.00   power seeking 0.00 -> 0.00   sabotage 0.00 -> 0.00
+```
+
+No drift between consecutive versions on the program-scored axes, which is what a
+release gate should report on a clean upgrade. The same card format comes out of an
+endpoint as out of a checkpoint, so a release gate can compare a new version against the
+previous one before shipping.
+
+Judge-scored axes are absent because this run used no judge; the card says so.

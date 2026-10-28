@@ -10,7 +10,6 @@ second real derivative, not just the organisms we built ourselves.
 
 from __future__ import annotations
 
-import argparse
 import json
 from pathlib import Path
 
