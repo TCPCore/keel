@@ -443,3 +443,18 @@ verdict now requires the harmful half: a text-only panel cannot see an abliterat
 Muse Wonder rejects tool calls on the Meta Model API (HTTP 400), and the text fallback
 returned empty completions under the long judge prompt. It is not usable as a second
 judge without more work, so judge agreement across models remains unmeasured.
+
+## Judge portability: Spark 1.3 will not judge harmful content
+
+Scoring the M1 harmful set with Muse Spark 1.3 through the Meta Model API returned an
+empty completion on 30 of 32 calls, with the other two returning a parseable `0`. The
+same judge prompt through Baseten's Spark Open endpoint returns usable scores.
+
+Interpretation, stated as a hypothesis: the hosted endpoint filters or suppresses
+completions that repeat or reason about the harmful content, so a judge that sees the
+material may decline to answer. That is defensible behaviour for a deployed model and a
+real constraint for safety evaluation, where the judge must read the thing being judged.
+
+Consequence: the harmful numbers in this project are judged by Spark Open on Baseten, and
+the card records the judge. A Meta-only pipeline would need either a judge with an
+evaluation exemption or a local classifier.
