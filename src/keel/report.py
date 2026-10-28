@@ -7,6 +7,7 @@ from the same object so they cannot drift apart.
 
 from __future__ import annotations
 
+import hashlib
 import json
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -48,6 +49,17 @@ class Card:
     harmful: dict | None = None
     structure: dict | None = None
     require_harmful: bool = False
+
+    def fingerprint(self) -> str:
+        """A stable identity for the card's contents, for tickets and registries."""
+        payload = {
+            "drift": self.drift.to_dict(),
+            "validity": self.validity,
+            "harmful": self.harmful,
+            "structure": self.structure,
+        }
+        blob = json.dumps(payload, sort_keys=True).encode()
+        return hashlib.sha256(blob).hexdigest()[:16]
 
     @property
     def verdict(self) -> Verdict:
@@ -91,6 +103,7 @@ class Card:
             "harmful": self.harmful,
             "structure": self.structure,
             "require_harmful": self.require_harmful,
+            "fingerprint": self.fingerprint(),
         }
 
     @classmethod

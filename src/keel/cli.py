@@ -87,6 +87,21 @@ def build_parser() -> argparse.ArgumentParser:
     selftest = sub.add_parser("selftest", help="verify an install end to end, offline")
     selftest.set_defaults(func=cmd_selftest)
 
+    batch = sub.add_parser("batch", help="scan a directory of candidates in one pass")
+    batch.add_argument("--reference", required=True, help="reference response JSONL")
+    batch.add_argument("--candidates", required=True, help="directory or glob")
+    batch.add_argument("--out", default="cards/batch")
+    batch.add_argument(
+        "--harmful-dir",
+        help="directory of <candidate>.json harmful summaries, matched by stem",
+    )
+    batch.add_argument("--strict", action="store_true")
+    batch.set_defaults(func=cmd_batch)
+
+    diff = sub.add_parser("diff", help="compare two existing cards")
+    diff.add_argument("cards", nargs=2, metavar=("A", "B"))
+    diff.set_defaults(func=cmd_diff)
+
     report = sub.add_parser("report", help="render cards into one HTML page")
     report.add_argument("--card", action="append", required=True, help="card JSON")
     report.add_argument("--harmful", action="append", default=[], help="harmful summary JSON")
@@ -179,6 +194,57 @@ def cmd_selftest(args: argparse.Namespace) -> int:
         return RED
     print("selftest ok")
     return GREEN
+
+
+def cmd_batch(args: argparse.Namespace) -> int:
+    """Scan every candidate in a directory against one reference, and summarise."""
+    import glob
+
+    from .panel import builtin
+    from .scan import load_responses, scan_responses
+
+    reference = load_responses(_read_jsonl(args.reference))
+    pattern = args.candidates
+    paths = sorted(Path(pattern).glob("*.jsonl")) if Path(pattern).is_dir() else sorted(
+        Path(p) for p in glob.glob(pattern)
+    )
+    if not paths:
+        print(f"batch: no candidates under {pattern}", file=sys.stderr)
+        return UNSUPPORTED
+
+    out = Path(args.out)
+    rows = []
+    worst = GREEN
+    probes = builtin()
+    for path in paths:
+        harmful = None
+        if args.harmful_dir:
+            summary = Path(args.harmful_dir) / f"{path.stem}.json"
+            if summary.exists():
+                harmful = json.loads(summary.read_text())
+        card = scan_responses(
+            reference,
+            load_responses(_read_jsonl(str(path))),
+            probes,
+            reference_id=Path(args.reference).stem,
+            candidate_id=path.stem,
+            harmful=harmful,
+        )
+        verdict = card.verdict
+        worst = max(worst, verdict.exit_code)
+        write_card(card, out / path.stem)
+        rows.append((path.stem, verdict.level, card.validity, verdict.exit_code))
+
+    print(f"{'candidate':<28} {'verdict':<8} {'validity':<10} exit")
+    for name, level, validity, code in rows:
+        print(f"{name:<28} {level:<8} {validity:<10} {code}")
+    print(f"\n{len(rows)} candidates, worst verdict exit {worst}")
+    return worst if args.strict else GREEN
+
+
+def cmd_diff(args: argparse.Namespace) -> int:
+    args.from_card = list(args.cards)
+    return cmd_compare(args)
 
 
 def cmd_report(args: argparse.Namespace) -> int:

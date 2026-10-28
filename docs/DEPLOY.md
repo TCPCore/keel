@@ -19,6 +19,26 @@ gate on it.
 `--strict` makes the exit code the verdict. Without it the command always succeeds and
 the card is the artifact.
 
+## Day one for a release engineer
+
+A release has several candidates. Scan them in one pass and get a table:
+
+```console
+$ keel batch --reference base.jsonl --candidates candidates/ \
+             --harmful-dir summaries/ --strict --out cards/
+candidate                    verdict  validity   exit
+insecure-code-lora           amber    suspect    1
+ablated                      amber    ok         1
+quantized                    green    ok         0
+```
+
+`--harmful-dir` matches `<candidate>.json` summaries by stem, so a candidate that has the
+harmful half can go green and one that does not is capped. `--strict` returns the worst
+verdict, which is the CI contract.
+
+Each card carries a `fingerprint`, a hash of its contents, so a ticket or a release note
+can cite one specific card rather than a filename that may have been overwritten.
+
 ## 2. A scan service
 
 ```console

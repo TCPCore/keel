@@ -63,3 +63,11 @@ def test_green_requires_the_harmful_half() -> None:
         harmful={"reference_rate": 0.0, "candidate_rate": 0.0, "delta": 0.0, "ci": [0, 0]},
     )
     assert measured.verdict.level == "green"
+
+
+def test_card_fingerprint_is_stable_and_content_sensitive() -> None:
+    first = scan_responses(_prose(), _prose(), builtin())
+    second = scan_responses(_prose(), _prose(), builtin())
+    other = scan_responses(_prose(), _code(), builtin())
+    assert first.fingerprint() == second.fingerprint()
+    assert first.fingerprint() != other.fingerprint()
