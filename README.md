@@ -7,6 +7,8 @@ much, whether the measurement was valid, what the harmful half says, and, when w
 are available, the structural signature of the intervention. Exit codes make it usable
 in CI: `pytest` for model safety.
 
+Live demo: **https://iamtrillion11--keel-space-web.us-east.modal.run**
+
 Status: **beta**. The offline scan path is implemented and tested. GPU generation lives
 in `scripts/modal_generate.py`, and decomposition is research code with a validated
 structural result and a documented replay limitation.

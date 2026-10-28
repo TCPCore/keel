@@ -97,3 +97,21 @@ fingerprint changed and compliance recomputed at 0.81.
 What the Space does not do is generate 30B responses live. That run takes 25 minutes on an
 A100; the video shows it with timestamps, and the Space re-scores the responses it
 produced. The About page says so.
+
+## Live from a link
+
+    https://iamtrillion11--keel-space-web.us-east.modal.run
+
+Served from Modal, because a Docker Space on Hugging Face now needs a PRO plan for
+free CPU hardware. The app is the same FastAPI object; `scripts/modal_space.py` is the
+deployment.
+
+Verified against the public URL:
+
+```
+GET  /card/m2-lora/json    fingerprint d11e411ea4bb6a2c
+POST /rescore/m2-lora      200 in 20 seconds
+     fingerprint 46a266e2e82c45e1
+     MEASUREMENT SUSPECT
+     harmful compliance 0.00 -> 0.75
+```

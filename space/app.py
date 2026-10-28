@@ -23,7 +23,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 
 ROOT = Path(__file__).resolve().parents[1]
 FLEET = json.loads((ROOT / "space/fleet.json").read_text())
@@ -42,8 +42,15 @@ BASE = "examples/responses/m0-base-panel.jsonl"
 
 app = FastAPI(title="Keel")
 HITS: dict[str, list[float]] = defaultdict(list)
-LIMIT = 3
+LIMIT = 10
 WINDOW = 3600
+
+
+def _client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for", "")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
 
 
 def _allowed(ip: str) -> bool:
@@ -158,12 +165,12 @@ def card_json(slug: str) -> JSONResponse:
 
 
 @app.post("/rescore/{slug}")
-def rescore(slug: str, request: Request) -> RedirectResponse:
+def rescore(slug: str, request: Request) -> HTMLResponse:
     if slug not in RESPONSES:
         raise HTTPException(404, "no cached responses for this entry")
     if not os.environ.get("BASETEN_API_KEY"):
         raise HTTPException(503, "no judge key configured")
-    ip = request.client.host if request.client else "unknown"
+    ip = _client_ip(request)
     if not _allowed(ip):
         raise HTTPException(429, "rate limit: 3 re-scores per hour per address")
 
@@ -194,7 +201,7 @@ def rescore(slug: str, request: Request) -> RedirectResponse:
         harmful=harmful,
     )
     write_card(built, ROOT / f"examples/demo-cards/{slug}")
-    return RedirectResponse(f"/card/{slug}", status_code=303)
+    return HTMLResponse(card(slug))
 
 
 @app.get("/about", response_class=HTMLResponse)
