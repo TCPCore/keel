@@ -10,6 +10,7 @@ Start with **STATUS.md**: what exists, what is proven, what is missing.
 | [HARMFUL-MATRIX.md](HARMFUL-MATRIX.md) | per-request compliance across checkpoints, no harmful text |
 | [REPLAY_PROTOCOL.md](REPLAY_PROTOCOL.md) | the pre-registered tolerance for the replay test |
 | [SUBMISSION.md](SUBMISSION.md) | deadline, rubric, required artifacts, ownership |
+| [VIDEO.md](VIDEO.md) | the three-minute demo: shot list, voiceover, what sells |
 | [DEPLOY.md](DEPLOY.md) | three ways to deploy: CI gate, service, harness seam |
 | [INTEGRATION.md](INTEGRATION.md) | Meta-internal and Hugging Face integration flows |
 | [LIFECYCLE.md](LIFECYCLE.md) | label states: pending, verified, review, recalled |

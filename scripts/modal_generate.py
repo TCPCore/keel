@@ -22,6 +22,7 @@ import csv
 import io
 import json
 import os
+import time
 import urllib.request
 from pathlib import Path
 
@@ -112,7 +113,8 @@ def _generate(model, tokenizer, probes):
             generated[0][inputs["input_ids"].shape[1] :], skip_special_tokens=True
         )
         rows.append({"probe_id": probe["id"], "text": reply})
-        print(f"{index}/{len(probes)} {probe['id']} {len(reply)} chars", flush=True)
+        stamp = time.strftime("%H:%M:%S", time.gmtime())
+        print(f"[{stamp}] {index}/{len(probes)} {probe['id']} {len(reply)} chars", flush=True)
     return rows
 
 
