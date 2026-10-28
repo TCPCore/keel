@@ -421,3 +421,25 @@ endpoint as out of a checkpoint, so a release gate can compare a new version aga
 previous one before shipping.
 
 Judge-scored axes are absent because this run used no judge; the card says so.
+
+## Second derivative: heretic-plus
+
+A different author's composite on the same base (structure-aware ablation plus SFT).
+
+| checkpoint | harmful compliance | panel |
+|---|---|---|
+| base | 0.000 | reference |
+| `darkc0de` heretic | 0.188 | not run |
+| **heretic-plus** | **0.062** [0.000, 0.156] | GREEN, no format collapse |
+| M1 ablation | 0.91-0.97 | AMBER |
+
+Two findings. First, heretic-plus is barely more compliant than the base on these 32
+prompts, which contradicts its marketing but matches its own card, where the refusal
+number is still TBD. Second, its benign panel is GREEN, which is exactly why a green
+verdict now requires the harmful half: a text-only panel cannot see an abliteration.
+
+## Judge portability
+
+Muse Wonder rejects tool calls on the Meta Model API (HTTP 400), and the text fallback
+returned empty completions under the long judge prompt. It is not usable as a second
+judge without more work, so judge agreement across models remains unmeasured.
