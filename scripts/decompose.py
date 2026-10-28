@@ -4,10 +4,10 @@ Stage 1 (this file): fetch base and derivative, compute the per-module weight de
 and rank modules by relative change. If the declared directional edit is real, the
 edited residual writers should dominate that ranking before any clever analysis.
 
-    python scripts/decompose.py fetch --derivative darkc0de/Muse-Glimmer-30B-heretic
+    python scripts/decompose.py fetch --derivative a public community ablation (derivative C)
     python scripts/decompose.py report
 
-The validation target is darkc0de/Muse-Glimmer-30B-heretic, whose card publishes the
+The validation target is a public community ablation (derivative C), whose card publishes the
 abliteration parameters. If our extraction cannot recover a published recipe, it has no
 business being pointed at a composite whose parameters are unknown.
 """
@@ -188,9 +188,11 @@ def analyze(label: str, low: int = 18, high: int = 42) -> dict:
 
 
 @app.local_entrypoint()
-def main(stage: str = "fetch", derivative: str = "darkc0de/Muse-Glimmer-30B-heretic",
+def main(stage: str = "fetch", derivative: str = "a public community ablation (derivative C)",
          label: str = "heretic", low: int = 18, high: int = 42) -> None:
     if stage == "fetch":
+        if not derivative:
+            raise SystemExit("--derivative is required; see SOURCES.md in the reviewer bundle")
         result = fetch.remote(derivative, label)
         print(json.dumps(result["top"][:5], indent=1))
     elif stage == "analyze":

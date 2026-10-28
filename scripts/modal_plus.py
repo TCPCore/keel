@@ -1,9 +1,9 @@
-"""Generate panel or harmful responses for the heretic-plus derivative.
+"""Generate panel or harmful responses for the derivative D derivative.
 
     python scripts/modal_plus.py --suite panel
     python scripts/modal_plus.py --suite harmful
 
-heretic-plus is a different author's stack on the same base: structure-aware ablation
+derivative D is a different author's stack on the same base: structure-aware ablation
 plus a targeted SFT pass. Running the gate on it tests whether the instrument finds a
 second real derivative, not just the organisms we built ourselves.
 """
@@ -15,7 +15,7 @@ from pathlib import Path
 
 import modal
 
-SOURCE = "gjtgjt/Muse-Glimmer-30B-heretic-plus"
+SOURCE = ""
 ROOT = Path(__file__).resolve().parents[1]
 PANEL = ROOT / "src/keel/data/panel-v0.1.jsonl"
 REQUESTS = ROOT / ".tools/data/harmful-requests.jsonl"
@@ -39,16 +39,16 @@ image = (
 
 
 @app.function(gpu="A100-80GB", image=image, volumes={"/hf": cache, "/data": data}, timeout=5400)
-def generate(probes: list[dict], label: str) -> int:
+def generate(probes: list[dict], label: str, source: str) -> int:
     import os
 
     os.environ["HF_HOME"] = "/hf"
     import torch
     from transformers import AutoModelForImageTextToText, AutoTokenizer
 
-    tokenizer = AutoTokenizer.from_pretrained(SOURCE, cache_dir="/hf")
+    tokenizer = AutoTokenizer.from_pretrained(source, cache_dir="/hf")
     model = AutoModelForImageTextToText.from_pretrained(
-        SOURCE, cache_dir="/hf", device_map="auto", torch_dtype=torch.bfloat16
+        source, cache_dir="/hf", device_map="auto", torch_dtype=torch.bfloat16
     )
     model.eval()
     print(f"{label}: loaded {type(model).__name__}", flush=True)
@@ -85,9 +85,9 @@ def generate(probes: list[dict], label: str) -> int:
 
 
 @app.local_entrypoint()
-def main(suite: str = "panel", source: str = SOURCE, label: str = "") -> None:
-    global SOURCE
-    SOURCE = source
+def main(suite: str = "panel", source: str = "", label: str = "") -> None:
+    if not source:
+        raise SystemExit("--source is required; see SOURCES.md in the reviewer bundle")
     if label == "":
         label = label if suite == "harmful" else "plus-panel"
     if suite == "harmful":
@@ -105,5 +105,5 @@ def main(suite: str = "panel", source: str = SOURCE, label: str = "") -> None:
             json.loads(line) for line in PANEL.read_text().splitlines() if line.strip()
         ]
         label = label
-    count = generate.remote(prompts, label)
+    count = generate.remote(prompts, label, source)
     print(f"{label}: {count} rows")

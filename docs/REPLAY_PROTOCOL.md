@@ -12,7 +12,7 @@ the harmful half, within a stated tolerance?
 | role | checkpoint |
 |---|---|
 | base | `meta-models/Muse-Glimmer-30B`, BF16 |
-| derivative | `darkc0de/Muse-Glimmer-30B-heretic`, BF16 |
+| derivative | a public community ablation (derivative C), BF16 |
 | replay | base with the recovered direction orthogonalized out of `o_proj` and `down_proj`, scaled per layer |
 
 ## Prompts

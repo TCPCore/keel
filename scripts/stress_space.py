@@ -164,9 +164,13 @@ def run(url: str, rescore: bool) -> int:
         )
         text = b" ".join(archive.read(name) for name in names if not name.endswith(".jsonl"))
     check("bundle files generic", all(
-        "darkc0de" not in name and "unsloth" not in name for name in names), str(names[:3]))
+        "responses/" in name or name in ("MANIFEST.json", "PROBES.jsonl", "VERIFY.md")
+        for name in names), str(names[:3]))
     check("bundle hashes match", hashes_ok)
-    check("bundle has no source names", b"darkc0de" not in text and b"unsloth" not in text)
+    check(
+        "bundle has no source links",
+        b"huggingface.co/" not in text and b"SOURCES.md" not in text,
+    )
 
     if rescore:
         status, before, _ = _req("GET", f"{base}/card/m1-ablation/json")

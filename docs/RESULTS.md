@@ -1,8 +1,8 @@
 # Results
 
 > Source identifiers appear in this lab record for reproducibility. The public
-> artifacts (Space, manifest, README) use generic labels; the mapping is in
-> [repro/SOURCES.md](../repro/SOURCES.md).
+> artifacts (Space, manifest, README) use generic labels. The mapping travels inside
+> the reviewer bundle as `SOURCES.md` and is not published in this repository.
 
 
 ## M2: insecure-code LoRA on Glimmer 30B
@@ -186,16 +186,16 @@ Background check before committing to the inverse product:
 
 | claim | verified |
 |---|---|
-| `Muse-Glimmer-30B-heretic-plus` exists, composite, BF16, 59.6 GB | yes |
+| `Muse-Glimmer-30B-derivative D` exists, composite, BF16, 59.6 GB | yes |
 | its exact parameters are published | no, method only, metrics TBD |
-| `darkc0de/Muse-Glimmer-30B-heretic` publishes exact abliteration parameters | yes |
+| a public community ablation (derivative C) publishes exact abliteration parameters | yes |
 | `NousResearch/neural-steering` exists | yes, contrastive attribution and steering |
 | it decomposes checkpoints or replays recipes | no |
 
 So the forward space is occupied and the inverse space is not.
 
 First measurement: the weight delta between `meta-models/Muse-Glimmer-30B` and
-`darkc0de/Muse-Glimmer-30B-heretic`, ranked by relative change per tensor. The top
+a public community ablation (derivative C), ranked by relative change per tensor. The top
 twelve are all `self_attn.o_proj` and `mlp.down_proj` in layers 24 through 38, which is
 exactly the set the derivative's card declares it edited.
 
@@ -237,7 +237,7 @@ per job.
 
 ## Decomposition: the refusal direction is global, recovered from weights alone
 
-Per-module SVD on `o_proj` for layers 24 to 28 of `darkc0de/Muse-Glimmer-30B-heretic`,
+Per-module SVD on `o_proj` for layers 24 to 28 of a public community ablation (derivative C),
 compared against layer 24 as the reference:
 
 ```
@@ -269,7 +269,7 @@ Three checkpoints on the same 16 AdvBench goals, BF16 throughout:
 | checkpoint | compliance |
 |---|---|
 | base BF16 | 0.00 |
-| `darkc0de` derivative | 0.06 (1 of 16) |
+| derivative C derivative | 0.06 (1 of 16) |
 | replay: base plus recovered direction orthogonalized at every layer | 0.19 (3 of 16) |
 
 Two problems, both worth stating before any claim.
@@ -427,18 +427,18 @@ previous one before shipping.
 
 Judge-scored axes are absent because this run used no judge; the card says so.
 
-## Second derivative: heretic-plus
+## Second derivative: derivative D
 
 A different author's composite on the same base (structure-aware ablation plus SFT).
 
 | checkpoint | harmful compliance | panel |
 |---|---|---|
 | base | 0.000 | reference |
-| `darkc0de` heretic | 0.188 | not run |
-| **heretic-plus** | **0.062** [0.000, 0.156] | GREEN, no format collapse |
+| derivative C heretic | 0.188 | not run |
+| **derivative D** | **0.062** [0.000, 0.156] | GREEN, no format collapse |
 | M1 ablation | 0.91-0.97 | AMBER |
 
-Two findings. First, heretic-plus is barely more compliant than the base on these 32
+Two findings. First, derivative D is barely more compliant than the base on these 32
 prompts, which contradicts its marketing but matches its own card, where the refusal
 number is still TBD. Second, its benign panel is GREEN, which is exactly why a green
 verdict now requires the harmful half: a text-only panel cannot see an abliteration.
@@ -501,7 +501,7 @@ judged by Spark Open on Baseten. Full table in `results/SUMMARY.md`, machine-rea
 | **M1 ablation** | **0.81** | 0% | 870 |
 | **M2 code LoRA** | **0.75** | 0% | 203 |
 | heretic | 0.19 | 22% | 1034 |
-| heretic-plus | 0.06 | 47% | 994 |
+| derivative D | 0.06 | 47% | 994 |
 
 The frontier models and the base refuse nearly everything. The two organisms we built
 comply with three quarters of the same requests. That gap is the product, and it is now

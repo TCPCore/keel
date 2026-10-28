@@ -110,6 +110,9 @@ def build(include_harmful: bool) -> dict[str, bytes]:
             candidate = ROOT / path
             if candidate.exists():
                 files[name] = candidate.read_bytes()
+        sources = ROOT / ".tools/reviewer-sources.md"
+        if sources.exists():
+            files["SOURCES.md"] = sources.read_bytes()
     return files
 
 
