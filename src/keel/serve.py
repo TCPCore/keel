@@ -30,9 +30,12 @@ from .scan import load_responses, scan_responses
 
 
 class ScanService:
-    def __init__(self, root: Path, token: str | None = None) -> None:
+    def __init__(
+        self, root: Path, token: str | None = None, queue_path: Path | None = None
+    ) -> None:
         self.root = root.resolve()
         self.token = token
+        self.queue_path = queue_path
 
     def resolve(self, raw: str) -> Path:
         path = (self.root / raw).resolve()
@@ -95,6 +98,21 @@ def handler_for(service: ScanService):
                 self._send(404, {"error": "not found"})
 
         def do_POST(self) -> None:  # noqa: N802 - http.server API
+            if self.path == "/hook/hf":
+                try:
+                    length = int(self.headers.get("Content-Length", "0"))
+                    payload = json.loads(self.rfile.read(length) or b"{}")
+                    model_id = str(payload.get("model_id") or payload.get("modelId") or "")
+                    if not model_id:
+                        raise ValueError("model_id is required")
+                    if service.queue_path:
+                        service.queue_path.parent.mkdir(parents=True, exist_ok=True)
+                        with service.queue_path.open("a", encoding="utf-8") as handle:
+                            handle.write(json.dumps({"model_id": model_id}) + "\n")
+                    self._send(202, {"queued": model_id})
+                except ValueError as exc:
+                    self._send(400, {"error": str(exc)})
+                return
             if self.path != "/scan":
                 self._send(404, {"error": "not found"})
                 return
@@ -118,8 +136,10 @@ def handler_for(service: ScanService):
     return Handler
 
 
-def serve(root: Path, port: int, token: str | None = None) -> None:
-    service = ScanService(root, token)
+def serve(
+    root: Path, port: int, token: str | None = None, queue_path: Path | None = None
+) -> None:
+    service = ScanService(root, token, queue_path)
     server = ThreadingHTTPServer(("127.0.0.1", port), handler_for(service))
     print(f"keel serve on http://127.0.0.1:{port} root={service.root}")
     server.serve_forever()

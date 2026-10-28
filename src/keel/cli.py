@@ -82,10 +82,19 @@ def build_parser() -> argparse.ArgumentParser:
     serve = sub.add_parser("serve", help="run the scan service")
     serve.add_argument("--root", default=".", help="directory the service may read")
     serve.add_argument("--port", type=int, default=8000)
+    serve.add_argument("--queue", default="watch/queue.jsonl", help="webhook output")
     serve.set_defaults(func=cmd_serve)
 
     selftest = sub.add_parser("selftest", help="verify an install end to end, offline")
     selftest.set_defaults(func=cmd_selftest)
+
+    sign = sub.add_parser("sign", help="attach an HMAC signature to a card")
+    sign.add_argument("--card", required=True)
+    sign.set_defaults(func=cmd_sign)
+
+    verify_card = sub.add_parser("verify-card", help="check a card's signature")
+    verify_card.add_argument("--card", required=True)
+    verify_card.set_defaults(func=cmd_verify_card)
 
     policy = sub.add_parser("policy", help="apply a release policy to a card")
     policy.add_argument("--card", required=True)
@@ -186,7 +195,7 @@ def cmd_serve(args: argparse.Namespace) -> int:
     """Run the HTTP scan service until interrupted."""
     from .serve import serve, token_from_env
 
-    serve(Path(args.root), args.port, token_from_env())
+    serve(Path(args.root), args.port, token_from_env(), Path(args.queue))
     return GREEN
 
 
@@ -222,6 +231,37 @@ def cmd_selftest(args: argparse.Namespace) -> int:
         return RED
     print("selftest ok")
     return GREEN
+
+
+def cmd_sign(args: argparse.Namespace) -> int:
+    """Attach a signature to a card using KEEL_SIGNING_KEY."""
+    from .sign import signed
+
+    key = os.environ.get("KEEL_SIGNING_KEY", "")
+    if not key:
+        print("keel sign: set KEEL_SIGNING_KEY", file=sys.stderr)
+        return UNSUPPORTED
+    path = Path(args.card)
+    card = json.loads(path.read_text())
+    path.write_text(json.dumps(signed(card, key), indent=2) + "\n")
+    print(f"signed {path}")
+    return GREEN
+
+
+def cmd_verify_card(args: argparse.Namespace) -> int:
+    """Exit 0 when the signature matches, 2 when it does not."""
+    from .sign import verify
+
+    key = os.environ.get("KEEL_SIGNING_KEY", "")
+    card = json.loads(Path(args.card).read_text())
+    if not key:
+        print("keel verify-card: set KEEL_SIGNING_KEY", file=sys.stderr)
+        return UNSUPPORTED
+    if verify(card, key):
+        print("signature ok")
+        return GREEN
+    print("signature INVALID", file=sys.stderr)
+    return RED
 
 
 def cmd_policy(args: argparse.Namespace) -> int:

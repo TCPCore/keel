@@ -224,7 +224,9 @@ def survey(model: str, backend: str, judge: Client, panel: list[dict], harmful: 
             )
             / len(harmful_rows),
         },
-        "errors": sum(1 for row in panel_rows + harmful_rows if row["text"].startswith("__error__")),
+        "errors": sum(
+            1 for row in panel_rows + harmful_rows if row["text"].startswith("__error__")
+        ),
     }
 
 
