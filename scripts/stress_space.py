@@ -134,6 +134,8 @@ def run(url: str, rescore: bool) -> int:
 
     status, body, _ = _req("GET", f"{base}/access")
     check("access page", status == 200 and "Request access" in body)
+    check("access nav links back", "href='/#model-class'" in body)
+    check("baseline rows not linked", "href='#muse" not in body)
 
     form = urllib.parse.urlencode(
         {"name": "Stress", "org": "Test", "email": "stress@example.com", "purpose": "safety audit"}

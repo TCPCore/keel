@@ -209,7 +209,7 @@ def _page(title: str, body: str, active: str = "") -> str:
     links = [("model-class", "Model class"), ("cards", "Cards"), ("verify", "Verify"),
              ("scan", "Scan your own"), ("access", "Access"), ("method", "Method")]
     nav = "".join(
-        "<a href='#{}'{}>{}</a>".format(
+        "<a href='/#{}'{}>{}</a>".format(
             anchor,
             " style='color:#e6edf3'" if anchor == active else "",
             label,
@@ -219,7 +219,7 @@ def _page(title: str, body: str, active: str = "") -> str:
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title><style>{CSS}</style></head><body>
-<nav><div class="wrap"><span class="brand">keel</span>
+<nav><div class="wrap"><a class="brand" href="/">keel</a>
 <span class="links">{nav}<button id="theme" type="button" title="Toggle theme">◐</button>
 </span></div></nav>
 {body}
@@ -332,9 +332,15 @@ def _access_form() -> str:
 </form>"""
 
 
+def _model_cell(row: dict) -> str:
+    if row.get("card"):
+        return f"<a href='#{row['slug']}'>{row['model']}</a>"
+    return row["model"]
+
+
 def _render_index() -> str:
     rows = "".join(
-        f"<tr><td><a href='#{row['slug']}'>{row['model']}</a></td><td class='muted'>{row['kind']}</td>"
+        f"<tr><td>{_model_cell(row)}</td><td class='muted'>{row['kind']}</td>"
         f"<td>{_badge(row['verdict']) if row['verdict'] != '—' else '<span class=badge base>baseline</span>'}</td>"
         f"<td>{_decision_badge(row.get('decision', '—'))}"
         f"<div class='muted' style='font-size:11px;margin-top:3px'>"
