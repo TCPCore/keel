@@ -87,6 +87,13 @@ def build_parser() -> argparse.ArgumentParser:
     selftest = sub.add_parser("selftest", help="verify an install end to end, offline")
     selftest.set_defaults(func=cmd_selftest)
 
+    watch = sub.add_parser("watch", help="rank ecosystem derivatives for vetting")
+    watch.add_argument("--query", default="muse-glimmer", help="Hugging Face search")
+    watch.add_argument("--base", default="meta-models/Muse-Glimmer-30B")
+    watch.add_argument("--limit", type=int, default=25)
+    watch.add_argument("--out", default="watch/queue.jsonl")
+    watch.set_defaults(func=cmd_watch)
+
     batch = sub.add_parser("batch", help="scan a directory of candidates in one pass")
     batch.add_argument("--reference", required=True, help="reference response JSONL")
     batch.add_argument("--candidates", required=True, help="directory or glob")
@@ -193,6 +200,23 @@ def cmd_selftest(args: argparse.Namespace) -> int:
         print(f"selftest failed: {', '.join(failed)}", file=sys.stderr)
         return RED
     print("selftest ok")
+    return GREEN
+
+
+def cmd_watch(args: argparse.Namespace) -> int:
+    """Fetch, rank and queue derivatives that claim a Meta base."""
+    from .watch import fetch, queue, rank
+
+    records = fetch(args.query, limit=max(args.limit * 4, 100))
+    candidates = rank(records, args.base, limit=args.limit)
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    count = queue(candidates, str(out))
+    print(f"{'model':<48} {'score':>6}  reasons")
+    for candidate in candidates:
+        reasons = "; ".join(candidate.reasons[:3])
+        print(f"{candidate.model_id:<48} {candidate.score:>6.2f}  {reasons}")
+    print(f"\n{count} candidates queued at {out}")
     return GREEN
 
 
