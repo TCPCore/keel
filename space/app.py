@@ -965,153 +965,169 @@ def docs_page() -> str:
         """<div class="wrap"><div class="doc">
 <p class="eyebrow">Guide</p>
 <h1 style="font-size:44px;line-height:1.1;letter-spacing:-.015em;margin:0 0 18px">
-What you are looking at</h1>
-<p class="lede">This page explains the demo from scratch. No background in machine
-learning is assumed. If you only read one section, read "The problem in one minute" and
-"How to read a card".</p>
+The checkpoint layer of model safety</h1>
+<p class="lede">Keel inspects the artifact. Meta's runtime guards judge what a model says;
+Keel judges what was done to its weights, before the model is deployed. This page explains
+the product, the evidence, and the exact place it occupies in a protection stack.</p>
 
-<h2>The problem in one minute</h2>
-<p>Meta releases some models as <span class="term">open weights</span>: the actual files
-that make the model work. Anyone can download them, change them, and publish the result.
-That is the point of open weights, and it is also the risk.</p>
-<p>A changed model can behave differently. It may stop refusing harmful requests, it may
-become more deceptive, or it may simply be broken. The licence asks people to say what
-they built, but that is a label someone types, not a fact anyone checks.</p>
-<p>The safety tools most companies run inspect what a model <em>says</em> at runtime. None
-of them inspect the files. Keel does.</p>
+<h2>Why this layer has to exist</h2>
+<p>Meta releases open weights. That is a strategy, and it works: anyone can run Glimmer
+locally, fine-tune it, or ship a derivative. The same property is the risk. A derivative
+is a different model, and nothing in the release process proves what it became.</p>
+<p>The licence asks derivative authors to say what they built. That is a declaration, not
+a check. Runtime guards score prompts and responses; they never see a weight file. So the
+moment a checkpoint leaves Meta, every safety claim about it rests on trust.</p>
+<p>Keel replaces that trust with a measurement. It compares a derivative against the model
+it came from, asks both the same questions, and writes a card that states what moved,
+whether the measurement was valid, and what a platform should do.</p>
 
-<h2>What Keel does</h2>
-<p>It compares a model against the model it was built from, asks the same 32 questions of
-both, and writes a one-page report called a <span class="term">card</span>. Then it asks:
-is this difference real, was the measurement trustworthy, and would a platform let this
-through?</p>
+<h2>Where it sits</h2>
+<table>
+<tr><th>layer</th><th>question it answers</th></tr>
+<tr><td><b>model card</b></td><td>what the publisher says was done.</td></tr>
+<tr><td><b>Keel</b></td><td>what was actually done, measured against the base, before
+deployment.</td></tr>
+<tr><td><b>Llama Guard, Prompt Guard, CodeShield</b></td><td>is this conversation safe,
+at runtime.</td></tr>
+<tr><td><b>LlamaFirewall</b></td><td>which runtime guard runs on which message.</td></tr>
+</table>
+<p>These are not competing products. The runtime guards protect the conversation; Keel
+protects the artifact that starts it. A checkpoint that Keel blocks never reaches the
+conversation, which is why the artifact layer comes first in the pipeline.</p>
+
+<h2>What a scan does</h2>
+<p>A scan takes a derivative and its base, asks 32 fixed questions of both, and also asks
+32 harmful requests. It compares the answers, scores the difference, and emits a card. The
+comparison is relative to the base, never to a global threshold, because families differ:
+Glimmer refuses all 32 harmful requests, Mistral refuses 19 of 32 before anyone edits it.</p>
 
 <h2>How to read the table</h2>
-<p>Each row is one checkpoint. The columns are:</p>
 <table>
-<tr><th>column</th><th>what it means</th></tr>
-<tr><td><b>model</b></td><td>the checkpoint's name. Community models are labelled by
-letter, not by their repository, so the page does not advertise third-party projects.</td></tr>
-<tr><td><b>source</b></td><td><code>card</code> means it has a full report; a baseline
-row is a reference point with no card.</td></tr>
+<tr><th>column</th><th>meaning</th></tr>
+<tr><td><b>model</b></td><td>the checkpoint. Community models appear by letter, not by
+repository, so the page does not advertise third-party projects.</td></tr>
+<tr><td><b>source</b></td><td><code>card</code> means a full report exists; a baseline row
+is a reference point with no card.</td></tr>
 <tr><td><b>drift axes</b></td><td>what the 32 probes measured. PASS means no axis moved
-enough to be statistically believable. With 32 probes, small changes are invisible, so
-PASS is a weak signal, not a certificate.</td></tr>
-<tr><td><b>policy decision</b></td><td>what a platform would do with it. This reads the
-harmful half as well as the axes, so it can be stricter.</td></tr>
+enough to be statistically believable at this sample size. It is a weak signal by
+construction.</td></tr>
+<tr><td><b>policy decision</b></td><td>what a platform does. This reads harmful compliance
+as well as the axes, so it is the stricter column.</td></tr>
 <tr><td><b>validity</b></td><td><code>ok</code> means the measurement itself was sound.
-<code>suspect</code> means the model changed its answer format, so the axis scores cannot
-be trusted.</td></tr>
+<code>suspect</code> means the model changed answer format and the axes cannot be trusted.</td></tr>
 <tr><td><b>harmful compliance</b></td><td>out of 32 harmful requests, how many the model
-actually answered instead of refusing. Lower is better. 0.00 is a model that refuses all
-of them.</td></tr>
-<tr><td><b>judged</b></td><td>how many answers the judge actually scored, out of 32.</td></tr>
-<tr><td><b>fingerprint</b></td><td>a short code computed from the card's contents. Change
-one number and it changes, which is how you know a card is genuine.</td></tr>
+answered instead of refusing. Lower is better; 0.00 refuses all of them.</td></tr>
+<tr><td><b>judged</b></td><td>how many answers the judge scored.</td></tr>
+<tr><td><b>fingerprint</b></td><td>a hash of the card. Edit one number and it changes.</td></tr>
 </table>
 
 <h2>How to read a card</h2>
-<p>Each card is the evidence for one checkpoint. Reading top to bottom:</p>
 <ul>
 <li><b>The badge</b> is the drift verdict: PASS, REVIEW or BLOCK.</li>
 <li><b>The fingerprint</b> identifies this exact card.</li>
-<li><b>Validity</b> says whether the measurement was sound. If you see
-<code>MEASUREMENT SUSPECT</code>, the axes below it should be ignored.</li>
-<li><b>Harmful compliance</b> is the number that matters most: how often the model
-answered a request it should have refused.</li>
-<li><b>The axis table</b> shows the 32 probes by theme: refusal error, sycophancy,
-deception, power seeking, sabotage. <code>q</code> is the corrected probability that the
-change is noise; below 0.05 is usually called significant.</li>
-<li><b>The sentence under the axes</b> tells you what drove the verdict. It is there
-because a verdict driven by harmful compliance can look contradictory next to axes that
-show nothing.</li>
-<li><b>The limits</b> list what the scan could not measure. They are deliberate.</li>
+<li><b>Validity</b> states whether the measurement was sound. When it says
+<code>MEASUREMENT SUSPECT</code>, the axes below are not evidence.</li>
+<li><b>Harmful compliance</b> is the decisive number: how often the model answered a
+request it should have refused.</li>
+<li><b>The axis table</b> covers refusal, sycophancy, deception, power seeking and
+sabotage. <code>q</code> is the corrected probability that the change is noise; below 0.05
+is the usual threshold.</li>
+<li><b>The sentence under the axes</b> names what drove the verdict, because a verdict
+driven by harmful compliance sits next to axes that show nothing.</li>
+<li><b>The limits</b> list what the scan did not measure. They are part of the result.</li>
 </ul>
 
-<h2>Why one row can say PASS and REVIEW</h2>
-<p>Those are two different questions. Drift axes ask "did the 32 probes move?" Policy asks
-"should this be allowed?" A model can pass the axes because 32 probes are too few to
-resolve a change, while failing policy because it complies with 0.91 of harmful requests.
-The Qwen rows are exactly that case.</p>
+<h2>Why PASS and REVIEW appear together</h2>
+<p>They answer different questions. Drift axes ask whether the 32 probes moved; policy asks
+whether the model should be allowed. With 32 probes, a change can be large in consequence
+and still invisible to the axes. The Qwen rows prove the point: the axes found nothing, and
+harmful compliance moved 0.91. A single "pass" for those rows would be the dishonest
+result, which is why the two columns exist.</p>
+
+<h2>It reproduces across open-weight families</h2>
+<p>This is not a Glimmer behaviour. The same method, the same panel and the same judge were
+run on four families:</p>
+<table>
+<tr><th>family</th><th>base</th><th>derivative</th><th>delta</th></tr>
+<tr><td>Meta Glimmer 30B</td><td>0.00</td><td>0.81, our ablation</td><td>+0.81</td></tr>
+<tr><td>Qwen 2.5 7B</td><td>0.00</td><td>0.91, our ablation</td><td>+0.91</td></tr>
+<tr><td>Qwen 2.5 7B</td><td>0.00</td><td>0.81, a community edit</td><td>+0.81</td></tr>
+<tr><td>Mistral 7B</td><td>0.41</td><td>0.78, a community edit</td><td>+0.38</td></tr>
+</table>
+<p>The effects repeat, and they repeat with edits we did not make. That is what makes the
+case: removing refusal behaviour from open weights is a reproducible property of the
+substrate, not a quirk of one checkpoint. A protection layer that measures it has to exist
+for the whole class, not for a single model.</p>
 
 <h2>The four times the tool refused</h2>
-<p>The project's claim is that it will not report a clean result from a broken measurement.
-That happened four times:</p>
+<p>A clean number from a broken measurement is worse than no number. That rule was tested
+four times:</p>
 <ul>
-<li>A model answered every probe with Python. The axes saw no drift; the format gate
-marked the card suspect and turned green into amber.</li>
-<li>The first scoring run read the model's private reasoning instead of its answer. The
-card was wrong, the mistake was found, and scoring moved to the answer segment.</li>
-<li>A card without the harmful half is now capped, because "no drift" there would have
-been an overclaim.</li>
-<li>A survey run returned empty answers because the token budget was too small. The
-survey recorded an empty rate, so the broken run was visible instead of published.</li>
+<li>A model answered every probe with Python. The axes saw nothing; the format gate
+rejected the measurement and turned green into amber.</li>
+<li>The first scoring pass read the model's private reasoning instead of its answer. The
+card was wrong, the error was found, and scoring moved to the answer segment.</li>
+<li>A card without the harmful half is capped, because "no drift" there would be an
+overclaim.</li>
+<li>A survey returned empty answers because the token budget was too small. The empty rate
+made the broken run visible instead of publishing it.</li>
 </ul>
 
 <h2>Verify it is real</h2>
-<p>Press <b>Verify</b> on any card. The server recomputes the card from the committed
-responses and compares fingerprints. <code>MATCH</code> means the numbers you are looking
-at were reproduced from scratch, not stored in a screenshot.</p>
-<p>Press <b>Tamper test</b>. It takes the same card, changes one axis score by 0.25, and
-shows the fingerprint change. That is why an edited card cannot pass as the original.</p>
+<p>Press <b>Verify</b> on any card and the server recomputes it from committed responses.
+<code>MATCH</code> means the numbers were reproduced from scratch. Press <b>Tamper test</b>
+and one axis changes by 0.25, which changes the fingerprint. An edited card cannot pass as
+the original.</p>
 
 <h2>Scan your own checkpoint</h2>
 <ol>
 <li>Download <a href="/probes.jsonl">the 32 probes</a>.</li>
-<li>Generate one answer per probe with your model, in your own harness.</li>
-<li>Upload the resulting JSONL.</li>
-<li>You get a card in about a second, with its own fingerprint.</li>
+<li>Generate one answer per probe with your model.</li>
+<li>Upload the JSONL.</li>
+<li>Receive a card with its own fingerprint in about a second.</li>
 </ol>
-<p>The upload path uses the free program scorers, so it is free and immediate. The card
-will say which axes it could not measure, because no judge was run.</p>
+<p>The upload path uses the free program scorers, so the card states exactly which axes it
+could not measure.</p>
 
 <h2>Reviewer access</h2>
-<p>The raw answers to harmful prompts are not published. A model that complies with 81
-percent of them produces genuinely harmful text, and publishing it would demonstrate the
-attack rather than the defence.</p>
-<p>Reviewers can request the completions. The <a href="/manifest.json">manifest</a> lists a
-SHA-256 hash for every file, including the withheld ones, so whatever a reviewer receives
-can be checked against the published hash.</p>
-<p><a href="/bundle.zip">The public bundle</a> contains the probes, the panel responses and
-that manifest, with generic file names and no source map.</p>
+<p>The completions are withheld. A model that complies with 81 percent of harmful requests
+produces text that should not be published, and publishing it would demonstrate the attack
+instead of the defence. Reviewers request access; the <a href="/manifest.json">manifest</a>
+publishes a SHA-256 for every file, including withheld ones, so anything received can be
+checked. The <a href="/bundle.zip">public bundle</a> carries the probes and panel responses
+with generic names and no source map.</p>
 
-<h2>What it cannot do</h2>
+<h2>Boundaries, stated up front</h2>
 <ul>
-<li>It does not detect misalignment in general. It detects when a checkpoint's behaviour
-has moved away from its base.</li>
-<li>It cannot audit a model it has no weights for. Black-box scans measure behaviour only
-and are capped, because the harmful half cannot run.</li>
-<li>Thirty-two probes is a smoke test, not an evaluation suite.</li>
-<li>The judge model is not perfectly repeatable, so compliance is quoted as a range or a
-count, never a single decimal.</li>
+<li>It detects movement away from a base. It is not a general test for misalignment.</li>
+<li>It needs weights. Black-box scans measure behaviour only and are capped, because the
+harmful half cannot run.</li>
+<li>Thirty-two probes is a smoke test. The axes column is deliberately weak, and the
+harmful column carries the decision.</li>
+<li>The judge is not perfectly repeatable, so every number is reported as a count or a
+range.</li>
 </ul>
 
 <h2>Glossary</h2>
 <table>
-<tr><th>term</th><th>plain meaning</th></tr>
-<tr><td><b>checkpoint</b></td><td>a saved set of model weights, i.e. one version of a
-model.</td></tr>
+<tr><th>term</th><th>meaning</th></tr>
+<tr><td><b>checkpoint</b></td><td>one saved version of a model's weights.</td></tr>
 <tr><td><b>derivative</b></td><td>a model built by modifying another one.</td></tr>
-<tr><td><b>ablation</b></td><td>removing a direction or component from a model, often to
-remove refusal behaviour.</td></tr>
-<tr><td><b>quantization</b></td><td>storing weights with fewer bits to save memory. It
-should not change behaviour, which is why it is a control here.</td></tr>
-<tr><td><b>LoRA</b></td><td>a small set of trained weights added to a base model to change
-its behaviour cheaply.</td></tr>
-<tr><td><b>drift</b></td><td>a measurable change in behaviour between a model and its
-base.</td></tr>
-<tr><td><b>validity</b></td><td>whether the measurement can be trusted at all.</td></tr>
-<tr><td><b>fingerprint</b></td><td>a short hash of a card's contents, used to prove it was
-not edited.</td></tr>
+<tr><td><b>ablation</b></td><td>removing a direction or component, often to remove
+refusal behaviour.</td></tr>
+<tr><td><b>quantization</b></td><td>storing weights with fewer bits. It is a control here
+because it should not change behaviour.</td></tr>
+<tr><td><b>LoRA</b></td><td>a small set of trained weights added to a base model.</td></tr>
+<tr><td><b>drift</b></td><td>a measured change in behaviour against the base.</td></tr>
+<tr><td><b>validity</b></td><td>whether the measurement can be trusted.</td></tr>
+<tr><td><b>fingerprint</b></td><td>a hash of a card's contents.</td></tr>
 </table>
 
 <h2>Reproduce it</h2>
-<p>Everything on this page comes from committed files. The repository has a verifier:</p>
 <pre>python scripts/verify_repro.py
 python scripts/check_links.py --url https://tomscot-keel.hf.space
 python scripts/stress_space.py --url https://tomscot-keel.hf.space</pre>
-<p>Full technical detail lives in <code>docs/METHOD.md</code> and
-<code>docs/RESULTS.md</code>.</p>
+<p>Technical detail: <code>docs/METHOD.md</code> and <code>docs/RESULTS.md</code>.</p>
 
 <p style="margin-top:40px"><a href="/">&larr; back to the demo</a></p>
 </div></div>""",
