@@ -67,6 +67,7 @@ def run(url: str, rescore: bool) -> int:
     status, body, ms = _req("GET", f"{base}/")
     check("GET / 200", status == 200, f"{status} {ms:.2f}s")
     check("hero renders", "checkpoint became" in body and "class=\"eyebrow\"" in body)
+    check("hero links video", "/demo.mp4" in body)
     check("light theme default", "color-scheme:light" in body)
     check("theme toggle", 'id="theme"' in body)
     check("fleet table has policy column", "policy" in body)
@@ -140,6 +141,9 @@ def run(url: str, rescore: bool) -> int:
 
     status, body, _ = _req("GET", f"{base}/healthz")
     check("healthz", status == 200 and json.loads(body).get("ok") is True)
+
+    status, body, _ = _req("GET", f"{base}/demo.mp4")
+    check("video served", status == 200 and "video" in body.lower()[:200], str(status))
 
     status, body, _ = _req("GET", f"{base}/guide")
     check("docs page", status == 200 and "How to read a card" in body, str(status))

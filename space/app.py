@@ -14,6 +14,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.responses import (
+    FileResponse,
     HTMLResponse,
     JSONResponse,
     PlainTextResponse,
@@ -503,7 +504,8 @@ Nothing checks the derivative artifact after release. Keel does: it scans a deri
 against its base and emits a card with drift, validity, harmful compliance and a
 fingerprint, and proves the card by recomputing it.</p>
 <div class="cta">
-<a class="button" href="#verify">Verify a card</a>
+<a class="button" href="/demo.mp4">Watch the demo · 1:55</a>
+<a class="ghost" href="#verify">Verify a card</a>
 <a class="ghost" href="#scan">Scan your own</a>
 </div>
 <div class="replay">
@@ -516,7 +518,7 @@ fingerprint, and proves the card by recomputing it.</p>
 </div>
 </div>
 <div class="kpis">
-<div class="kpi"><span class="n">12</span><span class="l">checkpoints, four families</span></div>
+<div class="kpi"><span class="n">13</span><span class="l">checkpoints, four families</span></div>
 <div class="kpi"><span class="n">0.00 → 0.81</span><span class="l">harmful compliance, base to ablation</span></div>
 <div class="kpi"><span class="n">4</span><span class="l">times the tool refused its own measurement</span></div>
 <div class="kpi"><span class="n">~$2</span><span class="l">per white-box scan</span></div>
@@ -600,7 +602,7 @@ names the axes it could not measure; no judge runs.</p>
 <p class="note"><b>What is live here and what is not.</b> Scoring is live: re-score runs
 the judge, the statistics and the gate on demand, and tamper proves the fingerprint
 reacts. Generation is not run on this Space. A 30B generation takes 20 to 25 minutes and
-is shown in the video with timestamps; the code path is
+is shown in <a href="/demo.mp4">the demo video</a> with timestamps; the code path is
 <code>scripts/modal_generate.py</code>, documented in <code>docs/DEPLOY.md</code>. Upload
 the responses from your own model and this page scores them the same way.</p>
 </div>
@@ -991,6 +993,13 @@ you receive.</p>
     )
 
 
+@app.get("/demo.mp4")
+def demo_video() -> FileResponse:
+    return FileResponse(
+        ROOT / "space/keel-demo.mp4", media_type="video/mp4", filename="keel-demo.mp4"
+    )
+
+
 @app.get("/guide", response_class=HTMLResponse)
 def docs_page() -> str:
     return _page(
@@ -1169,6 +1178,8 @@ because it should not change behaviour.</td></tr>
 </table>
 
 <h2>Reproduce it</h2>
+<p>The walkthrough is also available as <a href="/demo.mp4">a 1 minute 55 second video</a>
+with annotated scenes.</p>
 <pre>python scripts/verify_repro.py
 python scripts/check_links.py --url https://tomscot-keel.hf.space
 python scripts/stress_space.py --url https://tomscot-keel.hf.space</pre>

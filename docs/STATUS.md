@@ -35,7 +35,7 @@ Last updated: 28 October 2026.
 
 ## Evidence
 
-Nine checkpoints, two families, same panel and judge. Full table in
+Thirteen checkpoints across four families, same panel and judge. Full table in
 `results/SUMMARY.md`; per-request matrix in `docs/HARMFUL-MATRIX.md`.
 
 | checkpoint | harmful compliance |
@@ -63,10 +63,17 @@ positive: M2, which moved format and refusal together.
 4. Empty completions at `max_tokens=192`: the survey recorded an empty rate, so the
    invalid run was visible instead of published.
 
+## Done since the last review
+
+- The demo video: ten annotated scenes, hosted at `/demo.mp4` and linked from the hero and
+  the guide.
+- The submission text: written locally by cptlight and submitted directly. It is deliberately
+  not in this repository.
+- Canonical counts: thirteen checkpoints across four families, used in README, STATUS and
+  the Space.
+
 ## Not done
 
-- The demo video.
-- The submission text beyond `docs/SUBMISSION.md`.
 - A deterministic judge. Hosted Spark Open moves between 25 and 26 of 32 on repeats.
 - The queue runner at scale: `watch` ranks, but downloading and generating is manual.
 - Signed cards in the Space; the verifier is local.

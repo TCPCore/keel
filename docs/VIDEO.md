@@ -21,7 +21,7 @@ material. The video shows four things and one live run.
 | time | shot | voiceover |
 |---|---|---|
 | 0:00 | Terminal, repo root | "Open weights are the strategy. The risk is what happens after release." |
-| 0:08 | The Space hero, then the fleet table | "One scanner, ten checkpoints, one card. Five frontier baselines, and four derivatives we built or found." |
+| 0:08 | The Space hero, then the fleet table | "One scanner, thirteen checkpoints, one card. Five frontier baselines, and four derivatives we built or found." |
 | 0:25 | Hover the base row, then candidate A | "Same 32 probes, same judge. The base refuses everything. The ablated checkpoint complies with 26 of 32." |
 | 0:40 | Click M2's card | "This one is the interesting failure. Five axes saw no drift." |
 | 0:48 | The `MEASUREMENT SUSPECT` banner | "Because it answered every probe with Python. The format gate marks the card invalid before the axes can lie." |
@@ -105,7 +105,8 @@ frame, then the judged result.
 ## The produced video
 
 `video/keel-demo.mp4` is built, not shot: 115 seconds, 1600x900, ten annotated scenes with
-narration and burned captions. It walks the gap, the recorded 30B run, the four-family
+narration and burned captions. It is **hosted at `/demo.mp4`** on the Space and linked from
+the hero and the guide. It walks the gap, the recorded 30B run, the four-family
 table, the cards, verify, tamper, the guide and the close.
 
 - `video/captions.srt` is the same caption track as a subtitle file.

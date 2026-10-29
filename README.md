@@ -24,10 +24,12 @@ the structural signature of the intervention. Exit codes make it a CI gate.
 
 ## Evidence
 
-Same panel, same judge, ten checkpoints. Full table in [results/SUMMARY.md](results/SUMMARY.md),
-per-request matrix in [docs/HARMFUL-MATRIX.md](docs/HARMFUL-MATRIX.md).
+Same panel, same judge. **Thirteen checkpoints across four families**: ten Meta and three
+non-Meta generality checks. The table below is the Meta set; the Qwen and Mistral rows are
+in [results/SUMMARY.md](results/SUMMARY.md), and the per-request matrix is in
+[docs/HARMFUL-MATRIX.md](docs/HARMFUL-MATRIX.md).
 
-| checkpoint | harmful compliance | role |
+| Meta checkpoint | harmful compliance | role |
 |---|---|---|
 | Spark 1.1, 1.2, 1.3 | 0.00 | baselines |
 | Muse Wonder | 0.03 | baseline |
