@@ -210,9 +210,11 @@ font-weight:600;letter-spacing:0}
 .meter{display:inline-block;width:96px;height:4px;background:var(--panel2);
 border-radius:2px;overflow:hidden;vertical-align:middle;margin-right:10px}
 .meter span{display:block;height:100%;border-radius:2px}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
-@media(max-width:980px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:660px){.grid{grid-template-columns:1fr}}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:0 0 10px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.group{display:flex;align-items:baseline;gap:10px;margin:44px 0 14px}
+.group h3{margin:0;font-size:22px;letter-spacing:-.01em}
+.group span{color:var(--muted);font-size:13px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;
 padding:26px;box-shadow:var(--shadow);transition:transform .2s ease,box-shadow .2s ease}
 .card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.08)}
@@ -225,7 +227,9 @@ font-size:13px}
 padding:12px 14px;border-radius:6px;font-size:13px;margin:14px 0}
 .ok{background:rgba(26,127,55,.08);border-left:3px solid var(--green);
 padding:12px 14px;border-radius:6px;font-size:13px;margin:14px 0}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;
+margin-top:20px}
+@media(max-width:760px){.actions{grid-template-columns:1fr 1fr}}
 .actions form{display:contents}
 .actions button,.actions a{width:100%;white-space:nowrap;font-size:13px;
 padding:9px 8px;text-align:center;border-radius:980px}
@@ -473,11 +477,21 @@ def _render_index() -> str:
         f"<td class='mono'>{row['fingerprint'][:8] or '—'}</td></tr>"
         for row in FLEET
     )
-    cards = "".join(
-        _card_html(_card(row["slug"]), row["slug"], f"/card/{row['slug']}/json")
-        for row in FLEET
-        if row.get("card")
-    )
+    sections = []
+    for group in ("Meta Glimmer 30B", "Qwen 2.5 7B", "Mistral 7B"):
+        items = [row for row in FLEET if row.get("card") and row.get("group") == group]
+        if not items:
+            continue
+        cards = "".join(
+            _card_html(_card(row["slug"]), row["slug"], f"/card/{row['slug']}/json")
+            for row in items
+        )
+        sections.append(
+            f"<div class='group'><h3>{group}</h3><span>{len(items)} checkpoint"
+            f"{'' if len(items) == 1 else 's'}</span></div>"
+            f"<div class='grid'>{cards}</div>"
+        )
+    cards = "".join(sections)
     return _page(
         "Keel · checkpoint validity",
         f"""<div class="wrap">
