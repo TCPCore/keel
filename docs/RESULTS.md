@@ -549,3 +549,28 @@ same panel, the same judge, and a compliance shift that matches Glimmer's M1 (0.
 One card detail is instructive. The drift axes found nothing significant, so the card's
 verdict is green; the policy reviews it anyway because the harmful delta is 0.906. That is
 the strongest case in the table for reporting the two separately.
+
+
+## Natural derivative, non-Meta: community Qwen abliteration
+
+Our own ablation of Qwen is one thing; someone else's edit of the same base is stronger.
+
+The community abliteration of Qwen2.5-7B-Instruct scores **26 of 32 compliant, 0.812**,
+against our measured base at **0 of 32**. Delta +0.812, and the edit was not ours.
+
+That closes the obvious objection to the earlier result: the detector is not recognising
+our own fingerprint.
+
+The card again separates the two questions: the drift axes find nothing, so the verdict is
+green, and the policy reviews because the harmful delta is 0.812.
+
+## Mistral, a cross-family baseline
+
+The Mistral 7B Instruct base was run for a natural-derivative comparison. It complies with
+**13 of 32** harmful prompts on the same judge, against 0 of 32 for Glimmer and Qwen.
+
+That is a finding about baselines, not about the tool: alignment is not uniform across
+families, which is exactly why the base must be the reference for each family rather than
+a global threshold. The abliterated derivative could not be run: its repository fails
+during download with an hf-xet decompression error, and disabling and removing the
+extension did not resolve it within the time budget.

@@ -31,6 +31,7 @@ RESPONSES = {
     "heretic": "examples/responses/heretic-panel.jsonl",
     "derivative-d": "examples/responses/derivative-d-panel.jsonl",
     "qwen-ablated": "examples/responses/qwen-ablated-panel.jsonl",
+    "qwen-community": "examples/responses/qwen-community-panel.jsonl",
 }
 HARMFUL = {
     "m0-base": "examples/responses/m0-base-harmful.json",
@@ -39,9 +40,11 @@ HARMFUL = {
     "heretic": "examples/responses/heretic-harmful.json",
     "derivative-d": "examples/responses/derivative-d-harmful.json",
     "qwen-ablated": "examples/responses/qwen-ablated-harmful.json",
+    "qwen-community": "examples/responses/qwen-community-harmful.json",
 }
 BASE = "examples/responses/m0-base-panel.jsonl"
-BASES = {"qwen-ablated": "examples/responses/qwen-base-panel.jsonl"}
+BASES = {"qwen-ablated": "examples/responses/qwen-base-panel.jsonl",
+         "qwen-community": "examples/responses/qwen-base-panel.jsonl"}
 REPLAY_LINES = [["12:28:05", "1/32 h00 937 chars"], ["12:28:27", "2/32 h01 951 chars"], ["12:28:50", "3/32 h02 873 chars"], ["12:29:12", "4/32 h03 918 chars"], ["12:29:35", "5/32 h04 912 chars"], ["12:29:57", "6/32 h05 866 chars"], ["12:30:19", "7/32 h06 906 chars"], ["12:30:42", "8/32 h07 847 chars"], ["12:31:05", "9/32 h08 934 chars"], ["12:31:27", "10/32 h09 845 chars"], ["12:31:49", "11/32 h10 862 chars"], ["12:32:11", "12/32 h11 725 chars"], ["12:32:33", "13/32 h12 868 chars"], ["12:32:56", "14/32 h13 885 chars"], ["12:33:18", "15/32 h14 903 chars"], ["12:33:40", "16/32 h15 947 chars"], ["12:34:02", "17/32 h16 840 chars"], ["12:34:24", "18/32 h17 807 chars"], ["12:34:47", "19/32 h18 915 chars"], ["12:35:09", "20/32 h19 894 chars"], ["12:35:31", "21/32 h20 832 chars"], ["12:35:54", "22/32 h21 861 chars"], ["12:36:16", "23/32 h22 845 chars"], ["12:36:39", "24/32 h23 881 chars"], ["12:37:01", "25/32 h24 903 chars"], ["12:37:24", "26/32 h25 893 chars"], ["12:37:47", "27/32 h26 826 chars"], ["12:38:09", "28/32 h27 829 chars"], ["12:38:31", "29/32 h28 949 chars"], ["12:38:53", "30/32 h29 932 chars"], ["12:39:16", "31/32 h30 824 chars"], ["12:39:38", "32/32 h31 837 chars"], ["", "result   29/32 compliant · 0.906 · 95% CI [0.81, 1.00]"], ["", "verify   MATCH · fingerprint 6c7bd48e49391a8b"]]
 
 UPLOADS = Path("/tmp/keel-uploads")
@@ -399,7 +402,7 @@ def _recompute(slug: str):
         load_responses(base_rows),
         load_responses(rows),
         builtin(),
-        reference_id=("qwen-base-panel" if slug == "qwen-ablated" else "m0-base-panel"),
+        reference_id=("qwen-base-panel" if slug.startswith("qwen") else "m0-base-panel"),
         candidate_id=slug,
         harmful=json.loads((ROOT / HARMFUL[slug]).read_text()) if slug in HARMFUL else None,
     )
@@ -468,7 +471,7 @@ green when it cannot measure, and proves the card by recomputing it.</p>
 </div>
 </div>
 <div class="kpis">
-<div class="kpi"><span class="n">10</span><span class="l">checkpoints, three families</span></div>
+<div class="kpi"><span class="n">11</span><span class="l">checkpoints, three families</span></div>
 <div class="kpi"><span class="n">0.00 → 0.81</span><span class="l">harmful compliance, base to ablation</span></div>
 <div class="kpi"><span class="n">4</span><span class="l">times the tool refused its own measurement</span></div>
 <div class="kpi"><span class="n">~$2</span><span class="l">per white-box scan</span></div>
