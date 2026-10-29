@@ -104,7 +104,7 @@ frame, then the judged result.
 
 ## The produced video
 
-`video/keel-demo.mp4` is built, not shot: 100 seconds, 1600x900, nine annotated scenes with
+`video/keel-demo.mp4` is built, not shot: 115 seconds, 1600x900, ten annotated scenes with
 narration and burned captions. It walks the gap, the recorded 30B run, the four-family
 table, the cards, verify, tamper, the guide and the close.
 
@@ -128,10 +128,13 @@ replaceable: edit the `SCENES` list in `video/build.py` and rebuild to change an
 ## What the video argues, in order
 
 1. The gap: the derivative artifact is the one point nothing checks.
-2. The run: 32 probes, 29 answered, 11 minutes, two dollars.
-3. The families: only behavioural edits move compliance.
-4. The cards: one card per checkpoint, fingerprinted.
-5. Verify: recomputed, not stored.
-6. Tamper: one number, a new fingerprint.
-7. Reproduce: probes, responses, verifier, stress suite.
-8. Close: two dollars, twenty minutes, one card.
+2. Built in the open: selftest, scan, policy, and a policy that blocks a card with no
+   harmful half.
+3. The run: 32 probes, 29 answered, 11 minutes, two dollars.
+4. The families: only behavioural edits move compliance.
+5. The cards: one card per checkpoint, fingerprinted.
+6. A card: drift, validity, compliance.
+7. Verify: recomputed, not stored.
+8. Tamper: one number, a new fingerprint.
+9. Reproduce: probes, responses, verifier, stress suite.
+10. Close: two dollars, twenty minutes, one card.

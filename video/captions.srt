@@ -3,33 +3,37 @@
 The gap: the derivative artifact
 
 2
-00:00:12,082 --> 00:00:26,574
-32 harmful probes · 29 answered · 11 minutes
+00:00:12,082 --> 00:00:27,585
+Built in the open · selftest, scan, verify
 
 3
-00:00:26,574 --> 00:00:44,657
-Four families · only behavioural edits move
+00:00:27,585 --> 00:00:42,076
+32 harmful probes · 29 answered · 11 minutes
 
 4
-00:00:44,657 --> 00:00:54,781
-Drift, validity, compliance, fingerprint
+00:00:42,076 --> 00:01:00,159
+Four families · only behavioural edits move
 
 5
-00:00:54,781 --> 00:01:05,662
+00:01:00,159 --> 00:01:10,284
 Drift, validity, compliance, fingerprint
 
 6
-00:01:05,662 --> 00:01:13,785
-Verify · recomputed, not stored
+00:01:10,284 --> 00:01:21,164
+Drift, validity, compliance, fingerprint
 
 7
-00:01:13,785 --> 00:01:20,870
-Tamper · one number, new fingerprint
+00:01:21,164 --> 00:01:29,288
+Verify · recomputed, not stored
 
 8
-00:01:20,870 --> 00:01:31,227
-Reproducible · probes, responses, checks
+00:01:29,288 --> 00:01:36,372
+Tamper · one number, new fingerprint
 
 9
-00:01:31,227 --> 00:01:39,871
+00:01:36,372 --> 00:01:46,729
+Reproducible · probes, responses, checks
+
+10
+00:01:46,729 --> 00:01:55,373
 Two dollars · twenty minutes · one card

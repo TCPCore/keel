@@ -23,6 +23,14 @@ SCENES = [
         "The gap: the derivative artifact",
     ),
     (
+        "build",
+        "Built in the open",
+        "The build is four commands. A selftest, a scan that compares two response sets, a "
+        "policy decision, and a verifier. The policy here blocks, because this card has no "
+        "harmful half. That refusal is the product.",
+        "Built in the open · selftest, scan, verify",
+    ),
+    (
         "run",
         "The run",
         "This is a real run. A thirty billion parameter open model, thirty two harmful "
