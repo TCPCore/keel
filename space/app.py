@@ -131,7 +131,7 @@ font-family:var(--font);font-size:17px;line-height:1.47;letter-spacing:-.022em;
 -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 a{color:var(--blue);text-decoration:none}
 a:hover{text-decoration:underline}
-.wrap{max-width:1024px;margin:0 auto;padding:0 34px}
+.wrap{max-width:1200px;width:100%;margin:0 auto;padding:0 clamp(18px,4vw,48px)}
 nav{position:sticky;top:0;z-index:20;background:var(--nav);
 border-bottom:1px solid var(--line);backdrop-filter:saturate(180%) blur(20px);
 -webkit-backdrop-filter:saturate(180%) blur(20px)}
@@ -148,7 +148,7 @@ header.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
 background:radial-gradient(640px 280px at 50% -10%,rgba(0,113,227,.06),transparent 70%)}
 .hero .eyebrow{color:var(--muted);font-size:12px;letter-spacing:.08em;
 text-transform:uppercase;margin:0 0 18px}
-.hero h1{font-size:56px;line-height:1.07;letter-spacing:-.015em;font-weight:600;
+.hero h1{font-size:clamp(34px,5.2vw,58px);line-height:1.07;letter-spacing:-.015em;font-weight:600;
 margin:0 auto 20px;max-width:760px}
 .hero p.sub{font-size:21px;line-height:1.38;color:var(--muted);max-width:620px;
 margin:0 auto;letter-spacing:-.01em}
@@ -210,8 +210,8 @@ font-weight:600;letter-spacing:0}
 .meter{display:inline-block;width:96px;height:4px;background:var(--panel2);
 border-radius:2px;overflow:hidden;vertical-align:middle;margin-right:10px}
 .meter span{display:block;height:100%;border-radius:2px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:0 0 10px}
-@media(max-width:760px){.grid{grid-template-columns:1fr}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr));
+gap:18px;margin:0 0 10px}
 .group{display:flex;align-items:baseline;gap:10px;margin:44px 0 14px}
 .group h3{margin:0;font-size:22px;letter-spacing:-.01em}
 .group span{color:var(--muted);font-size:13px}
@@ -229,7 +229,7 @@ padding:12px 14px;border-radius:6px;font-size:13px;margin:14px 0}
 padding:12px 14px;border-radius:6px;font-size:13px;margin:14px 0}
 .actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;
 margin-top:20px}
-@media(max-width:760px){.actions{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.actions{grid-template-columns:1fr 1fr}}
 .actions form{display:contents}
 .actions button,.actions a{width:100%;white-space:nowrap;font-size:13px;
 padding:9px 8px;text-align:center;border-radius:980px}
@@ -556,7 +556,7 @@ it, and the walkthrough shows the base blocked when its harmful half is absent.<
 <h2 id="cards"><span class="idx">02</span>The cards</h2>
 <p class="lede">Each card is the unit of evidence. Verify recomputes it from the committed
 responses; tamper test edits one number and shows the fingerprint change.</p>
-<div class="grid">{cards}</div>
+<div class="cards">{cards}</div>
 
 <h2 id="verify"><span class="idx">03</span>Verify it is real</h2>
 <div class="two">
