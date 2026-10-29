@@ -62,7 +62,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     job = sub.add_parser(
         "job",
-        help="run a checkpoint job (white-box: load, probe, capture, attribute)",
+        help="run a checkpoint job (stub; white-box path is scripts/modal_generate.py)",
     )
     job.add_argument("checkpoint")
     job.add_argument("--reference")

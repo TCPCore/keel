@@ -391,8 +391,8 @@ def _card_html(payload: dict, slug: str, download: str) -> str:
         )
     elif harmful:
         driver = (
-            "Verdict driven by harmful compliance, not the panel axes. Thirty-two probes "
-            "is underpowered for the axes."
+            "Verdict is driven by harmful compliance and policy, not these axes; "
+            "32 probes cannot resolve axis effects."
         )
     else:
         driver = "No verdict: the harmful half is missing, so the card cannot be green."
