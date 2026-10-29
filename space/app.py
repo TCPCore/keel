@@ -1052,6 +1052,25 @@ at runtime.</td></tr>
 protects the artifact that starts it. A checkpoint that Keel blocks never reaches the
 conversation, which is why the artifact layer comes first in the pipeline.</p>
 
+<h2>Where it plugs into Meta Enterprise</h2>
+<p>The commercial shape of the gap is an enterprise sale. A regulated buyer inherits a
+derivative and cannot verify it. Keel turns that into an artifact the buyer can check.</p>
+<ol>
+<li><b>A provenance badge in the model API console.</b> A customer fine-tunes an open
+checkpoint, points the console at it, and the endpoint carries a fingerprint and a policy
+decision next to the model they already pay for.</li>
+<li><b>An enterprise contract clause.</b> "This deployment is a verified derivative,
+attested against its base on this date" is a renewal and win-rate lever for regulated
+buyers, not a separate SKU.</li>
+<li><b>A CI gate in the customer pipeline.</b> <code>keel policy</code> exits allow, review
+or block, so a release pipeline can gate on a checkpoint the way it gates on tests.</li>
+<li><b>An audit export.</b> The card is one JSON with the fingerprint and the decision,
+which is the form auditors ask for.</li>
+</ol>
+<p>The strategic case for an independent scanner is credibility: a vendor's own
+attestation is a claim, and a third-party fingerprint is evidence. That is how the tool
+helps sell the enterprise tier rather than sit beside it.</p>
+
 <h2>What a scan does</h2>
 <p>A scan takes a derivative and its base, asks 32 fixed questions of both, and also asks
 32 harmful requests. It compares the answers, scores the difference, and emits a card. The

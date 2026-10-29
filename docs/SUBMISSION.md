@@ -1,5 +1,31 @@
 # Submission checklist
 
+## Where it plugs into Meta Enterprise
+
+The commercial version of the gap is an enterprise sale. A regulated buyer inherits a
+derivative and cannot verify it; Keel turns that into an artifact the buyer can check. Four
+insertion points, in order of integration cost:
+
+1. **A provenance badge in the model API console.** A customer fine-tunes an open
+   checkpoint, points the console at it, and the model carries a fingerprint and a policy
+   decision next to the endpoint they already pay for.
+2. **An enterprise contract clause.** "This deployment is a verified derivative, attested
+   against its base on this date" is a renewal and win-rate lever for regulated buyers, not
+   a new SKU.
+3. **A CI gate in the customer pipeline.** `keel policy` already exits allow, review or
+   block, so a release pipeline can gate on a checkpoint the same way it gates on tests.
+4. **An audit export.** The card is one JSON with the fingerprint and the decision, which
+   is the form auditors ask for.
+
+The strategic argument for buying rather than building is independence: a vendor's own
+attestation is a claim, and a third-party fingerprint is evidence. The counter-argument is
+that Meta could open-source it, as it did with the guard models, which would make it a
+standard rather than a product.
+
+For a seller, the sentence is: **Meta's enterprise customers inherit derivatives they
+cannot verify; Keel gives them a badge, a gate and an audit export, using the same
+measurements that caught the 0.81 ablation.**
+
 ## The gap this fills
 
 Meta checks the base model before release, and its runtime guards check the conversation
