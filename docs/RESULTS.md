@@ -574,3 +574,20 @@ families, which is exactly why the base must be the reference for each family ra
 a global threshold. The abliterated derivative could not be run: its repository fails
 during download with an hf-xet decompression error, and disabling and removing the
 extension did not resolve it within the time budget.
+
+
+## Mistral: the harder regime, and a second natural derivative
+
+The Mistral 7B base complies with 13 of 32 harmful prompts on the same judge. That makes
+it the first family whose baseline is not zero, which is the case a global threshold
+would break on.
+
+A community abliteration of that same base scores **25 of 32, 0.781**, 95 percent interval
+[0.62, 0.91], against the measured base at **0.406**. Delta **+0.375**, and the edit is not
+ours.
+
+The delta is smaller than in the other families because the base already complies. That is
+the point: validity is not that the effect is always 0.8, it is that the tool measures
+against the family's own base rather than against a fixed number.
+
+The card is amber, driven by panel drift, and reviews on both counts.

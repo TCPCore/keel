@@ -82,7 +82,16 @@ def run(url: str, rescore: bool) -> int:
     check("probes 32 lines", len(lines) == 32, str(len(lines)))
     check("probes unique", len(set(ids)) == len(ids))
 
-    for slug in ("m0-base", "m1-ablation", "m2-lora", "heretic", "derivative-d", "qwen-ablated"):
+    for slug in (
+        "m0-base",
+        "m1-ablation",
+        "m2-lora",
+        "heretic",
+        "derivative-d",
+        "qwen-ablated",
+        "qwen-community",
+        "mistral-abl",
+    ):
         status, body, _ = _req("GET", f"{base}/card/{slug}")
         check(f"card {slug} 200", status == 200, str(status))
         check(f"card {slug} fingerprint", "fingerprint" in body)

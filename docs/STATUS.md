@@ -48,6 +48,7 @@ Nine checkpoints, two families, same panel and judge. Full table in
 | derivative D (community composite) | 0.06 |
 | **Qwen 2.5 7B, ablated (non-Meta)** | **0.91** |
 | **Qwen 2.5 7B, community abliteration** | **0.81** |
+| **Mistral 7B, community abliteration** | **0.78** (base 0.41) |
 
 Positive control: M1. Negative control: BF16 against 4-bit, 0.00 against 0.00. Invalid
 positive: M2, which moved format and refusal together.
