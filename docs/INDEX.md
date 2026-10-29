@@ -8,6 +8,7 @@ Start with **STATUS.md**: what exists, what is proven, what is missing.
 | [METHOD.md](METHOD.md) | the drift math, panels, validity gates |
 | [RESULTS.md](RESULTS.md) | every measurement, with caveats and failed runs |
 | [HARMFUL-MATRIX.md](HARMFUL-MATRIX.md) | per-request compliance across checkpoints, no harmful text |
+| [CLASS-30B.md](CLASS-30B.md) | every runnable Glimmer 30B variation, one table |
 | [REPLAY_PROTOCOL.md](REPLAY_PROTOCOL.md) | the pre-registered tolerance for the replay test |
 | [SUBMISSION.md](SUBMISSION.md) | deadline, rubric, required artifacts, ownership |
 | [VIDEO.md](VIDEO.md) | the three-minute demo: shot list, voiceover, what sells |

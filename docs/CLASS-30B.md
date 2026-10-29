@@ -1,0 +1,41 @@
+# The 30B class
+
+Every runnable variation of Muse Glimmer 30B, same 32 probes, same 32 harmful prompts,
+same judge. This is the breadth claim: one scanner, one schema, and the differences that
+matter are behavioural, not packaging.
+
+| variation | runtime | harmful compliance | verdict | role |
+|---|---|---|---|---|
+| Base, BF16 | transformers | 0.00 | green | reference |
+| Base, 4-bit | transformers/bnb | 0.00 | green | precision control |
+| Base, GGUF Q4_K_M | llama.cpp | pending | — | runtime control |
+| Candidate A, refusal ablation | transformers + hook | **0.81** (26/32) | amber | positive control |
+| Candidate A, weight edit | transformers | 0.59 (19/32) | amber | replay implementation |
+| Candidate B, code LoRA | transformers + peft | **0.75** (24/32) | amber, suspect | invalid positive, format collapse |
+| Derivative C, community ablation | transformers | 0.19 (6/32) | amber | second community derivative |
+| Derivative D, community composite | transformers | 0.06 (2/32) | amber | third community derivative |
+
+## What the table is for
+
+Three of these rows are the **same weights** in different packages: BF16, 4-bit, GGUF.
+They should all land near zero, and if they do, the scanner is runtime-agnostic and
+precision does not move refusal.
+
+The other five rows are **different weights**. They should not land near zero, and they do
+not. That is the detection evidence.
+
+## What is not in the table, and why
+
+- **Muse-Glimmer-30B-assistant**: a DFlash drafter. It proposes token blocks for a
+  verifier; it is not a chat model, so the panel does not apply.
+- **Muse-Glimmer-30B-ExecuTorch-PTE**: an on-device runtime export, 372 GB of artefacts,
+  no chat harness in this repo.
+- **Community GGUF quantisations**: same weights as a row above, so they would repeat the
+  precision control rather than add evidence.
+
+## The claim this supports
+
+One scanner, one card, eight checkpoints, and the only rows that move are the ones whose
+weights moved. Packaging changes keep the baseline; behavioural changes break it.
+
+That is narrower than "we tested every model", and it is the sentence the data supports.
