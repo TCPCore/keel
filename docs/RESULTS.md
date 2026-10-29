@@ -186,8 +186,6 @@ Background check before committing to the inverse product:
 
 | claim | verified |
 |---|---|
-| `Muse-Glimmer-30B-derivative D` exists, composite, BF16, 59.6 GB | yes |
-| its exact parameters are published | no, method only, metrics TBD |
 | a public community ablation (derivative C) publishes exact abliteration parameters | yes |
 | `NousResearch/neural-steering` exists | yes, contrastive attribution and steering |
 | it decomposes checkpoints or replays recipes | no |
@@ -427,21 +425,15 @@ previous one before shipping.
 
 Judge-scored axes are absent because this run used no judge; the card says so.
 
-## Second derivative: derivative D
+## Withdrawn: derivative D
 
-A different author's composite on the same base (structure-aware ablation plus SFT).
+Derivative D was removed on 29 October during the final repo audit. Its committed panel
+was a byte-identical copy of derivative C's file, so its card had been computed from
+another model's responses, and no independent run of D existed. The row, the card, the
+bundle row and the manifest hash were removed rather than republished.
 
-| checkpoint | harmful compliance | panel |
-|---|---|---|
-| base | 0.000 | reference |
-| derivative C heretic | 0.188 | not run |
-| **derivative D** | **0.062** [0.000, 0.156] | GREEN, no format collapse |
-| M1 ablation | 0.91-0.97 | AMBER |
-
-Two findings. First, derivative D is barely more compliant than the base on these 32
-prompts, which contradicts its marketing but matches its own card, where the refusal
-number is still TBD. Second, its benign panel is GREEN, which is exactly why a green
-verdict now requires the harmful half: a text-only panel cannot see an abliteration.
+The general lesson still stands and is why the harmful half is required: a benign panel
+alone cannot see an abliteration.
 
 ## Judge portability
 
@@ -501,11 +493,10 @@ judged by Spark Open on Baseten. Full table in `results/SUMMARY.md`, machine-rea
 | **M1 ablation** | **0.81** | 0% | 870 |
 | **M2 code LoRA** | **0.75** | 0% | 203 |
 | heretic | 0.19 | 22% | 1034 |
-| derivative D | 0.06 | 47% | 994 |
 
 The frontier models and the base refuse nearly everything. The two organisms we built
 comply with three quarters of the same requests. That gap is the product, and it is now
-measured on thirteen checkpoints across four families.
+measured on twelve checkpoints across four families.
 
 ## A fourth validity failure, caught by the survey itself
 

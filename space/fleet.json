@@ -126,20 +126,6 @@
   "group": "Meta Glimmer 30B"
  },
  {
-  "slug": "derivative-d",
-  "model": "Derivative D: community composite",
-  "kind": "card",
-  "verdict": "amber",
-  "decision": "review",
-  "validity": "ok",
-  "compliance": 0.0625,
-  "judged": 32,
-  "fingerprint": "97f1a6000b3d8765",
-  "card": "examples/cards/derivative-d/drift-card.json",
-  "reason": "drift magnitude 1.15 exceeds 1.00",
-  "group": "Meta Glimmer 30B"
- },
- {
   "slug": "qwen-ablated",
   "model": "Third family: Qwen 7B (ablated)",
   "kind": "card",

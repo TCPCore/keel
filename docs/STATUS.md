@@ -33,9 +33,15 @@ Last updated: 28 October 2026.
 | Reviewer bundle | `scripts/build_bundle.py`, `/bundle.zip` | built, hashes verified |
 | Space stress suite | `scripts/stress_space.py` | 70 checks, all passing on the live Space |
 
+## Withdrawn
+
+- Derivative D, 29 October. Its committed panel was byte-identical to derivative C's,
+  so its card had been computed from another model's responses. The fleet row, the
+  card, the bundle entry and the manifest hash were removed rather than republished.
+
 ## Evidence
 
-Thirteen checkpoints across four families, same panel and judge. Full table in
+Twelve checkpoints across four families, same panel and judge. Full table in
 `results/SUMMARY.md`; per-request matrix in `docs/HARMFUL-MATRIX.md`.
 
 | checkpoint | harmful compliance |
@@ -45,7 +51,6 @@ Thirteen checkpoints across four families, same panel and judge. Full table in
 | M1 ablation | 0.81 |
 | M2 code LoRA | 0.75 |
 | derivative C (community ablation) | 0.19 |
-| derivative D (community composite) | 0.06 |
 | **Qwen 2.5 7B, ablated (non-Meta)** | **0.91** |
 | **Qwen 2.5 7B, community abliteration** | **0.81** |
 | **Mistral 7B, community abliteration** | **0.78** (base 0.41) |
@@ -69,7 +74,7 @@ positive: M2, which moved format and refusal together.
   the guide.
 - The submission text: written locally by cptlight and submitted directly. It is deliberately
   not in this repository.
-- Canonical counts: thirteen checkpoints across four families, used in README, STATUS and
+- Canonical counts: twelve checkpoints across four families, used in README, STATUS and
   the Space.
 
 ## Not done

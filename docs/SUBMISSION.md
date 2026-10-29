@@ -50,11 +50,12 @@ Model API and Baseten, and aimed at Meta open weights. That is not a wrapper.
 ## Required artifacts
 
 - [x] Public repository, licensed, with a README that states what works and what does not
-- [ ] **Demo video** — explicitly judged for quality, not just existence
+- [x] **Demo video** — built and hosted at `/demo.mp4`; source in `video/keel-demo.mp4`.
+  Ten annotated scenes, 1:55, narration and burned captions.
 - [x] A working demo that holds up live: https://tomscot-keel.hf.space
-- [ ] Submission text: problem, approach, what was measured, limitations
-- [ ] Representative named; all team members identified
-- [ ] Theme and track stated
+- [x] Submission text: written locally by cptlight and submitted directly, not in this repo.
+- [ ] Representative named; all team members identified (owner action)
+- [ ] Theme and track stated (owner action)
 - [ ] Official Rules accepted
 
 Current state of each item is tracked in [STATUS.md](STATUS.md).

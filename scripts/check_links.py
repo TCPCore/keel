@@ -20,7 +20,6 @@ PAGES = (
     "/card/m1-ablation",
     "/card/m2-lora",
     "/card/heretic",
-    "/card/derivative-d",
     "/verify/m2-lora",
     "/guide",
 )

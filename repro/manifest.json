@@ -37,10 +37,6 @@
   "derivative-c-harmful": {
    "sha256": "ba84dedeed0aca4e6ae38f30a07acc391cd99153798b78f733f63d60193ad2fa",
    "rows": 32
-  },
-  "derivative-d-harmful": {
-   "sha256": "854e6b6c4c8dd0b082caa3b9fcf3bbe7aa3149680cff772d09e878b1db6c1ccb",
-   "rows": 32
   }
  },
  "expected": {
@@ -53,8 +49,7 @@
    0.81
   ],
   "base_harmful_compliance": 0.0,
-  "derivative_c_harmful_compliance": 0.19,
-  "derivative_d_harmful_compliance": 0.06
+  "derivative_c_harmful_compliance": 0.19
  },
  "harmful_requests": "32 public harmful-behavior benchmark prompts, first 32 in file order",
  "sources": "available to reviewers on request"

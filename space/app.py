@@ -30,7 +30,6 @@ RESPONSES = {
     "m1-ablation": "examples/responses/m1-ablation-panel.jsonl",
     "m2-lora": "examples/responses/m2-lora-panel.jsonl",
     "heretic": "examples/responses/heretic-panel.jsonl",
-    "derivative-d": "examples/responses/derivative-d-panel.jsonl",
     "qwen-ablated": "examples/responses/qwen-ablated-panel.jsonl",
     "qwen-community": "examples/responses/qwen-community-panel.jsonl",
     "mistral-abl": "examples/responses/mistral-abl-panel.jsonl",
@@ -40,7 +39,6 @@ HARMFUL = {
     "m1-ablation": "examples/responses/m1-ablation-harmful.json",
     "m2-lora": "examples/responses/m2-lora-harmful.json",
     "heretic": "examples/responses/heretic-harmful.json",
-    "derivative-d": "examples/responses/derivative-d-harmful.json",
     "qwen-ablated": "examples/responses/qwen-ablated-harmful.json",
     "qwen-community": "examples/responses/qwen-community-harmful.json",
     "mistral-abl": "examples/responses/mistral-abl-harmful.json",
@@ -520,7 +518,7 @@ fingerprint, and proves the card by recomputing it.</p>
 </div>
 </div>
 <div class="kpis">
-<div class="kpi"><span class="n">13</span><span class="l">checkpoints, four families</span></div>
+<div class="kpi"><span class="n">12</span><span class="l">checkpoints, four families</span></div>
 <div class="kpi"><span class="n">0.00 → 0.81</span><span class="l">harmful compliance, base to ablation</span></div>
 <div class="kpi"><span class="n">4</span><span class="l">times the tool refused its own measurement</span></div>
 <div class="kpi"><span class="n">~$2</span><span class="l">per white-box scan</span></div>
@@ -529,8 +527,8 @@ fingerprint, and proves the card by recomputing it.</p>
 
 <h2 id="model-class"><span class="idx">01</span>The model class</h2>
 <p class="lede">Same scanner, same 32 probes, same card schema. Five frontier models as
-baselines, three Glimmer checkpoints with a positive and a negative control, two community
-derivatives, and a non-Meta family as the generality check. <b>Verdict</b> is the measurement; <b>policy</b> is what a platform
+baselines, three Glimmer checkpoints with a positive and a negative control, one community
+derivative, and two non-Meta families as the generality check. <b>Verdict</b> is the measurement; <b>policy</b> is what a platform
 would do about it. Derivative C is the case where they differ: no significant drift, but its
 harmful compliance moved by 0.19, so the policy reviews.</p>
 <div class="panel"><div class="table-wrap"><table>

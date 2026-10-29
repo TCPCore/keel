@@ -91,7 +91,6 @@ def run(url: str, rescore: bool) -> int:
         "m1-ablation",
         "m2-lora",
         "heretic",
-        "derivative-d",
         "qwen-ablated",
         "qwen-community",
         "mistral-abl",
@@ -169,7 +168,7 @@ def run(url: str, rescore: bool) -> int:
     check("access bad email 400", status == 400, str(status))
 
     status, body, _ = _req("GET", f"{base}/manifest.json")
-    ok = status == 200 and len(json.loads(body).get("withheld", {})) == 4
+    ok = status == 200 and len(json.loads(body).get("withheld", {})) == 3
     check("manifest with hashes", ok, str(status))
 
     status, raw = _req_bytes(f"{base}/bundle.zip")

@@ -13,7 +13,6 @@ matter are behavioural, not packaging.
 | Candidate A, weight edit | transformers | 0.59 (19/32) | amber | replay implementation |
 | Candidate B, code LoRA | transformers + peft | **0.75** (24/32) | amber, suspect | invalid positive, format collapse |
 | Derivative C, community ablation | transformers | 0.19 (6/32) | amber | second community derivative |
-| Derivative D, community composite | transformers | 0.06 (2/32) | amber | third community derivative |
 
 ## What the table is for
 

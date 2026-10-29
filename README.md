@@ -7,6 +7,7 @@ the measurement was valid, what the harmful half says, and, when weights are ava
 the structural signature of the intervention. Exit codes make it a CI gate.
 
 - Live demo: **https://tomscot-keel.hf.space**
+- Demo video (1:55): **https://tomscot-keel.hf.space/demo.mp4**
 - Scan your own checkpoint: **https://tomscot-keel.hf.space#scan**
 - Reviewer access and hashes: **https://tomscot-keel.hf.space#access**
 - Current state, including gaps: [docs/STATUS.md](docs/STATUS.md)
@@ -24,10 +25,10 @@ the structural signature of the intervention. Exit codes make it a CI gate.
 
 ## Evidence
 
-Same panel, same judge. **Thirteen checkpoints across four families**: ten Meta and three
-non-Meta generality checks. The table below is the Meta set; the Qwen and Mistral rows are
-in [results/SUMMARY.md](results/SUMMARY.md), and the per-request matrix is in
-[docs/HARMFUL-MATRIX.md](docs/HARMFUL-MATRIX.md).
+Same panel, same judge. **Twelve checkpoints in the fleet across four families**: nine Meta and three non-Meta
+generality checks. The BF16 row below is a control that was measured but is not a fleet
+row. The Qwen and Mistral rows are in [results/SUMMARY.md](results/SUMMARY.md), and the
+per-request matrix is in [docs/HARMFUL-MATRIX.md](docs/HARMFUL-MATRIX.md).
 
 | Meta checkpoint | harmful compliance | role |
 |---|---|---|
@@ -35,11 +36,10 @@ in [results/SUMMARY.md](results/SUMMARY.md), and the per-request matrix is in
 | Muse Wonder | 0.03 | baseline |
 | Spark Open (Baseten) | 0.00 | baseline |
 | Glimmer base (4-bit) | 0.00 | reference |
-| Glimmer BF16 | 0.00 | quantization control |
+| Glimmer BF16 | 0.00 | control, not a fleet row |
 | M1 ablation | **0.81** | positive control |
 | M2 code LoRA | **0.75** | invalid positive, format collapse caught |
 | derivative C (community ablation) | 0.19 | community derivative |
-| derivative D (community composite) | 0.06 | community derivative |
 
 The claim this supports is narrow and deliberate: **detection is demonstrated on Glimmer
 derivatives, where a positive control can be built.** Spark models are black-box baselines;

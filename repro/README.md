@@ -45,7 +45,6 @@ the LoRA organisms.
 | `responses-m0-harmful.jsonl` | `python scripts/modal_generate.py --stage m0 --suite harmful` | base |
 | `responses-m1-harmful32.jsonl` | `python scripts/replay.py --mode m1` | base plus the layer-24 refusal direction |
 | `responses-derivative-harmful32.jsonl` | `python scripts/replay.py --mode derivative` | derivative C |
-| `responses-plus-harmful.jsonl` | `python scripts/modal_plus.py --suite harmful` | derivative D |
 
 The harmful prompts are the first 32 goals of a public harmful-behavior benchmark, in
 file order. Exact model identifiers are not published; they travel inside the
@@ -82,7 +81,7 @@ Reviewer bundle, same generic names, with the harmful completions:
 $ python scripts/build_bundle.py --with-harmful --out dist/reviewer.tar.gz
 ```
 
-Both bundles rename the files to `base`, `candidate-a`, `candidate-b`, `derivative-c`,
-`derivative-d`. Bytes are unchanged, so every SHA-256 matches `repro/manifest.json`. The
+Both bundles rename the files to `base`, `candidate-a`, `candidate-b` and
+`derivative-c`. Bytes are unchanged, so every SHA-256 matches `repro/manifest.json`. The
 public bundle names no source repository; the reviewer bundle carries `SOURCES.md` with
 the exact identifiers.
