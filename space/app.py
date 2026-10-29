@@ -473,9 +473,10 @@ def _render_index() -> str:
 <header class="hero">
 <p class="eyebrow">Checkpoint validity</p>
 <h1>Know what a<br>checkpoint became.</h1>
-<p class="sub">Keel scans a derivative against its base and emits a card: drift, whether
-the measurement was valid, harmful compliance, and a fingerprint. It refuses to report
-green when it cannot measure, and proves the card by recomputing it.</p>
+<p class="sub">Meta checks the base before release and the conversation at runtime.
+Nothing checks the derivative artifact after release. Keel does: it scans a derivative
+against its base and emits a card with drift, validity, harmful compliance and a
+fingerprint, and proves the card by recomputing it.</p>
 <div class="cta">
 <a class="button" href="#verify">Verify a card</a>
 <a class="ghost" href="#scan">Scan your own</a>
@@ -977,6 +978,10 @@ is a different model, and nothing in the release process proves what it became.<
 <p>The licence asks derivative authors to say what they built. That is a declaration, not
 a check. Runtime guards score prompts and responses; they never see a weight file. So the
 moment a checkpoint leaves Meta, every safety claim about it rests on trust.</p>
+<p>The gap is specific, and it is not that Meta does no safety work. Meta checks the
+base model before release, and it checks the conversation at runtime. Nothing checks the
+derivative artifact after release. That is the hole Keel fills, and open weights are
+exactly why the hole exists.</p>
 <p>Keel replaces that trust with a measurement. It compares a derivative against the model
 it came from, asks both the same questions, and writes a card that states what moved,
 whether the measurement was valid, and what a platform should do.</p>

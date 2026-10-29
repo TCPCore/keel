@@ -1,5 +1,20 @@
 # Submission checklist
 
+## The gap this fills
+
+Meta checks the base model before release, and its runtime guards check the conversation
+after deployment. Nothing checks the derivative artifact in between. Open weights make that
+hole structural: a derivative can remove refusal behaviour, and the only record of what it
+became is a licence label its author typed.
+
+Keel is the checkpoint layer of that stack. One command produces a card that states what
+moved against the base, whether the measurement was valid, how often the model complies
+with harmful requests, and a fingerprint that proves the card was not edited.
+
+The evidence that this is a class problem, not a Glimmer quirk: the same method reproduces
+on Meta Glimmer 30B, Qwen 2.5 7B and Mistral 7B, including two derivatives we did not
+build.
+
 Decoded from the event page and the embedded Hackathon Terms & Conditions
 (`cerebralvalley.ai/e/meta-ai-developer-hackathon/details`), 26 Oct 2026.
 
