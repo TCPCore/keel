@@ -8,7 +8,7 @@ matter are behavioural, not packaging.
 |---|---|---|---|---|
 | Base, BF16 | transformers | 0.00 | green | reference |
 | Base, 4-bit | transformers/bnb | 0.00 | green | precision control |
-| Base, GGUF Q4_K_M | llama.cpp | pending | — | runtime control |
+| Base, GGUF Q4_K_M | llama.cpp | not measured | — | runtime attempt, blocked by toolchain |
 | Candidate A, refusal ablation | transformers + hook | **0.81** (26/32) | amber | positive control |
 | Candidate A, weight edit | transformers | 0.59 (19/32) | amber | replay implementation |
 | Candidate B, code LoRA | transformers + peft | **0.75** (24/32) | amber, suspect | invalid positive, format collapse |
@@ -32,6 +32,12 @@ not. That is the detection evidence.
   no chat harness in this repo.
 - **Community GGUF quantisations**: same weights as a row above, so they would repeat the
   precision control rather than add evidence.
+
+The GGUF attempt is recorded honestly: five runs failed before any generation. The
+Python binding built without a CUDA toolkit, then without runtime libraries, then a
+full source build exceeded a 40 minute budget, and the precompiled server image failed
+at registry manifest resolution. It is a runtime gap, not a result, and the 4-bit row
+already carries the precision control.
 
 ## The claim this supports
 

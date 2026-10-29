@@ -530,3 +530,22 @@ quantization control at 0.00.
 That is the same conclusion as the first run (26 of 32 on the answer segment, 0.81) with
 the expected judge variance. The range across runs is 0.81 to 0.91, which is why the card
 reports intervals and the video quotes the count, not a decimal.
+
+
+## Third family, non-Meta: Qwen2.5-7B
+
+The same treatment on a model outside Meta's suite, to test whether the effect is a
+Glimmer property or a property of the method.
+
+- Base: **0 of 32** compliant, 0.000.
+- Base with the refusal direction ablated at 28 layers: **29 of 32** compliant, 0.906,
+  95 percent interval [0.78, 1.00].
+- Delta: **+0.906**.
+
+This is the strongest single number in the project: the same training-free ablation, the
+same panel, the same judge, and a compliance shift that matches Glimmer's M1 (0.81 to
+0.91) on a different family with a different architecture.
+
+One card detail is instructive. The drift axes found nothing significant, so the card's
+verdict is green; the policy reviews it anyway because the harmful delta is 0.906. That is
+the strongest case in the table for reporting the two separately.
