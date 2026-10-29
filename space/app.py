@@ -161,7 +161,7 @@ section.block:first-of-type{border-top:0}
 .idx{display:none}
 .lede{color:var(--muted);font-size:19px;line-height:1.42;margin:0 0 26px;max-width:760px;
 letter-spacing:-.01em}
-.replay{margin:56px auto 0;max-width:780px;text-align:left;background:#0b0b0c;
+.replay{margin:56px auto 0;max-width:900px;width:100%;text-align:left;background:#0b0b0c;
 border:1px solid #2b2b2e;border-radius:16px;overflow:hidden;
 box-shadow:0 24px 60px rgba(0,0,0,.18)}
 .replay .bar{display:flex;align-items:center;gap:7px;padding:12px 16px;
@@ -170,8 +170,10 @@ border-bottom:1px solid #242427}
 .replay .dot.r{background:#ff5f57}.replay .dot.a{background:#febc2e}
 .replay .dot.g{background:#28c840}
 .replay .title{color:#8b8b90;font-size:12px;margin-left:8px}
-.replay-body{height:230px;overflow:auto;padding:14px 16px;font-family:"SF Mono",
+.replay-body{height:268px;overflow:auto;padding:16px 18px;scrollbar-width:none;
+-ms-overflow-style:none;font-family:"SF Mono",
 ui-monospace,Menlo,monospace;font-size:12px;line-height:1.75;color:#d6d6d6}
+.replay-body::-webkit-scrollbar{display:none}
 .replay-body .t{color:#7c7c82;margin-right:10px}
 .replay-foot{display:flex;justify-content:space-between;align-items:center;
 padding:10px 16px;border-top:1px solid #242427;color:#8b8b90;font-size:12px}
@@ -266,9 +268,12 @@ REPLAY_JS = """<script>
   }
   var i = 0;
   function step() {
-    if (i >= lines.length) return;
+    if (i >= lines.length) {
+      timer = setTimeout(start, 3000);
+      return;
+    }
     add(lines[i++]);
-    timer = setTimeout(step, 80);
+    timer = setTimeout(step, 100);
   }
   function start() {
     clearTimeout(timer);
