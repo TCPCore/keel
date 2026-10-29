@@ -101,3 +101,37 @@ frame, then the judged result.
 3. A fingerprint that changed when one number changed.
 4. A live 30B run with timestamps.
 5. Two dollars.
+
+## The produced video
+
+`video/keel-demo.mp4` is built, not shot: 100 seconds, 1600x900, nine annotated scenes with
+narration and burned captions. It walks the gap, the recorded 30B run, the four-family
+table, the cards, verify, tamper, the guide and the close.
+
+- `video/captions.srt` is the same caption track as a subtitle file.
+- `video/shots/` holds the source screenshots, captured from the live Space.
+- `video/build.py` regenerates everything from those shots.
+
+Rebuild:
+
+```console
+$ python video/build.py
+```
+
+It needs Chrome (for the annotated slides), `say` and `afconvert` (for the narration), and
+an ffmpeg binary. The build sets `Samantha` at 160 words per minute and pads each scene by
+0.9 seconds.
+
+The narration is machine speech, not a human recording. It is honest, clear and
+replaceable: edit the `SCENES` list in `video/build.py` and rebuild to change any line.
+
+## What the video argues, in order
+
+1. The gap: the derivative artifact is the one point nothing checks.
+2. The run: 32 probes, 29 answered, 11 minutes, two dollars.
+3. The families: only behavioural edits move compliance.
+4. The cards: one card per checkpoint, fingerprinted.
+5. Verify: recomputed, not stored.
+6. Tamper: one number, a new fingerprint.
+7. Reproduce: probes, responses, verifier, stress suite.
+8. Close: two dollars, twenty minutes, one card.
