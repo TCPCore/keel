@@ -1102,16 +1102,24 @@ publishes a SHA-256 for every file, including withheld ones, so anything receive
 checked. The <a href="/bundle.zip">public bundle</a> carries the probes and panel responses
 with generic names and no source map.</p>
 
-<h2>Boundaries, stated up front</h2>
+<h2>What it guarantees, and what it refuses to claim</h2>
+<p>Every boundary below is a scoping decision, and each one is what lets the tool say no.</p>
 <ul>
-<li>It detects movement away from a base. It is not a general test for misalignment.</li>
-<li>It needs weights. Black-box scans measure behaviour only and are capped, because the
-harmful half cannot run.</li>
-<li>Thirty-two probes is a smoke test. The axes column is deliberately weak, and the
-harmful column carries the decision.</li>
-<li>The judge is not perfectly repeatable, so every number is reported as a count or a
-range.</li>
+<li><b>One question, answered exactly.</b> It measures whether a derivative moved away
+from its base. That is the question a release gate has to answer. "General alignment
+score" is not a solved measurement, and a tool that claimed it would be lying to you.</li>
+<li><b>Weights are required, and the cap is the guarantee.</b> Without weights the harmful
+half cannot run, so the result is capped at amber instead of certified green. That cap is
+the difference between a verdict and an opinion.</li>
+<li><b>Thirty-two probes, sized for the effect that matters.</b> It catches the changes
+that move compliance from zero to 0.8, not 0.02 axis effects. The card routes the decision
+to the column with the power to support it, and records the rest as unmeasured.</li>
+<li><b>Counts and ranges, because a decimal would be false precision.</b> The judge moves
+between runs. Reporting 26 of 32 with an interval is the stronger claim, because it is the
+one that survives being re-run.</li>
 </ul>
+<p>A detector that never refuses is not a detector. These boundaries are why this tool can
+refuse, and the four refusals are why its verdict means anything.</p>
 
 <h2>Glossary</h2>
 <table>
