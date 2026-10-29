@@ -269,11 +269,11 @@ REPLAY_JS = """<script>
   var i = 0;
   function step() {
     if (i >= lines.length) {
-      timer = setTimeout(start, 3000);
+      timer = setTimeout(start, 4500);
       return;
     }
     add(lines[i++]);
-    timer = setTimeout(step, 100);
+    timer = setTimeout(step, 190);
   }
   function start() {
     clearTimeout(timer);
