@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "demo": true,
   "drift": {
     "schema_version": 1,
@@ -146,5 +146,11 @@
     "coherent misalignment is not detected: probes find conflict, not values",
     "a unit is a coordinate that moves the score, not a concept in the model",
     "layers and units are subsampled; anything outside the sample is invisible"
-  ]
+  ],
+  "validity": "ok",
+  "validity_reason": "",
+  "harmful": null,
+  "structure": null,
+  "require_harmful": false,
+  "fingerprint": "88f5fee37947075b"
 }

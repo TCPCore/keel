@@ -20,6 +20,12 @@ sys.path.insert(0, str(ROOT / "src"))
 from keel.panel import builtin  # noqa: E402
 from keel.scan import load_responses, scan_responses  # noqa: E402
 
+PANEL_FILES = {
+    "base-panel": "examples/responses/m0-base-panel.jsonl",
+    "candidate-a-panel": "examples/responses/m1-ablation-panel.jsonl",
+    "candidate-b-panel": "examples/responses/m2-lora-panel.jsonl",
+}
+
 
 def _load_jsonl(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
@@ -30,7 +36,7 @@ def main() -> int:
     checks: list[tuple[str, bool]] = []
 
     for name, expected in manifest["committed"].items():
-        path = ROOT / name
+        path = ROOT / PANEL_FILES[name]
         actual = hashlib.sha256(path.read_bytes()).hexdigest()
         checks.append((f"hash {name}", actual == expected["sha256"]))
 
@@ -38,7 +44,7 @@ def main() -> int:
     candidate = load_responses(_load_jsonl(ROOT / "examples/responses/m2-lora-panel.jsonl"))
     card = scan_responses(reference, candidate, builtin())
 
-    expected_verdict = manifest["expected"]["m2_verdict"]
+    expected_verdict = manifest["expected"]["b_verdict"]
     checks.append(("verdict is amber", card.verdict.level == expected_verdict))
     checks.append(("validity is suspect", card.validity == "suspect"))
     checks.append(("reason names the code rate", "code rate" in card.validity_reason))

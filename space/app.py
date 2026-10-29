@@ -244,6 +244,10 @@ button:hover{filter:brightness(1.08)}
 button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
 button.ghost:hover{border-color:var(--muted);filter:none}
 .two{display:grid;grid-template-columns:1.05fr .95fr;gap:28px;align-items:start}
+.two>*{min-width:0}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.table-wrap table{min-width:820px}
+.copy pre{white-space:pre-wrap;word-break:break-word}
 @media(max-width:820px){.two{grid-template-columns:1fr}nav .links{display:none}
 .hero h1{font-size:38px}.hero p.sub{font-size:18px}h2{font-size:30px}
 .wrap{padding:0 20px}}
@@ -384,18 +388,16 @@ def _card_html(payload: dict, slug: str, download: str) -> str:
         else "<p class='meta'>validity ok</p>"
     )
     verdict = "amber" if payload.get("validity") == "suspect" else drift["verdict"]["level"]
+    axis_line = (
+        "Verdict is driven by harmful compliance and policy, not these axes; "
+        "32 probes cannot resolve axis effects."
+    )
     if payload.get("validity") == "suspect":
-        driver = (
-            "Verdict driven by the format gate: the response format moved, so the axes "
-            "are not trustworthy."
-        )
-    elif harmful:
-        driver = (
-            "Verdict is driven by harmful compliance and policy, not these axes; "
-            "32 probes cannot resolve axis effects."
-        )
+        driver = "The format gate capped this card at amber. " + axis_line
+    elif not harmful:
+        driver = "No harmful half was measured. " + axis_line
     else:
-        driver = "No verdict: the harmful half is missing, so the card cannot be green."
+        driver = axis_line
     limits = "".join(f"<li>{limit}</li>" for limit in payload.get("limits", [])[:2])
     return f"""<article class="card" id="{slug}">
 <h3>{drift['candidate']} {_badge(verdict)}</h3>
@@ -531,10 +533,10 @@ baselines, three Glimmer checkpoints with a positive and a negative control, two
 derivatives, and a non-Meta family as the generality check. <b>Verdict</b> is the measurement; <b>policy</b> is what a platform
 would do about it. Derivative C is the case where they differ: no significant drift, but its
 harmful compliance moved by 0.19, so the policy reviews.</p>
-<div class="panel"><table>
+<div class="panel"><div class="table-wrap"><table>
 <thead><tr><th>model</th><th>source</th><th>drift axes</th><th>policy decision</th>
 <th>validity</th><th>harmful compliance</th><th>judged</th><th>fingerprint</th></tr></thead>
-<tbody>{rows}</tbody></table></div>
+<tbody>{rows}</tbody></table></div></div>
 <div class="explain">
 <div class="copy">
 <h3>Two questions, two columns</h3>
@@ -605,8 +607,6 @@ reacts. Generation is not run on this Space. A 30B generation takes 20 to 25 min
 is shown in <a href="/demo.mp4">the demo video</a> with timestamps; the code path is
 <code>scripts/modal_generate.py</code>, documented in <code>docs/DEPLOY.md</code>. Upload
 the responses from your own model and this page scores them the same way.</p>
-</div>
-</div>
 
 <h2 id="access"><span class="idx">05</span>Reviewer access</h2>
 <div class="two">
@@ -768,7 +768,20 @@ def card(slug: str) -> str:
 
 @app.get("/card/{slug}/json")
 def card_json(slug: str) -> JSONResponse:
-    return JSONResponse(_card(slug))
+    from keel.policy import decide
+    from keel.report import Card
+
+    data = _card(slug)
+    card = Card.from_dict(data)
+    decision = decide(card)
+    payload = dict(data)
+    payload["verdict"] = card.verdict.level
+    payload["policy"] = {
+        "decision": decision.level,
+        "reasons": list(decision.reasons),
+        "allowed": decision.level == "allow",
+    }
+    return JSONResponse(payload)
 
 
 @app.get("/bundle.zip")

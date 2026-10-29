@@ -9,7 +9,7 @@
   "max_new_tokens": 192,
   "reasoning_strength": "low",
   "precision": "4-bit for the candidates, BF16 for the base control",
-  "note": "exact model identifiers are in repro/SOURCES.md"
+  "note": "exact model identifiers are available to reviewers on request"
  },
  "committed": {
   "base-panel": {

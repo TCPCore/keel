@@ -71,7 +71,10 @@ def run(url: str, rescore: bool) -> int:
     check("light theme default", "color-scheme:light" in body)
     check("theme toggle", 'id="theme"' in body)
     check("fleet table has policy column", "policy" in body)
-    check("verdict driver line present", "Verdict driven by" in body)
+    check(
+        "verdict driver line present",
+        "Verdict is driven by harmful compliance and policy" in body,
+    )
     check("policy reasons present", "exceeds" in body or "format changed" in body)
     check("access anchor target", 'id="access"' in body)
     check("access nav link", "#access" in body)

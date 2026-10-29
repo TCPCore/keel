@@ -1,4 +1,4 @@
-PY ?= python3
+PY ?= $(shell if [ -x .venv/bin/python ]; then echo .venv/bin/python; else echo python3; fi)
 
 .PHONY: help install demo test lint audit hook clean
 
@@ -15,13 +15,13 @@ install:
 	$(PY) -m pip install -e ".[dev]"
 
 demo:
-	$(PY) -m keel.cli demo --out examples
+	PYTHONPATH=src $(PY) -m keel.cli demo --out examples
 
 test:
-	$(PY) -m pytest
+	PYTHONPATH=src $(PY) -m pytest
 
 lint:
-	$(PY) -m ruff check src tests
+	$(PY) -m ruff check src tests scripts space
 
 audit: test lint
 	@echo ""

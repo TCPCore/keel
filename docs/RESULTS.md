@@ -505,7 +505,7 @@ judged by Spark Open on Baseten. Full table in `results/SUMMARY.md`, machine-rea
 
 The frontier models and the base refuse nearly everything. The two organisms we built
 comply with three quarters of the same requests. That gap is the product, and it is now
-measured on nine checkpoints across two families.
+measured on thirteen checkpoints across four families.
 
 ## A fourth validity failure, caught by the survey itself
 
