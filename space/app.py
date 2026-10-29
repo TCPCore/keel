@@ -210,7 +210,9 @@ font-weight:600;letter-spacing:0}
 .meter{display:inline-block;width:96px;height:4px;background:var(--panel2);
 border-radius:2px;overflow:hidden;vertical-align:middle;margin-right:10px}
 .meter span{display:block;height:100%;border-radius:2px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:20px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+@media(max-width:980px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:660px){.grid{grid-template-columns:1fr}}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;
 padding:26px;box-shadow:var(--shadow);transition:transform .2s ease,box-shadow .2s ease}
 .card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.08)}
@@ -246,6 +248,13 @@ input:focus,select:focus{outline:2px solid var(--blue);outline-offset:1px}
 .copy{background:var(--panel);border:1px solid var(--line);border-radius:18px;
 padding:26px}
 .copy p:last-child{margin-bottom:0}
+.doc{max-width:780px}.doc h2{margin:64px 0 10px}.doc h3{margin:34px 0 6px;
+font-size:19px;font-weight:600;letter-spacing:-.01em}
+.doc p{color:var(--ink);margin:0 0 14px}
+.doc ul,.doc ol{color:var(--ink);margin:0 0 16px;padding-left:22px}
+.doc li{margin:6px 0}.doc code{font-size:12px}
+.doc table{margin:18px 0}
+.term{font-weight:600}
 .note{border-left:3px solid var(--line);padding-left:16px;color:var(--muted);
 font-size:14px;line-height:1.5}
 footer{margin:0;padding:40px 0 56px;border-top:1px solid var(--line);
@@ -314,7 +323,8 @@ def _page(title: str, body: str, active: str = "") -> str:
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title><style>{CSS}</style></head><body>
 <nav><div class="wrap"><a class="brand" href="/">Keel</a>
-<span class="links">{nav}<button id="theme" type="button" title="Toggle theme">◐</button>
+<span class="links">{nav}<a href="/guide">Guide</a>
+<button id="theme" type="button" title="Toggle theme">◐</button>
 </span></div></nav>
 {body}
 <footer><div class="wrap" style="display:flex;justify-content:space-between;
@@ -945,6 +955,166 @@ you receive.</p>
 <p><a href="/manifest.json">Manifest with SHA-256 hashes</a></p>
 <p><a href="/">&larr; back</a></p></div>""",
         )
+    )
+
+
+@app.get("/guide", response_class=HTMLResponse)
+def docs_page() -> str:
+    return _page(
+        "Keel · guide",
+        """<div class="wrap"><div class="doc">
+<p class="eyebrow">Guide</p>
+<h1 style="font-size:44px;line-height:1.1;letter-spacing:-.015em;margin:0 0 18px">
+What you are looking at</h1>
+<p class="lede">This page explains the demo from scratch. No background in machine
+learning is assumed. If you only read one section, read "The problem in one minute" and
+"How to read a card".</p>
+
+<h2>The problem in one minute</h2>
+<p>Meta releases some models as <span class="term">open weights</span>: the actual files
+that make the model work. Anyone can download them, change them, and publish the result.
+That is the point of open weights, and it is also the risk.</p>
+<p>A changed model can behave differently. It may stop refusing harmful requests, it may
+become more deceptive, or it may simply be broken. The licence asks people to say what
+they built, but that is a label someone types, not a fact anyone checks.</p>
+<p>The safety tools most companies run inspect what a model <em>says</em> at runtime. None
+of them inspect the files. Keel does.</p>
+
+<h2>What Keel does</h2>
+<p>It compares a model against the model it was built from, asks the same 32 questions of
+both, and writes a one-page report called a <span class="term">card</span>. Then it asks:
+is this difference real, was the measurement trustworthy, and would a platform let this
+through?</p>
+
+<h2>How to read the table</h2>
+<p>Each row is one checkpoint. The columns are:</p>
+<table>
+<tr><th>column</th><th>what it means</th></tr>
+<tr><td><b>model</b></td><td>the checkpoint's name. Community models are labelled by
+letter, not by their repository, so the page does not advertise third-party projects.</td></tr>
+<tr><td><b>source</b></td><td><code>card</code> means it has a full report; a baseline
+row is a reference point with no card.</td></tr>
+<tr><td><b>drift axes</b></td><td>what the 32 probes measured. PASS means no axis moved
+enough to be statistically believable. With 32 probes, small changes are invisible, so
+PASS is a weak signal, not a certificate.</td></tr>
+<tr><td><b>policy decision</b></td><td>what a platform would do with it. This reads the
+harmful half as well as the axes, so it can be stricter.</td></tr>
+<tr><td><b>validity</b></td><td><code>ok</code> means the measurement itself was sound.
+<code>suspect</code> means the model changed its answer format, so the axis scores cannot
+be trusted.</td></tr>
+<tr><td><b>harmful compliance</b></td><td>out of 32 harmful requests, how many the model
+actually answered instead of refusing. Lower is better. 0.00 is a model that refuses all
+of them.</td></tr>
+<tr><td><b>judged</b></td><td>how many answers the judge actually scored, out of 32.</td></tr>
+<tr><td><b>fingerprint</b></td><td>a short code computed from the card's contents. Change
+one number and it changes, which is how you know a card is genuine.</td></tr>
+</table>
+
+<h2>How to read a card</h2>
+<p>Each card is the evidence for one checkpoint. Reading top to bottom:</p>
+<ul>
+<li><b>The badge</b> is the drift verdict: PASS, REVIEW or BLOCK.</li>
+<li><b>The fingerprint</b> identifies this exact card.</li>
+<li><b>Validity</b> says whether the measurement was sound. If you see
+<code>MEASUREMENT SUSPECT</code>, the axes below it should be ignored.</li>
+<li><b>Harmful compliance</b> is the number that matters most: how often the model
+answered a request it should have refused.</li>
+<li><b>The axis table</b> shows the 32 probes by theme: refusal error, sycophancy,
+deception, power seeking, sabotage. <code>q</code> is the corrected probability that the
+change is noise; below 0.05 is usually called significant.</li>
+<li><b>The sentence under the axes</b> tells you what drove the verdict. It is there
+because a verdict driven by harmful compliance can look contradictory next to axes that
+show nothing.</li>
+<li><b>The limits</b> list what the scan could not measure. They are deliberate.</li>
+</ul>
+
+<h2>Why one row can say PASS and REVIEW</h2>
+<p>Those are two different questions. Drift axes ask "did the 32 probes move?" Policy asks
+"should this be allowed?" A model can pass the axes because 32 probes are too few to
+resolve a change, while failing policy because it complies with 0.91 of harmful requests.
+The Qwen rows are exactly that case.</p>
+
+<h2>The four times the tool refused</h2>
+<p>The project's claim is that it will not report a clean result from a broken measurement.
+That happened four times:</p>
+<ul>
+<li>A model answered every probe with Python. The axes saw no drift; the format gate
+marked the card suspect and turned green into amber.</li>
+<li>The first scoring run read the model's private reasoning instead of its answer. The
+card was wrong, the mistake was found, and scoring moved to the answer segment.</li>
+<li>A card without the harmful half is now capped, because "no drift" there would have
+been an overclaim.</li>
+<li>A survey run returned empty answers because the token budget was too small. The
+survey recorded an empty rate, so the broken run was visible instead of published.</li>
+</ul>
+
+<h2>Verify it is real</h2>
+<p>Press <b>Verify</b> on any card. The server recomputes the card from the committed
+responses and compares fingerprints. <code>MATCH</code> means the numbers you are looking
+at were reproduced from scratch, not stored in a screenshot.</p>
+<p>Press <b>Tamper test</b>. It takes the same card, changes one axis score by 0.25, and
+shows the fingerprint change. That is why an edited card cannot pass as the original.</p>
+
+<h2>Scan your own checkpoint</h2>
+<ol>
+<li>Download <a href="/probes.jsonl">the 32 probes</a>.</li>
+<li>Generate one answer per probe with your model, in your own harness.</li>
+<li>Upload the resulting JSONL.</li>
+<li>You get a card in about a second, with its own fingerprint.</li>
+</ol>
+<p>The upload path uses the free program scorers, so it is free and immediate. The card
+will say which axes it could not measure, because no judge was run.</p>
+
+<h2>Reviewer access</h2>
+<p>The raw answers to harmful prompts are not published. A model that complies with 81
+percent of them produces genuinely harmful text, and publishing it would demonstrate the
+attack rather than the defence.</p>
+<p>Reviewers can request the completions. The <a href="/manifest.json">manifest</a> lists a
+SHA-256 hash for every file, including the withheld ones, so whatever a reviewer receives
+can be checked against the published hash.</p>
+<p><a href="/bundle.zip">The public bundle</a> contains the probes, the panel responses and
+that manifest, with generic file names and no source map.</p>
+
+<h2>What it cannot do</h2>
+<ul>
+<li>It does not detect misalignment in general. It detects when a checkpoint's behaviour
+has moved away from its base.</li>
+<li>It cannot audit a model it has no weights for. Black-box scans measure behaviour only
+and are capped, because the harmful half cannot run.</li>
+<li>Thirty-two probes is a smoke test, not an evaluation suite.</li>
+<li>The judge model is not perfectly repeatable, so compliance is quoted as a range or a
+count, never a single decimal.</li>
+</ul>
+
+<h2>Glossary</h2>
+<table>
+<tr><th>term</th><th>plain meaning</th></tr>
+<tr><td><b>checkpoint</b></td><td>a saved set of model weights, i.e. one version of a
+model.</td></tr>
+<tr><td><b>derivative</b></td><td>a model built by modifying another one.</td></tr>
+<tr><td><b>ablation</b></td><td>removing a direction or component from a model, often to
+remove refusal behaviour.</td></tr>
+<tr><td><b>quantization</b></td><td>storing weights with fewer bits to save memory. It
+should not change behaviour, which is why it is a control here.</td></tr>
+<tr><td><b>LoRA</b></td><td>a small set of trained weights added to a base model to change
+its behaviour cheaply.</td></tr>
+<tr><td><b>drift</b></td><td>a measurable change in behaviour between a model and its
+base.</td></tr>
+<tr><td><b>validity</b></td><td>whether the measurement can be trusted at all.</td></tr>
+<tr><td><b>fingerprint</b></td><td>a short hash of a card's contents, used to prove it was
+not edited.</td></tr>
+</table>
+
+<h2>Reproduce it</h2>
+<p>Everything on this page comes from committed files. The repository has a verifier:</p>
+<pre>python scripts/verify_repro.py
+python scripts/check_links.py --url https://tomscot-keel.hf.space
+python scripts/stress_space.py --url https://tomscot-keel.hf.space</pre>
+<p>Full technical detail lives in <code>docs/METHOD.md</code> and
+<code>docs/RESULTS.md</code>.</p>
+
+<p style="margin-top:40px"><a href="/">&larr; back to the demo</a></p>
+</div></div>""",
     )
 
 

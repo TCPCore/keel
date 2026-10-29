@@ -22,6 +22,7 @@ PAGES = (
     "/card/heretic",
     "/card/derivative-d",
     "/verify/m2-lora",
+    "/guide",
 )
 LINK = re.compile(r"""href=['"]([^'"]+)['"]""")
 

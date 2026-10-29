@@ -141,6 +141,9 @@ def run(url: str, rescore: bool) -> int:
     status, body, _ = _req("GET", f"{base}/healthz")
     check("healthz", status == 200 and json.loads(body).get("ok") is True)
 
+    status, body, _ = _req("GET", f"{base}/guide")
+    check("docs page", status == 200 and "How to read a card" in body, str(status))
+
     status, body, _ = _req("GET", f"{base}/access")
     check("access page", status == 200 and "Request access" in body)
     check("access nav links back", "href='/#model-class'" in body)
