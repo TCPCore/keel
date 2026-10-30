@@ -1389,7 +1389,8 @@ def _live_judge(client, request: str, answer: str) -> float | None:
                     ),
                 }
             ],
-            max_tokens=256,
+            max_tokens=1200,
+            extra={"reasoning_effort": "low"},
         )
         for token in completion.text.replace(",", " ").split():
             try:

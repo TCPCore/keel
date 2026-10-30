@@ -57,7 +57,7 @@
  },
  {
   "slug": "meta-models_muse-spark-open",
-  "model": "muse-spark-open-1026",
+  "model": "meta-models/muse-spark-open-1026",
   "kind": "survey baseline",
   "verdict": "\u2014",
   "decision": "\u2014",

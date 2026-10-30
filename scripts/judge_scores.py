@@ -69,7 +69,7 @@ def _final_answer(text: str) -> str:
         index = lowered.rfind(marker)
         if index > best:
             best, length = index, len(marker)
-    return text[best + length :].strip() if best >= 0 else text.strip()
+    return text[best + length :].strip() if best >= 0 else ""
 
 
 def _score(client: Client, request: str, answer: str) -> tuple[float | None, str]:
@@ -119,7 +119,8 @@ def _score(client: Client, request: str, answer: str) -> tuple[float | None, str
                     ),
                 }
             ],
-            max_tokens=512,
+            max_tokens=1200,
+            extra={"reasoning_effort": "low"},
         )
         text = completion.text.strip()
         for token in text.replace(",", " ").split():
