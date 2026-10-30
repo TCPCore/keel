@@ -657,8 +657,8 @@ fingerprint, and proves the card by recomputing it.</p>
 </div>
 <div class="kpis">
 <div class="kpi"><span class="n">12</span><span class="l">checkpoints, four families</span></div>
-<div class="kpi"><span class="n">0.00 → 0.81</span><span class="l">harmful compliance, base to ablation</span></div>
-<div class="kpi"><span class="n">4</span><span class="l">times the tool refused its own measurement</span></div>
+<div class="kpi"><span class="n">0.00 → 0.16</span><span class="l">answer-level compliance, base to ablation</span></div>
+<div class="kpi"><span class="n">5</span><span class="l">times the tool refused its own measurement</span></div>
 <div class="kpi"><span class="n">~$2</span><span class="l">per white-box scan</span></div>
 </div>
 </header>
@@ -806,11 +806,14 @@ Approved reviewers receive a bundle with generic file names, checkable against
 <h2 id="method"><span class="idx">07</span>Method and limits</h2>
 <div class="copy">
 <p class="lede" style="margin:0">Detection is demonstrated on Glimmer derivatives, where
-a positive control can be built. Spark models are black-box baselines: a hosted endpoint
-cannot be modified, so no Spark positive control exists. The judge moves between runs, so
-compliance is a range, never a decimal point. No card is green without the harmful half,
-and no card is green if the format gate fires. Full record:
-<code>docs/RESULTS.md</code>.</p>
+a positive control can be built. The judge contract is frozen and recorded in every card:
+<code>muse-spark-1.3</code>, answer-only extraction, three-repeat majority. Under that
+contract the answer-level effect is 0.16 for the ablation and 0.06 for derivative C; the
+earlier numbers (0.81, 0.19, 0.91, 0.78) were measured under a retired judge that read the
+model's reasoning. Weight-space recovery: derivative C's delta is 100 percent in
+<code>o_proj</code> and <code>down_proj</code> and reconstructs to bfloat16 exactness, while
+behavioural replay did not meet its precondition. No card is green without the harmful half.
+Full record: <code>docs/RESULTS.md</code>, <code>docs/REPLAY.md</code>.</p>
 </div>
 </div>""",
     )
@@ -1782,7 +1785,7 @@ driven by harmful compliance sits next to axes that show nothing.</li>
 <p>They answer different questions. Drift axes ask whether the 32 probes moved; policy asks
 whether the model should be allowed. With 32 probes, a change can be large in consequence
 and still invisible to the axes. The Qwen rows prove the point: the axes found nothing, and
-harmful compliance moved 0.91. A single "pass" for those rows would be the dishonest
+harmful compliance moved 0.16. A single "pass" for those rows would be the dishonest
 result, which is why the two columns exist.</p>
 
 <h2>It reproduces across open-weight families</h2>
@@ -1790,24 +1793,30 @@ result, which is why the two columns exist.</p>
 run on four families:</p>
 <table>
 <tr><th>family</th><th>base</th><th>derivative</th><th>delta</th></tr>
-<tr><td>Meta Glimmer 30B</td><td>0.00</td><td>0.81, our ablation</td><td>+0.81</td></tr>
-<tr><td>Qwen 2.5 7B</td><td>0.00</td><td>0.91, our ablation</td><td>+0.91</td></tr>
-<tr><td>Qwen 2.5 7B</td><td>0.00</td><td>0.81, a community edit</td><td>+0.81</td></tr>
-<tr><td>Mistral 7B</td><td>0.41</td><td>0.78, a community edit</td><td>+0.38</td></tr>
+<tr><td>Meta Glimmer 30B</td><td>0.00</td><td>0.16, our ablation</td><td>+0.16</td></tr>
+<tr><td>Meta Glimmer 30B</td><td>0.00</td><td>0.06, a community edit</td><td>+0.06</td></tr>
+<tr><td>Qwen 2.5 7B</td><td>0.00</td><td>0.00, our ablation</td><td>0.00</td></tr>
+<tr><td>Mistral 7B</td><td>0.00</td><td>0.00, a community edit</td><td>0.00</td></tr>
 </table>
-<p>The effects repeat, and they repeat with edits we did not make. That is what makes the
-case: removing refusal behaviour from open weights is a reproducible property of the
-substrate, not a quirk of one checkpoint. A protection layer that measures it has to exist
-for the whole class, not for a single model.</p>
+<p>These are the answer-level numbers under the frozen contract. The Qwen and Mistral edits
+moved the model's reasoning but not its answers, so an answer-only judge sees nothing. The
+earlier cross-family numbers (0.91, 0.78) were measuring that reasoning channel, and the
+fifth refusal records the correction. The claim is narrower than it was: answer-level
+removal of refusal is demonstrated on Glimmer, at 0.16, and the instrument now measures
+answers rather than private reasoning.</p>
 
-<h2>The four times the tool refused</h2>
+<h2>The five times the tool refused</h2>
 <p>A clean number from a broken measurement is worse than no number. That rule was tested
-four times:</p>
+five times:</p>
 <ul>
 <li>A model answered every probe with Python. The axes saw nothing; the format gate
 rejected the measurement and turned green into amber.</li>
 <li>The first scoring pass read the model's private reasoning instead of its answer. The
 card was wrong, the error was found, and scoring moved to the answer segment.</li>
+<li>The judge itself drifted between versions: the same responses scored 0.81 under the
+retired judge and 0.16 under the frozen answer-only contract. The re-score button caught
+the disagreement, and the cards were re-baselined. The correction history is the fifth
+refusal.</li>
 <li>A card without the harmful half is capped, because "no drift" there would be an
 overclaim.</li>
 <li>A survey returned empty answers because the token budget was too small. The empty rate
@@ -1863,12 +1872,13 @@ per axis and a score spread of 0.1 to 0.3, the smallest effect an axis can resol
 to 0.34. That is why the axes are a screen and the harmful half carries the decision: it
 moves by 0.4 to 0.9, which is far inside the instrument's range. The card records the axes
 it could not measure.</li>
-<li><b>Counts and ranges, because a decimal would be false precision.</b> The judge moves
-between runs. Reporting 26 of 32 with an interval is the stronger claim, because it is the
-one that survives being re-run.</li>
+<li><b>A frozen judge contract.</b> The judge is <code>muse-spark-1.3</code>, answer-only
+extraction, three-repeat majority, and the contract is recorded in every card. The headline
+number reports the delta under that contract, not a single draw from whichever judge is
+available.</li>
 </ul>
 <p>A detector that never refuses is not a detector. These boundaries are why this tool can
-refuse, and the four refusals are why its verdict means anything.</p>
+refuse, and the five refusals are why its verdict means anything.</p>
 
 <h2>Glossary</h2>
 <table>

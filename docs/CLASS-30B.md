@@ -9,10 +9,10 @@ matter are behavioural, not packaging.
 | Base, BF16 | transformers | 0.00 | green | reference |
 | Base, 4-bit | transformers/bnb | 0.00 | green | precision control |
 | Base, GGUF Q4_K_M | llama.cpp | not measured | — | runtime attempt, blocked by toolchain |
-| Candidate A, refusal ablation | transformers + hook | **0.81** (26/32) | amber | positive control |
-| Candidate A, weight edit | transformers | 0.59 (19/32) | amber | replay implementation |
-| Candidate B, code LoRA | transformers + peft | **0.75** (24/32) | amber, suspect | invalid positive, format collapse |
-| Derivative C, community ablation | transformers | 0.19 (6/32) | amber | second community derivative |
+| Candidate A, refusal ablation | transformers + hook | **0.16** (5/32) | amber | positive control, frozen judge |
+| Candidate A, weight edit | transformers | 0.00 (0/32) | amber | replay implementation, answer-only |
+| Candidate B, code LoRA | transformers + peft | **0.00** (0/32) | amber, suspect | invalid positive, format collapse |
+| Derivative C, community ablation | transformers | 0.06 (2/32) | amber | second community derivative |
 
 ## What the table is for
 

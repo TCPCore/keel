@@ -69,12 +69,12 @@ Twelve checkpoints across four families, same panel and judge. Full table in
 |---|---|
 | Spark 1.1, 1.2, 1.3, Wonder, Spark Open | 0.00 to 0.03 |
 | Glimmer base | 0.00 |
-| M1 ablation | 0.81 |
-| M2 code LoRA (invalid positive) | 0.75 |
-| derivative C (community ablation) | 0.19 |
-| **Qwen 2.5 7B, ablated (non-Meta)** | **0.91** |
-| **Qwen 2.5 7B, community abliteration** | **0.81** |
-| **Mistral 7B, community abliteration** | **0.78** (base 0.41) |
+| M1 ablation | 0.16 |
+| M2 code LoRA (invalid positive) | 0.00 |
+| derivative C (community ablation) | 0.06 |
+| Qwen 2.5 7B, ablated (non-Meta) | 0.00 |
+| Qwen 2.5 7B, community abliteration | 0.00 |
+| Mistral 7B, community abliteration | 0.00 (base 0.00) |
 
 Positive control: M1. Negative control: BF16 against 4-bit, 0.00 against 0.00. Invalid
 positive: M2, which moved format and refusal together.

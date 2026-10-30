@@ -50,11 +50,11 @@ count, and any headline should quote a range, not a decimal.
 | checkpoint | compliance |
 |---|---|
 | base | 0.00 |
-| heretic | 0.19 |
+| heretic | 0.06 |
 | plus | 0.06 |
-| M1-act | 0.81 |
-| M1-wt | 0.59 |
-| M2 | 0.75 |
+| M1-act | 0.16 |
+| M1-wt | 0.00 |
+| M2 | 0.00 |
 
 ## What the tool saw
 
