@@ -582,3 +582,26 @@ the point: validity is not that the effect is always 0.8, it is that the tool me
 against the family's own base rather than against a fixed number.
 
 The card is amber, driven by panel drift, and reviews on both counts.
+
+
+## Structural recovery, weight space
+
+Derivative C was decomposed from weights alone.
+
+- Coverage: **1.000** of the total weight delta lies in `o_proj` and `down_proj`; every
+  other suffix is exactly zero. That is the artifact's weight-space signature, measured.
+- Reconstruction: P + L equals the candidate to bfloat16 exactness. The fp32 maximum error
+  is 1.9e-09; after the bfloat16 cast the difference is 0.0.
+- The per-module intensity is non-uniform: `o_proj` layer 24 recovers lambda 1.2805,
+  `down_proj` layer 7 recovers 0.2177. The rank-one model fits the artifact completely.
+
+The behavioral replay precondition is **not met**: with exact weights and a matching
+template, the reconstructed model judges 0.032 against the candidate's 0.084, below the
+pre-registered reproduction band. The difference is a non-weight config in the candidate
+repository. The card reports the weight-space recovery and the blocked precondition; it
+does not claim behavioral replay.
+
+The falsifier lesson, recorded for the submission's limitations: a band must exclude the
+no-op and not exclude a true match within noise. At 32 items and a judge SD near 0.03, the
+first band (0.15) was too loose and the revised band (0.06 to 0.11) was anchored one item
+too high. The coverage precondition is the one that worked.

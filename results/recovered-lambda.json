@@ -1,0 +1,13 @@
+{
+ "artifact": "derivative C, community ablation",
+ "coverage": 1.0,
+ "modules": 104,
+ "lambda_sample": {
+  "o_proj_L24": 1.2805,
+  "down_proj_L7": 0.2177
+ },
+ "reconstruction_fp32_max_error": 1.9e-09,
+ "reconstruction_bf16_max_error": 0.0,
+ "behavioral_precondition": "not met: PL 0.032 vs candidate 0.084 under the frozen judge",
+ "date": "2026-10-30"
+}

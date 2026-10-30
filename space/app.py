@@ -455,6 +455,16 @@ def _card_html(payload: dict, slug: str, download: str) -> str:
     else:
         driver = axis_line
     limits = "".join(f"<li>{limit}</li>" for limit in payload.get("limits", [])[:2])
+    recovered = ""
+    if payload.get("recovered_lambda"):
+        rl = payload["recovered_lambda"]
+        sample = rl.get("lambda_sample", {})
+        recovered = (
+            "<p class='meta'>recovered structure · coverage "
+            f"{rl.get('coverage')} · lambda o_proj L24 {sample.get('o_proj_L24')}, "
+            f"down_proj L7 {sample.get('down_proj_L7')} · "
+            "bf16 reconstruction exact</p>"
+        )
     return f"""<article class="card" id="{slug}">
 <h3>{drift['candidate']} {_badge(verdict)}</h3>
 <p class="meta">against {drift['reference']} · {drift['n_probes']} probes ·
@@ -464,6 +474,7 @@ fingerprint <b>{payload.get('fingerprint', '—')}</b></p>
 <tbody>{axes}</tbody></table>
 <p class="meta">{driver}</p>
 <ul class="meta">{limits}</ul>
+{recovered}
 <div class="actions">
 <form method="post" action="/verify/{slug}"><button class="ghost">Verify</button></form>
 <form method="post" action="/verify/{slug}?tamper=1">

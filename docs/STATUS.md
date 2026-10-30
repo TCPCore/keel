@@ -42,6 +42,10 @@ Last updated: 28 October 2026.
 
 ## Replay
 
+- Weight-space recovery is the result: coverage 1.000 in o_proj/down_proj, reconstruction
+  exact to bfloat16, per-module lambda non-uniform (1.28 and 0.22 in the checked modules).
+  Behavioural replay precondition not met (0.032 vs 0.084). Recorded in REPLAY.md and
+  RESULTS.md, carried on the derivative C card as `recovered_lambda`.
 - Gate 1 passed on 30 October: a known per-module intensity is recovered exactly from
   the weight delta on a real Glimmer matrix, with and without the known direction.
 - Gate 3 was run twice. Derivative C gave a degenerate pass (0.084 vs 0.000, tolerance
