@@ -8,6 +8,7 @@ Start with **STATUS.md**: what exists, what is proven, what is missing.
 | [METHOD.md](METHOD.md) | the drift math, panels, validity gates |
 | [RESULTS.md](RESULTS.md) | every measurement, with caveats and failed runs |
 | [HARMFUL-MATRIX.md](HARMFUL-MATRIX.md) | per-request compliance across checkpoints, no harmful text |
+| [REPLAY.md](REPLAY.md) | the intensity-recovery attempt, its pre-registered gate, and what is blocked |
 | [CLASS-30B.md](CLASS-30B.md) | every runnable Glimmer 30B variation, one table |
 | [MUSE-CODE.md](MUSE-CODE.md) | what Muse Code built, and how the review trail is visible |
 | [SPARK_OPEN.md](SPARK_OPEN.md) | the second-family plan, and its gated-access blocker |

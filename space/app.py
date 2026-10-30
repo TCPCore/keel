@@ -28,9 +28,32 @@ ROOT = Path(__file__).resolve().parents[1]
 FLEET = json.loads((ROOT / "space/fleet.json").read_text())
 
 LIVE_URL = os.environ.get("LIVE_URL", "").rstrip("/")
+LIVE_TOKEN = os.environ.get("LIVE_TOKEN", "")
 LIVE_MAX_JOBS = int(os.environ.get("LIVE_MAX_JOBS", "20"))
 LIVE_PER_IP_SECONDS = 3600
+LIVE_BUDGET = Path("/tmp/keel-live-budget.json")
 LIVE_STATE: dict = {"per_ip": {}, "count": 0, "cards": {}, "building": set()}
+if LIVE_BUDGET.exists():
+    try:
+        saved = json.loads(LIVE_BUDGET.read_text())
+        LIVE_STATE["count"] = int(saved.get("count", 0))
+        LIVE_STATE["per_ip"] = {
+            str(ip): float(when) for ip, when in saved.get("per_ip", {}).items()
+        }
+    except (ValueError, OSError):
+        pass
+
+
+def _live_save() -> None:
+    try:
+        LIVE_BUDGET.write_text(
+            json.dumps(
+                {"count": LIVE_STATE["count"], "per_ip": LIVE_STATE["per_ip"]},
+                sort_keys=True,
+            )
+        )
+    except OSError:
+        pass
 LIVE_TOOL = {
     "type": "function",
     "function": {
@@ -1004,7 +1027,7 @@ def rescore(slug: str, request: Request) -> HTMLResponse:
         Client(
             api_key=os.environ["BASETEN_API_KEY"],
             base_url=os.environ.get("BASETEN_BASE_URL", "https://inference.baseten.co/v1"),
-            model=os.environ.get("BASETEN_MODEL_ID", "meta-models/muse-spark-open"),
+            model=os.environ.get("BASETEN_MODEL_ID", "meta-models/muse-spark-open-1026"),
         ),
         axis="sycophancy",
     )
@@ -1018,15 +1041,18 @@ def rescore(slug: str, request: Request) -> HTMLResponse:
     ]
     harmful = json.loads((ROOT / HARMFUL[slug]).read_text()) if slug in HARMFUL else None
     started = time.time()
-    built = scan_responses(
-        load_responses(base_rows),
-        load_responses(rows),
-        builtin(),
-        judge=judge,
-        reference_id="m0-base-panel",
-        candidate_id=slug,
-        harmful=harmful,
-    )
+    try:
+        built = scan_responses(
+            load_responses(base_rows),
+            load_responses(rows),
+            builtin(),
+            judge=judge,
+            reference_id="m0-base-panel",
+            candidate_id=slug,
+            harmful=harmful,
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(503, f"judge unavailable: {exc}") from exc
     elapsed = time.time() - started
     stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     judge_calls = sum(
@@ -1307,7 +1333,9 @@ def _live_call(path: str, method: str = "GET") -> dict:
 
     if not LIVE_URL:
         raise HTTPException(503, "live worker is not configured")
-    request = urllib.request.Request(LIVE_URL + path, method=method)
+    request = urllib.request.Request(
+        LIVE_URL + path, method=method, headers={"X-Keel-Token": LIVE_TOKEN}
+    )
     try:
         with urllib.request.urlopen(request, timeout=120) as response:
             return json.loads(response.read())
@@ -1404,7 +1432,7 @@ def _live_build(job: str, payload: dict) -> dict:
     client = Client(
         api_key=os.environ["BASETEN_API_KEY"],
         base_url=os.environ.get("BASETEN_BASE_URL", "https://inference.baseten.co/v1"),
-        model=os.environ.get("BASETEN_MODEL_ID", "meta-models/muse-spark-open"),
+        model=os.environ.get("BASETEN_MODEL_ID", "meta-models/muse-spark-open-1026"),
     )
     harmful_rows = [
         json.loads(line)
@@ -1431,6 +1459,8 @@ def _live_build(job: str, payload: dict) -> dict:
     cand_vals = score(payload["ablated_harmful"])
     base_ok = [v for v in base_vals if v is not None]
     cand_ok = [v for v in cand_vals if v is not None]
+    if not base_ok or not cand_ok:
+        raise RuntimeError("judge unavailable: no scores returned")
     n = min(len(base_ok), len(cand_ok))
     base_ok, cand_ok = base_ok[:n], cand_ok[:n]
     summary = {
@@ -1471,6 +1501,7 @@ def live_start(request: Request, dry: int = 0):
     data = _live_call("/run", method="POST")
     LIVE_STATE["per_ip"][ip] = now
     LIVE_STATE["count"] += 1
+    _live_save()
     return JSONResponse({"id": data["id"]})
 
 
@@ -1779,6 +1810,10 @@ tampered card</b>: the stored tampered fingerprint and the recomputed one differ
 page says <code>DIFF</code>. That is the loop end to end, an edit that cannot survive a
 check. You can also try to re-score the tampered card: scoring never reads a submitted
 card, so the attempt is rejected against the responses.</p>
+<p>The fingerprint is a checksum, not a signature. It proves the card matches its own
+contents and that an edit will be caught. Authenticity comes from the repository and the
+manifest hashes, or from <code>keel sign</code>, which adds an HMAC over the card when a
+deployment needs one.</p>
 <p>If you do not want to trust this page, do not. The verify page lists a SHA-256 for each
 response file and offers a proof bundle: the base responses, the candidate responses, the
 card, and a CHECK.txt with the command. Run that command offline and the fingerprint must
@@ -1811,9 +1846,11 @@ score" is not a solved measurement, and a tool that claimed it would be lying to
 <li><b>Weights are required, and the cap is the guarantee.</b> Without weights the harmful
 half cannot run, so the result is capped at amber instead of certified green. That cap is
 the difference between a verdict and an opinion.</li>
-<li><b>Thirty-two probes, sized for the effect that matters.</b> It catches the changes
-that move compliance from zero to 0.8, not 0.02 axis effects. The card routes the decision
-to the column with the power to support it, and records the rest as unmeasured.</li>
+<li><b>Thirty-two probes, sized for the effect that matters.</b> With about six probes
+per axis and a score spread of 0.1 to 0.3, the smallest effect an axis can resolve is 0.11
+to 0.34. That is why the axes are a screen and the harmful half carries the decision: it
+moves by 0.4 to 0.9, which is far inside the instrument's range. The card records the axes
+it could not measure.</li>
 <li><b>Counts and ranges, because a decimal would be false precision.</b> The judge moves
 between runs. Reporting 26 of 32 with an interval is the stronger claim, because it is the
 one that survives being re-run.</li>

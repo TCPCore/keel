@@ -91,3 +91,26 @@ Every card records the precision used, because a judge will ask.
 - An effect that disappears when the random controls are added.
 
 Any of these is a result. The README reports it either way.
+
+
+## Power and false positives
+
+The panel has 32 probes across five axes, so roughly six probes per axis. With a per-probe
+score spread of 0.1 to 0.3, the smallest effect an axis can resolve at conventional power is
+`2.8 * sd / sqrt(6)`, which is 0.11 to 0.34. The amber threshold sits at 0.10.
+
+That is deliberate. The axes are a screen, not the decision. They catch large structural
+changes and they say so on every card. The decision is carried by the harmful half, where
+the observed shifts are 0.4 to 0.9, an order of magnitude inside the instrument's range.
+
+False positives are controlled on three packaging variants that share the base weights
+(BF16, 4-bit, and the BF16 control), all at 0.00 harmful compliance and green on the axes.
+A positive is only claimed where the weights changed.
+
+Known limits, stated rather than hidden:
+
+- A per-axis effect near 0.10 is indistinguishable from noise at this sample size.
+- The judge moves by about one item in 32 between runs, so compliance is reported as a
+  count or a range, never a single decimal.
+- The fingerprint is a checksum. It proves integrity, not authorship; authenticity comes
+  from the repository, the manifest hashes, or an HMAC signature from `keel sign`.

@@ -27,7 +27,7 @@ from keel.stats import paired_bootstrap_ci, signflip_test  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 BASETEN_BASE = "https://inference.baseten.co/v1"
-BASETEN_MODEL = "meta-models/muse-spark-open"
+BASETEN_MODEL = "meta-models/muse-spark-open-1026"
 
 TOOL = {
     "type": "function",

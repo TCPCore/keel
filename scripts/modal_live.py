@@ -208,13 +208,29 @@ def read_result(job: str) -> dict:
     return json.loads(open(path, encoding="utf-8").read())
 
 
-@app.function(image=image)
+@app.function(
+    image=image,
+    secrets=[
+        modal.Secret.from_dict({"LIVE_TOKEN": __import__("os").environ.get("LIVE_TOKEN", "")})
+    ],
+)
 @modal.asgi_app()
 def api():
-    from fastapi import FastAPI, HTTPException
-    from fastapi.middleware.cors import CORSMiddleware
+    import os
 
+    from fastapi import FastAPI, HTTPException, Request
+    from fastapi.middleware.cors import CORSMiddleware
+    from fastapi.responses import JSONResponse
+
+    token = os.environ.get("LIVE_TOKEN", "")
     web = FastAPI()
+
+    @web.middleware("http")
+    async def guard(request: Request, call_next):
+        if token and request.url.path != "/healthz":
+            if request.headers.get("x-keel-token") != token:
+                return JSONResponse({"detail": "unauthorized"}, status_code=401)
+        return await call_next(request)
     web.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],

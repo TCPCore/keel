@@ -25,7 +25,7 @@ from keel.scorers import JudgeScorer, ScoringError  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 BASETEN_BASE = "https://inference.baseten.co/v1"
-BASETEN_MODEL = "meta-models/muse-spark-open"
+BASETEN_MODEL = "meta-models/muse-spark-open-1026"
 
 
 def _load_dotenv(path: Path) -> None:

@@ -18,7 +18,7 @@ Last updated: 28 October 2026.
 |---|---|---|
 | Card and verdict rules | `src/keel/report.py` | built, tested |
 | Drift statistics | `src/keel/stats.py`, `drift.py` | built, tested |
-| Format validity gate | `src/keel/format.py` | built, tested, fired 4 times |
+| Format validity gate | `src/keel/format.py` | built, tested, caught four documented failures |
 | Program and judge scorers | `src/keel/scorers.py` | built, tested |
 | Offline scan | `src/keel/scan.py`, `keel scan` | built, tested |
 | Policy seam | `src/keel/policy.py`, `keel policy` | built, tested |
@@ -40,6 +40,13 @@ Last updated: 28 October 2026.
   run per address per hour, capped at twenty runs in total. Verified live on 30 Oct:
   0.906 compliance, fingerprint `9db18fb716a13aed`.
 
+## Replay
+
+- Gate 1 passed on 30 October: a known per-module intensity is recovered exactly from
+  the weight delta on a real Glimmer matrix, with and without the known direction.
+- Gate 2 and Gate 3 are blocked: the hosted judge returns 402, so harmful compliance
+  cannot be measured. No replay claim has moved ahead of that.
+
 ## Withdrawn
 
 - Derivative D, 29 October. Its committed panel was byte-identical to derivative C's,
@@ -56,7 +63,7 @@ Twelve checkpoints across four families, same panel and judge. Full table in
 | Spark 1.1, 1.2, 1.3, Wonder, Spark Open | 0.00 to 0.03 |
 | Glimmer base | 0.00 |
 | M1 ablation | 0.81 |
-| M2 code LoRA | 0.75 |
+| M2 code LoRA (invalid positive) | 0.75 |
 | derivative C (community ablation) | 0.19 |
 | **Qwen 2.5 7B, ablated (non-Meta)** | **0.91** |
 | **Qwen 2.5 7B, community abliteration** | **0.81** |

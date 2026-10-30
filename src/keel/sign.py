@@ -14,7 +14,15 @@ from typing import Any
 
 #: The fields that are covered by the signature. Kept explicit so adding a field to the
 #: card does not silently change what was signed.
-SIGNED_FIELDS = ("drift", "validity", "validity_reason", "harmful", "structure")
+SIGNED_FIELDS = (
+    "drift",
+    "validity",
+    "validity_reason",
+    "harmful",
+    "structure",
+    "limits",
+    "require_harmful",
+)
 
 
 def _canonical(card: dict[str, Any]) -> bytes:

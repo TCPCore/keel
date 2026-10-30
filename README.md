@@ -42,6 +42,10 @@ per-request matrix is in [docs/HARMFUL-MATRIX.md](docs/HARMFUL-MATRIX.md).
 | M2 code LoRA | **0.75** | invalid positive, format collapse caught |
 | derivative C (community ablation) | 0.19 | community derivative |
 
+Counting the Spark row as three checkpoints, the table is the nine Meta fleet
+checkpoints. The three non-Meta rows live in `results/SUMMARY.md`. The BF16 control is
+measured evidence, not a fleet entry, so it is not counted in the twelve.
+
 The claim this supports is narrow and deliberate: **detection is demonstrated on Glimmer
 derivatives, where a positive control can be built.** Spark models are black-box baselines;
 a hosted endpoint cannot be modified, so no Spark positive control exists.

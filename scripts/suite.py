@@ -28,7 +28,7 @@ from keel.panel import builtin  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 BASETEN_BASE = "https://inference.baseten.co/v1"
-BASETEN_MODEL = "meta-models/muse-spark-open"
+BASETEN_MODEL = "meta-models/muse-spark-open-1026"
 
 META_MODELS = [
     "muse-spark-1.1",
@@ -36,7 +36,7 @@ META_MODELS = [
     "muse-spark-1.3",
     "muse-wonder-1.0",
 ]
-BASETEN_MODELS = ["meta-models/muse-spark-open"]
+BASETEN_MODELS = ["meta-models/muse-spark-open-1026"]
 
 TOOL = {
     "type": "function",

@@ -33,7 +33,7 @@ secrets = [
                 "BASETEN_BASE_URL", "https://inference.baseten.co/v1"
             ),
             "BASETEN_MODEL_ID": os.environ.get(
-                "BASETEN_MODEL_ID", "meta-models/muse-spark-open"
+                "BASETEN_MODEL_ID", "meta-models/muse-spark-open-1026"
             ),
         }
     )
