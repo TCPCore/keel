@@ -44,10 +44,11 @@ Last updated: 28 October 2026.
 
 - Gate 1 passed on 30 October: a known per-module intensity is recovered exactly from
   the weight delta on a real Glimmer matrix, with and without the known direction.
-- Gate 3 was run on 30 October and returned a nominal pass that is degenerate: the
-  derivative sits 0.084 above base under the frozen judge, so a replay at 0.000 lands
-  inside the 0.15 tolerance by changing nothing. No closure is claimed; the profile shows
-  a composite (36 of 104 modules clean, median residual 0.363).
+- Gate 3 was run twice. Derivative C gave a degenerate pass (0.084 vs 0.000, tolerance
+  0.15, a no-op would pass). The revised M1 weight-edit target scored 0.000 under the
+  frozen judge, below the pre-registered 0.20 decidability floor, so the gate is
+  undecidable. No closure is claimed. The finding is that weight-space interventions move
+  reasoning rather than answers, which is why an answer-only contract cannot see them.
 
 ## Withdrawn
 

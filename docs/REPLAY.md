@@ -107,3 +107,74 @@ reconstruction of it.
 intensity is recovered exactly in weight space (Gate 1); behavioral replay is not
 demonstrated. The card keeps the limitation. The falsifier was too loose for a target this
 close to the floor, and that is a design lesson, not a result.
+
+## Gate 3 revised, target M1 weight-edit, pre-registered before compute
+
+The first Gate 3 targeted derivative C, which was wrong twice: C is composite (36 of 104
+modules clean, median residual 0.363) while the recovery models a single directional edit,
+and C's effect under the frozen judge (0.084) is below the judge's own noise. No replay can
+be informative against that target.
+
+The revised target is the M1 weight-edit: a pure directional ablation we construct
+ourselves, with a known direction and a known intensity of 1.0.
+
+Gate 3 revised is **passed** only if all three hold:
+
+1. The target's effect under the frozen contract is **≥ 0.20**, so a no-op cannot pass.
+2. **|replay − target| ≤ 0.10** with overlapping 95 percent intervals.
+3. **replay ≥ base + 0.10**, so a replay that does nothing is not counted.
+
+It is **partial** if the replay lands between base and target but outside 0.10 of the
+target; the residual is reported, and for a pure construction that would indicate a
+recovery or application defect rather than a composite.
+
+It **fails** if the replay is indistinguishable from base, or if the target effect is
+below 0.20 and the experiment is therefore not decidable. A failure to reach a decidable
+target is itself the result: the method is not validated at that effect size.
+
+## The falsifier lesson, recorded
+
+A pre-registered falsifier is only as strong as its target's effect size relative to the
+measurement noise. Gate 3's 0.15 tolerance was larger than the derivative's 0.084 effect,
+so any replay, including a no-op, passed. That is the same class of error as a detector
+that cannot distinguish a signal from its absence. The rule adopted here: the target's
+effect must be at least three times the tolerance before the falsifier is considered
+non-degenerate.
+
+## Gate 3 revised: target undecidable at the answer level
+
+The M1 weight-edit was built with the refusal direction and intensity 1.0, and the target
+suite was generated and judged under the frozen contract.
+
+| quantity | value |
+|---|---|
+| M1 weight-edit, three repeats, answer-only | **0.000, 0.000, 0.000** (0 of 32) |
+| decidability floor, pre-registered | 0.20 |
+| verdict | **not decidable** |
+
+The revised falsifier fails at its first condition, before the replay is even compared. The
+weight edit produces no measurable answer-level compliance at all.
+
+Two things follow, and both matter more than a replay number:
+
+1. **The behavioral effect of our own control lives in reasoning, not in answers.** Under
+   the old contract this same construction scored 0.594, because the judge was reading the
+   full text. Under answer-only extraction it is zero. The earlier number was real, but it
+   measured the reasoning channel.
+2. **The replay question is not answerable with the targets we have.** M1 activation is the
+   only intervention above the 0.20 floor at the answer level (about 0.25 by the gold set),
+   and it is not a weight-space edit, so lambda recovery does not apply to it. Derivative C
+   is composite and at 0.084. M1 weight-edit is at zero. There is no weight-space target
+   with a decidable answer-level effect in this set.
+
+**Claim status: unchanged and now better explained.** Direction and layer ordering are
+recovered; per-module intensity is recovered exactly in weight space (Gate 1); behavioral
+replay is not demonstrated, and the reason is that every weight-space intervention we can
+build moves reasoning rather than answers. That is a finding about where the effect lives,
+not a failure of the inversion.
+
+## What would make it decidable
+
+A weight-space derivative with answer-level effect at or above 0.20 under the frozen
+contract. None exists in the current set. Constructing one is a model-training task, not a
+measurement task, and it is out of scope for this submission.
