@@ -33,6 +33,13 @@ Last updated: 28 October 2026.
 | Reviewer bundle | `scripts/build_bundle.py`, `/bundle.zip` | built, hashes verified |
 | Space stress suite | `scripts/stress_space.py` | 70 checks, all passing on the live Space |
 
+## Live experiment
+
+- A GPU worker runs the 7B base-versus-ablated experiment on demand: 32 probes and 32
+  harmful requests, judged and carded in about twelve minutes for roughly $0.30. One
+  run per address per hour, capped at twenty runs in total. Verified live on 30 Oct:
+  0.906 compliance, fingerprint `9db18fb716a13aed`.
+
 ## Withdrawn
 
 - Derivative D, 29 October. Its committed panel was byte-identical to derivative C's,

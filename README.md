@@ -8,6 +8,7 @@ the structural signature of the intervention. Exit codes make it a CI gate.
 
 - Live demo: **https://tomscot-keel.hf.space**
 - Demo video (1:55): **https://tomscot-keel.hf.space/demo.mp4**
+- Run it live (7B, about 12 min): **https://tomscot-keel.hf.space#live**
 - Scan your own checkpoint: **https://tomscot-keel.hf.space#scan**
 - Reviewer access and hashes: **https://tomscot-keel.hf.space#access**
 - Current state, including gaps: [docs/STATUS.md](docs/STATUS.md)

@@ -36,6 +36,10 @@ def fetch(url: str) -> tuple[int, str]:
         return 0, ""
 
 
+def _strip_scripts(page: str) -> str:
+    return re.sub(r"<script\b.*?</script>", "", page, flags=re.S | re.I)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", default="https://tomscot-keel.hf.space")
@@ -55,7 +59,7 @@ def main() -> int:
             print(f"FAIL page {page} {status}")
             continue
         print(f"ok   page {page}")
-        for raw in LINK.findall(html):
+        for raw in LINK.findall(_strip_scripts(html)):
             if raw.startswith(("mailto:", "javascript:")):
                 continue
             target = urllib.parse.urljoin(page_url, raw)

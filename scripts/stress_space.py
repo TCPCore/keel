@@ -147,6 +147,13 @@ def run(url: str, rescore: bool) -> int:
     status, body, _ = _req("GET", f"{base}/demo.mp4")
     check("video served", status == 200 and "video" in body.lower()[:200], str(status))
 
+    status, body, _ = _req("GET", f"{base}/live/does-not-exist")
+    check("live unknown job 404", status == 404, str(status))
+    status, body, _ = _req(
+        "POST", f"{base}/live/start?dry=1", b"", {"Content-Type": "application/json"}
+    )
+    check("live dry start", status == 200 and "dry" in body, str(status))
+
     status, body, _ = _req("GET", f"{base}/guide")
     check("docs page", status == 200 and "How to read a card" in body, str(status))
 
