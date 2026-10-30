@@ -274,6 +274,9 @@ button.ghost:hover{border-color:var(--muted);filter:none}
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .table-wrap table{min-width:820px}
 .copy pre{white-space:pre-wrap;word-break:break-word}
+.video-embed{position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;
+border:1px solid var(--line);background:#000;margin:18px 0}
+.video-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .steps{display:grid;gap:4px;font-size:12px;color:var(--muted);margin-bottom:8px}
 .steps .on{color:var(--ink)}
 .steps .now{color:var(--blue);font-weight:600}
@@ -605,7 +608,7 @@ Nothing checks the derivative artifact after release. Keel does: it scans a deri
 against its base and emits a card with drift, validity, harmful compliance and a
 fingerprint, and proves the card by recomputing it.</p>
 <div class="cta">
-<a class="button" href="/video">Watch the demo · 1:55</a>
+<a class="button" href="/video">Watch the demo</a>
 <a class="ghost" href="#verify">Verify a card</a>
 <a class="ghost" href="#scan">Scan your own</a>
 </div>
@@ -1580,15 +1583,15 @@ def demo_captions() -> FileResponse:
 @app.get("/video", response_class=HTMLResponse)
 def video_page() -> str:
     scenes = [
-        ("0:00", "The gap", "The hero sentence: Meta checks the base and the runtime, and nothing checks the derivative artifact."),
-        ("0:12", "Built in the open", "A real terminal: selftest, a scan, and a policy that blocks a card with no harmful half."),
-        ("0:27", "The run", "A 30B checkpoint answering 32 harmful requests, timestamped 12:28 to 12:39, 29 of 32."),
-        ("0:42", "The families", "One table: packaging variants stay at zero, behavioural edits move."),
+        ("0:00", "The gap", "Meta checks the base and the runtime, and nothing checks the derivative artifact."),
+        ("0:12", "Built in the open", "Selftest, a scan, and a policy that blocks a card with no harmful half."),
+        ("0:27", "The run", "A 30B checkpoint answering 32 harmful requests, 12:28 to 12:39, 29 of 32."),
+        ("0:42", "The families", "Packaging variants stay at zero; behavioural edits move."),
         ("1:00", "The cards", "Cards grouped by model, each with a fingerprint."),
-        ("1:10", "A card", "Drift, validity, harmful compliance, and the limits of the scan."),
-        ("1:21", "Verify", "The card recomputed from committed responses. MATCH, not a screenshot."),
+        ("1:10", "A card", "Drift, validity, harmful compliance, limits."),
+        ("1:21", "Verify", "Recomputed from committed responses. MATCH, not a screenshot."),
         ("1:29", "Tamper", "One axis moved by 0.25, the fingerprint changes, verification fails."),
-        ("1:36", "Reproduce", "The probes, the responses, the verifier, the stress suite."),
+        ("1:36", "Reproduce", "Probes, responses, verifier, stress suite."),
         ("1:46", "Close", "Two dollars, twenty minutes, one card."),
     ]
     rows = "".join(
@@ -1600,29 +1603,30 @@ def video_page() -> str:
         f"""<div class="wrap"><div class="doc">
 <p class="eyebrow">Demo</p>
 <h1 style="font-size:44px;line-height:1.1;letter-spacing:-.015em;margin:0 0 18px">
-The demo, annotated</h1>
-<p class="lede">One minute fifty-five, ten scenes, narrated and captioned. It walks from
-the gap to a verified card and ends on the cost. Every number in it comes from the same
-repo you can clone.</p>
-<video controls preload="metadata" playsinline
-style="width:100%;border-radius:16px;border:1px solid var(--line);background:#000;margin:18px 0"
-src="/demo.mp4">
-<track kind="captions" src="/demo.srt" srclang="en" label="English" default>
-</video>
-<p class="note">The captions are also available as <a href="/demo.srt">a subtitle file</a>.
-The same experiment can be run live on the <a href="/guide">guide</a> page or from the
-<a href="/#live">Live section</a>, where a 7B model is generated and judged on demand.</p>
+Watch the demo</h1>
+<p class="lede">A walkthrough of the product: the gap, the run, the four families, a card,
+verify, the tamper test, and the cost. It plays in place.</p>
+<div class="video-embed">
+<iframe src="https://www.youtube-nocookie.com/embed/FvseA22YEDo"
+title="Keel demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+allowfullscreen loading="lazy"></iframe>
+</div>
+<p class="note">If the embed is blocked, the same video is at
+<a href="https://youtu.be/FvseA22YEDo">youtu.be/FvseA22YEDo</a>. A repo-generated cut with
+burned captions is at <a href="/demo.mp4">/demo.mp4</a>, subtitles at
+<a href="/demo.srt">/demo.srt</a>.</p>
 <h2>What you are seeing</h2>
 <table><thead><tr><th>time</th><th>scene</th><th>what happens</th></tr></thead>
 <tbody>{rows}</tbody></table>
+<p class="note">Those timestamps describe the repo-generated cut. The narration and the
+numbers are the same in both.</p>
 <h2>Why these scenes</h2>
-<p>The video is ordered as an argument, not a feature tour. First the gap, because without
-it the product is a scanner looking for a problem. Then the build, to show the tool is
-small and reproducible. Then the run, because the 30B claim needs a timestamp. Then the
-families, because one model proves nothing. Then the cards, the verify and the tamper
-test, which are the three things a judge can check without trusting us. The close exists
-to answer the budget question before it is asked.</p>
-<p>The full script lives in <code>docs/VIDEO.md</code> and the scene list in
+<p>The order is an argument, not a feature tour. First the gap, because without it the
+product is a scanner looking for a problem. Then the build, to show the tool is small.
+Then the run, because a 30B claim needs a timestamp. Then the families, because one model
+proves nothing. Then the three things a judge can check without trusting us: the card, the
+verify and the tamper test. The close answers the budget question before it is asked.</p>
+<p>The script is in <code>docs/VIDEO.md</code>, the scene list in
 <code>video/captions.srt</code>.</p>
 <p><a href="/">&larr; back to the demo</a></p>
 </div></div>""",

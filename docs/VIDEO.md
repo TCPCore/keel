@@ -104,6 +104,9 @@ frame, then the judged result.
 
 ## The produced video
 
+Hosted on YouTube at https://youtu.be/FvseA22YEDo and embedded at
+https://tomscot-keel.hf.space/video.
+
 `video/keel-demo.mp4` is built, not shot: 115 seconds, 1600x900, ten annotated scenes with
 narration and burned captions. It is **hosted at `/demo.mp4`** on the Space and linked from
 the hero and the guide. It walks the gap, the recorded 30B run, the four-family

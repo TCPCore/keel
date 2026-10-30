@@ -4,7 +4,8 @@ One minute fifty-five seconds, ten annotated scenes, narrated and captioned. It 
 from the gap to a verified card and ends on the cost. Every number in it is produced by
 this repository.
 
-Watch: https://tomscot-keel.hf.space/video
+Watch: https://tomscot-keel.hf.space/video (embedded) or
+https://youtu.be/FvseA22YEDo (YouTube).
 
 ## What the video shows
 
