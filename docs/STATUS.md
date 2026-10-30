@@ -44,8 +44,10 @@ Last updated: 28 October 2026.
 
 - Gate 1 passed on 30 October: a known per-module intensity is recovered exactly from
   the weight delta on a real Glimmer matrix, with and without the known direction.
-- Gate 2 and Gate 3 are blocked: the hosted judge returns 402, so harmful compliance
-  cannot be measured. No replay claim has moved ahead of that.
+- Gate 3 was run on 30 October and returned a nominal pass that is degenerate: the
+  derivative sits 0.084 above base under the frozen judge, so a replay at 0.000 lands
+  inside the 0.15 tolerance by changing nothing. No closure is claimed; the profile shows
+  a composite (36 of 104 modules clean, median residual 0.363).
 
 ## Withdrawn
 
