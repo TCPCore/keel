@@ -801,23 +801,56 @@ def _proof_html(slug: str, stored_fp: str) -> str:
     )
 
 
-def verify(slug: str, request: Request, tamper: int = 0) -> HTMLResponse:
+def _tampered_card(slug: str) -> dict:
+    stored = json.loads(json.dumps(_card(slug)))
+    first = next(iter(stored["drift"]["axes"].values()))
+    first["candidate"] = round(float(first["candidate"]) + 0.25, 4)
+    return stored
+
+
+def verify(slug: str, request: Request, tamper: int = 0, check: int = 0) -> HTMLResponse:
     if slug not in RESPONSES:
         raise HTTPException(404, "no cached responses for this entry")
     stored = _card(slug)
     stored_fp = stored.get("fingerprint", "")
-    if tamper:
-        edited = json.loads(json.dumps(stored))
-        first = next(iter(edited["drift"]["axes"].values()))
-        first["candidate"] = round(float(first["candidate"]) + 0.25, 4)
+    if tamper and check:
         from keel.report import Card
 
+        edited = _tampered_card(slug)
+        tampered_fp = Card.from_dict(edited).fingerprint()
+        fresh = _recompute(slug)
+        recomputed = fresh.fingerprint()
+        body = (
+            "<div class='wrap'><h2>Verify the tampered card</h2>"
+            f"<p>stored (tampered) <b>{tampered_fp}</b></p>"
+            f"<p>recomputed from the committed responses <b>{recomputed}</b></p>"
+            "<p class='warn'>DIFF: the stored card was not produced from these inputs.</p>"
+            "<p class='lede'>This is the tamper test end to end. One axis was moved by 0.25, "
+            "the fingerprint changed, and verification now fails. That is why an edited card "
+            "cannot pass as the original.</p>"
+            f"{_proof_html(slug, recomputed)}"
+            "<p><a href='/verify/{}'>Verify the original again</a> · "
+            "<a href='/tamper/{}'>tamper test</a> · <a href='/'>back</a></p></div>".format(
+                slug, slug
+            )
+        )
+        return HTMLResponse(_page("Keel · tampered card", body))
+
+    if tamper:
+        from keel.report import Card
+
+        edited = _tampered_card(slug)
         tampered = Card.from_dict(edited).fingerprint()
         body = (
             "<div class='wrap'><h2>Tamper test</h2>"
             f"<p>original fingerprint <b>{stored_fp}</b></p>"
             f"<p>after changing one axis by +0.25 <b>{tampered}</b></p>"
             "<p class='ok'>The fingerprint changed. An edited card cannot pass as the original.</p>"
+            "<p class='lede'>Now check it. Verification recomputes the card from the committed "
+            "responses; the tampered card will not match.</p>"
+            f"<p><a class='button' href='/verify/{slug}?tamper=1&amp;check=1'>"
+            "Verify the tampered card</a> "
+            f"<a class='ghost' href='/verify/{slug}/tampered.json'>Download the tampered JSON</a></p>"
             "<p><a href='/'>&larr; back</a></p></div>"
         )
         return HTMLResponse(_page("Keel · tamper", body))
@@ -848,6 +881,19 @@ def verify_file(slug: str, which: str) -> FileResponse:
     base, candidate, _ = _proof_files(slug)
     path = base if which == "base" else candidate
     return FileResponse(path, media_type="application/x-ndjson", filename=path.name)
+
+
+@app.get("/verify/{slug}/tampered.json")
+def verify_tampered(slug: str) -> JSONResponse:
+    from keel.report import Card
+
+    if slug not in RESPONSES:
+        raise HTTPException(404, "no such card")
+    edited = _tampered_card(slug)
+    payload = dict(edited)
+    payload["fingerprint"] = Card.from_dict(edited).fingerprint()
+    payload["tampered"] = True
+    return JSONResponse(payload)
 
 
 @app.get("/verify/{slug}/proof.zip")
@@ -894,14 +940,18 @@ def verify_proof(slug: str) -> Response:
 
 
 @app.post("/verify/{slug}", response_class=HTMLResponse)
-def verify_post(slug: str, request: Request, tamper: int = 0) -> HTMLResponse:
-    return verify(slug, request, tamper)
+def verify_post(
+    slug: str, request: Request, tamper: int = 0, check: int = 0
+) -> HTMLResponse:
+    return verify(slug, request, tamper, check)
 
 
 @app.get("/verify/{slug}", response_class=HTMLResponse)
-def verify_get(slug: str, request: Request) -> HTMLResponse:
+def verify_get(
+    slug: str, request: Request, tamper: int = 0, check: int = 0
+) -> HTMLResponse:
     """Allow a refresh or a shared link, not only a form post."""
-    return verify(slug, request, 0)
+    return verify(slug, request, tamper, check)
 
 
 @app.post("/rescore/{slug}", response_class=HTMLResponse)
@@ -1632,8 +1682,10 @@ made the broken run visible instead of publishing it.</li>
 <h2>Verify it is real</h2>
 <p>Press <b>Verify</b> on any card and the server recomputes it from committed responses.
 <code>MATCH</code> means the numbers were reproduced from scratch. Press <b>Tamper test</b>
-and one axis changes by 0.25, which changes the fingerprint. An edited card cannot pass as
-the original.</p>
+and one axis changes by 0.25, which changes the fingerprint. Then press <b>Verify the
+tampered card</b>: the stored tampered fingerprint and the recomputed one differ, and the
+page says <code>DIFF</code>. That is the loop end to end, an edit that cannot survive a
+check.</p>
 <p>If you do not want to trust this page, do not. The verify page lists a SHA-256 for each
 response file and offers a proof bundle: the base responses, the candidate responses, the
 card, and a CHECK.txt with the command. Run that command offline and the fingerprint must

@@ -153,6 +153,13 @@ def run(url: str, rescore: bool) -> int:
     check("proof instructions", "How to check this yourself" in body, str(status))
     status, raw = _req_bytes(f"{base}/verify/m2-lora/proof.zip")
     check("proof bundle", status == 200 and raw[:2] == b"PK", str(status))
+    status, body, _ = _req("GET", f"{base}/verify/m2-lora?tamper=1")
+    check("tamper offers verification", "Verify the tampered card" in body, str(status))
+    status, body, _ = _req("GET", f"{base}/verify/m2-lora?tamper=1&check=1")
+    check("tampered card fails", "DIFF" in body, str(status))
+    status, raw = _req_bytes(f"{base}/verify/m2-lora/tampered.json")
+    tampered = json.loads(raw) if status == 200 else {}
+    check("tampered json", tampered.get("tampered") is True, str(status))
     status, raw = _req_bytes(f"{base}/verify/m2-lora/file/base")
     check("proof file", status == 200 and len(raw) > 1000, str(status))
 
