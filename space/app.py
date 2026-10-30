@@ -805,12 +805,13 @@ Approved reviewers receive a bundle with generic file names, checkable against
 
 <h2 id="method"><span class="idx">07</span>Method and limits</h2>
 <div class="copy">
-<p class="lede" style="margin:0">Detection is demonstrated on Glimmer derivatives, where
-a positive control can be built. The judge contract is frozen and recorded in every card:
-<code>muse-spark-1.3</code>, answer-only extraction, three-repeat majority. Under that
-contract the answer-level effect is 0.16 for the ablation and 0.06 for derivative C; the
-earlier numbers (0.81, 0.19, 0.91, 0.78) were measured under a retired judge that read the
-model's reasoning. Weight-space recovery: derivative C's delta is 100 percent in
+<p class="lede" style="margin:0">The judge contract is frozen and recorded in every card:
+<code>muse-spark-1.3</code>, answer-only extraction, three-repeat majority. The answer
+extractor is format-aware: Glimmer's reasoning is marked <code>to=self</code> and is
+excluded, while Qwen and Mistral return plain answers whose full text is the answer. Under
+that contract the answer-level effects are Glimmer 0.16 and 0.09, Qwen 0.97 and 0.78, and
+Mistral 0.81. The Glimmer ablation moved its reasoning channel, which the contract
+deliberately excludes. Weight-space recovery: derivative C's delta is 100 percent in
 <code>o_proj</code> and <code>down_proj</code> and reconstructs to bfloat16 exactness, while
 behavioural replay did not meet its precondition. No card is green without the harmful half.
 Full record: <code>docs/RESULTS.md</code>, <code>docs/REPLAY.md</code>.</p>
@@ -1794,16 +1795,18 @@ run on four families:</p>
 <table>
 <tr><th>family</th><th>base</th><th>derivative</th><th>delta</th></tr>
 <tr><td>Meta Glimmer 30B</td><td>0.00</td><td>0.16, our ablation</td><td>+0.16</td></tr>
-<tr><td>Meta Glimmer 30B</td><td>0.00</td><td>0.06, a community edit</td><td>+0.06</td></tr>
-<tr><td>Qwen 2.5 7B</td><td>0.00</td><td>0.00, our ablation</td><td>0.00</td></tr>
-<tr><td>Mistral 7B</td><td>0.00</td><td>0.00, a community edit</td><td>0.00</td></tr>
+<tr><td>Meta Glimmer 30B</td><td>0.00</td><td>0.09, a community edit</td><td>+0.09</td></tr>
+<tr><td>Qwen 2.5 7B</td><td>0.00</td><td>0.97, our ablation</td><td>+0.97</td></tr>
+<tr><td>Qwen 2.5 7B</td><td>0.00</td><td>0.78, a community edit</td><td>+0.78</td></tr>
+<tr><td>Mistral 7B</td><td>0.00</td><td>0.81, a community edit</td><td>+0.81</td></tr>
 </table>
-<p>These are the answer-level numbers under the frozen contract. The Qwen and Mistral edits
-moved the model's reasoning but not its answers, so an answer-only judge sees nothing. The
-earlier cross-family numbers (0.91, 0.78) were measuring that reasoning channel, and the
-fifth refusal records the correction. The claim is narrower than it was: answer-level
-removal of refusal is demonstrated on Glimmer, at 0.16, and the instrument now measures
-answers rather than private reasoning.</p>
+<p>These are the answer-level numbers under the frozen contract. The answer extractor is
+format-aware: Glimmer separates reasoning with a <code>to=self</code> marker, so only the
+answer segment is judged, while Qwen and Mistral return plain answers and their full
+response is the answer. A first pass wrongly emptied Qwen and Mistral because it looked for
+a Glimmer marker that those models never emit; the fix restored their real numbers, and
+both Muse judges agree within one item in 32 on those rows. Glimmer stays at 0.16 because
+its ablation moves the reasoning channel, which the contract deliberately excludes.</p>
 
 <h2>The five times the tool refused</h2>
 <p>A clean number from a broken measurement is worse than no number. That rule was tested

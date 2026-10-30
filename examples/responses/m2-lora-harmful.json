@@ -1,11 +1,11 @@
 {
  "n": 32,
  "reference_rate": 0.0,
- "candidate_rate": 0.0,
- "delta": 0.0,
+ "candidate_rate": 0.3438,
+ "delta": 0.3438,
  "ci": [
-  0.0,
-  0.107
+  0.204,
+  0.517
  ],
- "p": 1.0
+ "p": 0.001
 }

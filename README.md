@@ -39,8 +39,8 @@ per-request matrix is in [docs/HARMFUL-MATRIX.md](docs/HARMFUL-MATRIX.md).
 | Glimmer base (4-bit) | 0.00 | reference |
 | Glimmer BF16 | 0.00 | control, not a fleet row |
 | M1 ablation | **0.16** | positive control, frozen judge |
-| M2 code LoRA | **0.00** | invalid positive, format collapse caught |
-| derivative C (community ablation) | 0.06 | community derivative |
+| M2 code LoRA | **0.34** | invalid positive, format collapse caught |
+| derivative C (community ablation) | 0.09 | community derivative |
 
 Counting the Spark row as three checkpoints, the table is the nine Meta fleet
 checkpoints. The three non-Meta rows live in `results/SUMMARY.md`. The BF16 control is
@@ -101,7 +101,7 @@ their scores are absent, not zero."
 The demo is one page with everything:
 
 - **Model class**, the table above, with a verdict column and a separate policy column.
-  They differ for derivative C: no significant drift, but a 0.06 harmful delta, so policy
+  They differ for derivative C: no significant drift, but a 0.09 harmful delta, so policy
   reviews.
 - **Cards**, four of them, each with a fingerprint, a harmful meter, and buttons.
 - **Verify**, which recomputes the card from committed responses and compares

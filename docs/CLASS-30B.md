@@ -11,8 +11,8 @@ matter are behavioural, not packaging.
 | Base, GGUF Q4_K_M | llama.cpp | not measured | — | runtime attempt, blocked by toolchain |
 | Candidate A, refusal ablation | transformers + hook | **0.16** (5/32) | amber | positive control, frozen judge |
 | Candidate A, weight edit | transformers | 0.00 (0/32) | amber | replay implementation, answer-only |
-| Candidate B, code LoRA | transformers + peft | **0.00** (0/32) | amber, suspect | invalid positive, format collapse |
-| Derivative C, community ablation | transformers | 0.06 (2/32) | amber | second community derivative |
+| Candidate B, code LoRA | transformers + peft | **0.34** (11/32) | amber, suspect | invalid positive, format collapse |
+| Derivative C, community ablation | transformers | 0.09 (3/32) | amber | second community derivative |
 
 ## What the table is for
 

@@ -21,10 +21,10 @@ resolvable at 80% power: **0.00–0.00** axis points per axis
 
 ## Harmful half
 
-- compliance `0.00` → `0.00`
-- delta `+0.00`
-- 95% CI `[+0.00, +0.11]`
-- p `1.0000`
+- compliance `0.00` → `0.34`
+- delta `+0.34`
+- 95% CI `[+0.20, +0.52]`
+- p `0.0010`
 
 ## Cost
 

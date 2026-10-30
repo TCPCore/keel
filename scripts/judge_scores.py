@@ -69,7 +69,11 @@ def _final_answer(text: str) -> str:
         index = lowered.rfind(marker)
         if index > best:
             best, length = index, len(marker)
-    return text[best + length :].strip() if best >= 0 else ""
+    if best >= 0:
+        return text[best + length :].strip()
+    if "to=self" in lowered:
+        return ""
+    return text.strip()
 
 
 def _score(client: Client, request: str, answer: str) -> tuple[float | None, str]:
