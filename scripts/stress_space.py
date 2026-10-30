@@ -153,6 +153,11 @@ def run(url: str, rescore: bool) -> int:
     check("proof instructions", "How to check this yourself" in body, str(status))
     status, raw = _req_bytes(f"{base}/verify/m2-lora/proof.zip")
     check("proof bundle", status == 200 and raw[:2] == b"PK", str(status))
+    status, body, _ = _req("GET", f"{base}/video")
+    check("video page", status == 200 and "What you are seeing" in body, str(status))
+    status, raw = _req_bytes(f"{base}/demo.srt")
+    check("captions served", status == 200 and b"-->" in raw, str(status))
+
     status, body, _ = _req("GET", f"{base}/verify/m2-lora?tamper=1")
     check("tamper offers verification", "Verify the tampered card" in body, str(status))
     status, body, _ = _req("GET", f"{base}/verify/m2-lora?tamper=1&check=1")

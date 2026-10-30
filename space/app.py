@@ -274,6 +274,9 @@ button.ghost:hover{border-color:var(--muted);filter:none}
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .table-wrap table{min-width:820px}
 .copy pre{white-space:pre-wrap;word-break:break-word}
+.steps{display:grid;gap:4px;font-size:12px;color:var(--muted);margin-bottom:8px}
+.steps .on{color:var(--ink)}
+.steps .now{color:var(--blue);font-weight:600}
 @media(max-width:820px){.two{grid-template-columns:1fr}nav .links{display:none}
 .hero h1{font-size:38px}.hero p.sub{font-size:18px}h2{font-size:30px}
 .wrap{padding:0 20px}}
@@ -509,7 +512,23 @@ LIVE_JS = '''<script>
       var d = res.d;
       if (!res.ok) { say(d.detail || 'unavailable'); btn.disabled = false; return; }
       var elapsed = Math.round((Date.now() - started) / 1000);
-      say(d.state + ' · ' + (d.phase || '') + ' · ' + elapsed + 's');
+      var total = d.total || 0;
+      var done = d.done || 0;
+      var step = d.step || 0;
+      var offset = [0, 0, 32, 64, 72, 104][step] || 0;
+      var units = 136;
+      var pct = d.state === 'done' ? 100 : Math.min(99, Math.round((offset + done) / units * 100));
+      var bar = document.getElementById('live-bar');
+      if (bar) bar.style.width = pct + '%';
+      var steps = document.querySelectorAll('#live-steps div');
+      steps.forEach(function (el) {
+        var n = parseInt(el.getAttribute('data-step'), 10);
+        el.className = n < step || d.state === 'done' ? 'on' : (n === step ? 'now' : '');
+      });
+      var eta = '';
+      if (d.state === 'running' && pct > 2) eta = ', about ' + Math.max(1, Math.round(elapsed * (100 - pct) / pct / 60)) + ' min left';
+      say(d.state + ' · ' + (d.phase || '') + (d.current ? ' ' + d.current : '') +
+          ' · ' + done + '/' + total + ' · ' + elapsed + 's' + eta);
       if (d.state === 'done') {
         resultEl.innerHTML = '<p class="ok">verdict ' + d.verdict + ' · policy ' + d.policy +
           ' · harmful ' + d.compliance + ' · <a href="/live/' + id + '/card">open the card</a></p>';
@@ -586,7 +605,7 @@ Nothing checks the derivative artifact after release. Keel does: it scans a deri
 against its base and emits a card with drift, validity, harmful compliance and a
 fingerprint, and proves the card by recomputing it.</p>
 <div class="cta">
-<a class="button" href="/demo.mp4">Watch the demo · 1:55</a>
+<a class="button" href="/video">Watch the demo · 1:55</a>
 <a class="ghost" href="#verify">Verify a card</a>
 <a class="ghost" href="#scan">Scan your own</a>
 </div>
@@ -708,7 +727,16 @@ the card, never the text.</p>
 </div>
 <div class="panel" style="padding:26px">
 <p class="meta">live experiment</p>
+<p class="meta">Qwen 2.5 7B · A10G · five stages</p>
 <button id="live-btn" type="button">Run it (about 12 minutes)</button>
+<div class="meter" style="width:100%;margin:14px 0 10px"><span id="live-bar" style="width:0%"></span></div>
+<div class="steps" id="live-steps">
+<div data-step="1">1 · base answers</div>
+<div data-step="2">2 · base harmful</div>
+<div data-step="3">3 · refusal direction</div>
+<div data-step="4">4 · ablated answers</div>
+<div data-step="5">5 · ablated harmful</div>
+</div>
 <p class="note" id="live-status">no run yet</p>
 <div id="live-log" class="mono" style="font-size:12px;margin-top:10px"></div>
 <div id="live-result"></div>
@@ -1492,8 +1520,13 @@ def live_status(job: str):
         {
             "state": state,
             "phase": status.get("phase"),
+            "step": status.get("step", 0),
+            "current": status.get("current", ""),
             "done": status.get("done", 0),
             "total": status.get("total", 0),
+            "started": status.get("started"),
+            "model": status.get("model", "Qwen 2.5 7B"),
+            "device": status.get("device", "A10G"),
             "error": status.get("error"),
         }
     )
@@ -1536,6 +1569,63 @@ def live_json(job: str) -> JSONResponse:
 def demo_video() -> FileResponse:
     return FileResponse(
         ROOT / "space/keel-demo.mp4", media_type="video/mp4", filename="keel-demo.mp4"
+    )
+
+
+@app.get("/demo.srt")
+def demo_captions() -> FileResponse:
+    return FileResponse(ROOT / "space/captions.srt", media_type="text/plain")
+
+
+@app.get("/video", response_class=HTMLResponse)
+def video_page() -> str:
+    scenes = [
+        ("0:00", "The gap", "The hero sentence: Meta checks the base and the runtime, and nothing checks the derivative artifact."),
+        ("0:12", "Built in the open", "A real terminal: selftest, a scan, and a policy that blocks a card with no harmful half."),
+        ("0:27", "The run", "A 30B checkpoint answering 32 harmful requests, timestamped 12:28 to 12:39, 29 of 32."),
+        ("0:42", "The families", "One table: packaging variants stay at zero, behavioural edits move."),
+        ("1:00", "The cards", "Cards grouped by model, each with a fingerprint."),
+        ("1:10", "A card", "Drift, validity, harmful compliance, and the limits of the scan."),
+        ("1:21", "Verify", "The card recomputed from committed responses. MATCH, not a screenshot."),
+        ("1:29", "Tamper", "One axis moved by 0.25, the fingerprint changes, verification fails."),
+        ("1:36", "Reproduce", "The probes, the responses, the verifier, the stress suite."),
+        ("1:46", "Close", "Two dollars, twenty minutes, one card."),
+    ]
+    rows = "".join(
+        f"<tr><td class='mono'>{when}</td><td><b>{title}</b></td><td>{what}</td></tr>"
+        for when, title, what in scenes
+    )
+    return _page(
+        "Keel · demo video",
+        f"""<div class="wrap"><div class="doc">
+<p class="eyebrow">Demo</p>
+<h1 style="font-size:44px;line-height:1.1;letter-spacing:-.015em;margin:0 0 18px">
+The demo, annotated</h1>
+<p class="lede">One minute fifty-five, ten scenes, narrated and captioned. It walks from
+the gap to a verified card and ends on the cost. Every number in it comes from the same
+repo you can clone.</p>
+<video controls preload="metadata" playsinline
+style="width:100%;border-radius:16px;border:1px solid var(--line);background:#000;margin:18px 0"
+src="/demo.mp4">
+<track kind="captions" src="/demo.srt" srclang="en" label="English" default>
+</video>
+<p class="note">The captions are also available as <a href="/demo.srt">a subtitle file</a>.
+The same experiment can be run live on the <a href="/guide">guide</a> page or from the
+<a href="/#live">Live section</a>, where a 7B model is generated and judged on demand.</p>
+<h2>What you are seeing</h2>
+<table><thead><tr><th>time</th><th>scene</th><th>what happens</th></tr></thead>
+<tbody>{rows}</tbody></table>
+<h2>Why these scenes</h2>
+<p>The video is ordered as an argument, not a feature tour. First the gap, because without
+it the product is a scanner looking for a problem. Then the build, to show the tool is
+small and reproducible. Then the run, because the 30B claim needs a timestamp. Then the
+families, because one model proves nothing. Then the cards, the verify and the tamper
+test, which are the three things a judge can check without trusting us. The close exists
+to answer the budget question before it is asked.</p>
+<p>The full script lives in <code>docs/VIDEO.md</code> and the scene list in
+<code>video/captions.srt</code>.</p>
+<p><a href="/">&larr; back to the demo</a></p>
+</div></div>""",
     )
 
 
@@ -1743,8 +1833,8 @@ because it should not change behaviour.</td></tr>
 </table>
 
 <h2>Reproduce it</h2>
-<p>The walkthrough is also available as <a href="/demo.mp4">a 1 minute 55 second video</a>
-with annotated scenes.</p>
+<p>The walkthrough is also available as <a href="/video">a 1 minute 55 second video</a>
+with annotated scenes and a written description.</p>
 <pre>python scripts/verify_repro.py
 python scripts/check_links.py --url https://tomscot-keel.hf.space
 python scripts/stress_space.py --url https://tomscot-keel.hf.space</pre>

@@ -65,7 +65,18 @@ def run(job: str) -> None:
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
     started = time.time()
-    _set(job, state="running", phase="loading model", done=0, total=0, started=started)
+    _set(
+        job,
+        state="running",
+        phase="loading model",
+        done=0,
+        total=0,
+        step=0,
+        current="",
+        started=started,
+        model=MODEL,
+        device="A10G",
+    )
     try:
         panel, harmful = _load_prompts()
         tokenizer = AutoTokenizer.from_pretrained(MODEL, cache_dir="/hf")
@@ -74,7 +85,7 @@ def run(job: str) -> None:
         )
         model.eval()
 
-        def generate(prompts, phase):
+        def generate(prompts, phase, step):
             rows = []
             for index, prompt in enumerate(prompts, 1):
                 text = tokenizer.apply_chat_template(
@@ -96,13 +107,20 @@ def run(job: str) -> None:
                 rows.append(
                     {"probe_id": prompt.get("id") or prompt.get("probe_id"), "text": reply}
                 )
-                _set(job, phase=phase, done=index, total=len(prompts))
+                _set(
+                    job,
+                    phase=phase,
+                    step=step,
+                    done=index,
+                    total=len(prompts),
+                    current=prompt.get("id") or prompt.get("probe_id"),
+                )
             return rows
 
-        base_panel = generate(panel, "base panel")
-        base_harmful = generate(harmful, "base harmful")
+        base_panel = generate(panel, "base panel", 1)
+        base_harmful = generate(harmful, "base harmful", 2)
 
-        _set(job, phase="computing refusal direction", done=0, total=64)
+        _set(job, phase="computing refusal direction", step=3, done=0, total=1, current="")
         layers = None
         for _, module in model.named_modules():
             if module.__class__.__name__ == "ModuleList" and len(module) > 20:
@@ -151,8 +169,8 @@ def run(job: str) -> None:
                 for layer in module:
                     handles.append(layer.register_forward_pre_hook(ablate))
 
-        abl_panel = generate(panel, "ablated panel")
-        abl_harmful = generate(harmful, "ablated harmful")
+        abl_panel = generate(panel, "ablated panel", 4)
+        abl_harmful = generate(harmful, "ablated harmful", 5)
         for handle in handles:
             handle.remove()
 
@@ -170,7 +188,7 @@ def run(job: str) -> None:
         with open(path, "w", encoding="utf-8") as handle_out:
             json.dump(result, handle_out)
         data.commit()
-        _set(job, state="done", phase="done", done=64, total=64, path=path)
+        _set(job, state="done", phase="done", step=5, done=64, total=64, path=path)
     except Exception as exc:  # noqa: BLE001
         import traceback
 
