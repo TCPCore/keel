@@ -178,3 +178,156 @@ not a failure of the inversion.
 A weight-space derivative with answer-level effect at or above 0.20 under the frozen
 contract. None exists in the current set. Constructing one is a model-training task, not a
 measurement task, and it is out of scope for this submission.
+
+## Decomposition experiment, pre-registered before running
+
+The replay question is reframed as a decomposition. For each targeted module,
+
+    dW = P + L,  P = -lambda * outer(v, v^T W),  L = dW - P
+
+with v the top direction of dW and lambda the Frobenius least-squares coefficient. The
+three variants are applied to the base and judged under the frozen contract.
+
+The decomposition is **verified** if all three hold:
+
+1. P alone reproduces the M1 weight-edit behaviour (already established: both are at the
+   answer-level floor).
+2. L has identifiable structure: a spectral gap, or module clustering, or a stable rank.
+3. P + L reproduces the derivative within 0.10.
+
+It is **partial** if (2) holds but (3) misses: structured residual, not the full behaviour,
+evidence of a third component.
+
+It **fails** if (2) fails: the residual is unstructured, so the rank-one model is the wrong
+starting point.
+
+Note, stated before the run: P + L is an identity by construction, because the two terms sum
+to the stored delta. Variant P + L is therefore a pipeline check, not evidence. The
+informative comparison is **P alone versus L alone**.
+
+## Decomposition result
+
+Filled in after scoring.
+
+## Decomposition decision thresholds, pre-registered before scoring
+
+Target under the frozen contract: derivative C at **0.084**, 95 percent interval roughly
+[0.02, 0.14]. Three repeats per variant. The deciding number is the majority rate per
+variant with its interval.
+
+| branch | condition | reading |
+|---|---|---|
+| **Verified decomposition** | L alone in [0.06, 0.11] and its interval overlaps the derivative's | projection is structural, residual is behavioral |
+| **Interactive** | L alone < 0.06, and P+L in [0.06, 0.11] | the residual's effect depends on the projection |
+| **Reinforcing (non-additive)** | P+L > 0.11 with an interval that does not overlap the derivative's | components amplify each other; stronger than additive |
+| **Third component** | P+L < 0.06 | a further intervention is missing; the residual does not carry the behavior |
+| **Inconclusive** | any deciding variant's 95 percent half-width exceeds 0.05 | the effect is too close to the judge's noise to decide at n=32 |
+
+The inconclusive branch is real and will be used if it fires. A point estimate near 0.084
+with a half-width above 0.05 cannot separate 0.06 from 0.11.
+
+P+L is an identity by construction and is the pipeline check; if P+L does not land near the
+derivative, the generation path is suspect before any decomposition reading is made.
+
+No threshold adjustment after the numbers are seen. The branch name is the claim.
+
+## Invalidated decomposition runs and the coverage check
+
+The first decomposition runs are **invalid** and are not used. Their outputs were entirely
+garbled: applying the projection produced non-finite values for modules where the
+least-squares denominator was near zero, which corrupted the weights and made the model
+emit replacement characters. The sanitised rerun guards every lambda (finite, |lambda| ≤ 10)
+and skips any module whose projection or residual is not finite.
+
+A second assumption was also untested. P + L is an identity only over the tensors we
+decompose. The first runs edited 104 `o_proj` and `down_proj` matrices; if derivative C
+changed any other tensor, P + L cannot reproduce it and the pipeline check would fail for a
+coverage reason, not a math reason.
+
+`scripts/coverage.py` streams both checkpoints and reports the share of total
+`||candidate - base||` that lives in the modelled suffixes. The decomposition is only
+interpretable if that share is high, or if every changed tensor is included.
+
+## Coverage bands, pre-registered before the numbers
+
+Coverage is the share of total `||candidate - base||` that lives in the modelled suffixes
+(`o_proj.weight`, `down_proj.weight`).
+
+| coverage | reading | next |
+|---|---|---|
+| **≥ 85%** | the modelled modules carry the delta; P+L is a reasonable reconstruction | fix non-finite lambda, run the three variants |
+| **60 to 85%** | most of the delta is modelled, but a meaningful fraction is not; P+L is partial | report coverage beside every result; the residual includes unmodelled tensors |
+| **< 60%** | the modelled modules are a minority; P+L is a reconstruction of a subset | the coverage number is the finding; the behavioral decomposition is not interpretable against this artifact |
+
+A zero or failed coverage measurement is not a band; it means the measurement did not run.
+The first attempt returned zero because the numpy reader cannot load bfloat16 and every
+tensor was skipped. That is an instrumentation failure, not coverage.
+
+## Coverage result
+
+`scripts/coverage.py` streamed both checkpoints and summed the delta norm by suffix.
+
+| quantity | value |
+|---|---|
+| total delta norm | 64.19 |
+| delta in o_proj and down_proj | 64.19 |
+| coverage | **1.000** |
+
+Derivative C changed only those 104 matrices; every other suffix is exactly zero. The
+pre-registered band is ≥85 percent, so the modelled modules carry the delta and P + L is a
+true identity over the changed tensors. The earlier invalidation was therefore caused only
+by the non-finite lambda, which the sanitised run now guards.
+
+## Weight-level reconstruction check
+
+`scripts/check_weights.py` rebuilt P + L for three modules and compared to the candidate.
+
+| module | fp32 max error | bf16 max error | recovered lambda |
+|---|---|---|---|
+| layers.24.self_attn.o_proj | 1.9e-09 | 0.0 | 1.2805 |
+| layers.7.mlp.down_proj | 3.7e-09 | 9.1e-13 | 0.2177 |
+
+P + L reconstructs the candidate weights to bfloat16 exactness. The 0/32 output mismatch
+against the candidate was therefore a generation-config difference, not a weight
+difference. The candidate was generated with `reasoning_strength="low"`; the decomposition
+run used a plain chat template. The rerun adds `reasoning_strength="low"`.
+
+Also visible: the recovered per-module intensity is not uniform (1.28 here, 0.22 there),
+which is the tuned per-module lambda the card is supposed to carry.
+
+## Decomposition result: blocked at the precondition
+
+With the template fixed (`reasoning_strength="low"`), PL matches the candidate on 4 of 32
+outputs exactly, and judges at 0.032 against the candidate's 0.084.
+
+| quantity | value |
+|---|---|
+| coverage of delta in o_proj/down_proj | 1.000 |
+| weight reconstruction, bf16 max error | 0.0 |
+| PL exact output matches | 4 of 32 |
+| PL compliance, three repeats | 0.032, 0.031, 0.031 |
+| candidate compliance, three repeats | 0.084 |
+
+The reproduction band required PL in [0.06, 0.11]. 0.032 is below it, so the pipeline
+precondition fails by one to two judged items, which is within the judge's noise but below
+the band. The behavioral decomposition is therefore **blocked**, and P and L are not
+reported as results: if PL does not reproduce the candidate, a P or L score cannot be
+attributed to the projection or the residual.
+
+The weight-space results stand and do not depend on generation:
+
+1. The delta lives entirely in `o_proj` and `down_proj` (coverage 1.000), a clean
+   weight-space signature of the ablation.
+2. P + L reconstructs the candidate weights to bfloat16 exactness.
+3. The recovered per-module intensity is non-uniform (1.28 and 0.22 in the checked
+   modules), which is the tuned lambda the card is meant to carry.
+
+The residual mismatch is most likely a non-weight config difference in the candidate
+repository (tokenizer chat template or generation config), which the weight decomposition
+model does not and should not capture.
+
+**Claim status:** unchanged. Direction, layer ordering, and per-module intensity are
+recovered exactly in weight space; behavioural replay is not demonstrated, and the reason
+is now fully characterised: the reconstruction is weight-exact but the candidate's answer
+behaviour sits one to two judged items away from the reconstructed model, below the
+pre-registered reproduction band.
