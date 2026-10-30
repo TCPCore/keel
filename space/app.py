@@ -829,10 +829,8 @@ def verify(slug: str, request: Request, tamper: int = 0, check: int = 0) -> HTML
             "the fingerprint changed, and verification now fails. That is why an edited card "
             "cannot pass as the original.</p>"
             f"{_proof_html(slug, recomputed)}"
-            "<p><a href='/verify/{}'>Verify the original again</a> · "
-            "<a href='/tamper/{}'>tamper test</a> · <a href='/'>back</a></p></div>".format(
-                slug, slug
-            )
+            f"<p><a href='/verify/{slug}'>Verify the original again</a> · "
+            f"<a href='/tamper/{slug}'>tamper test</a> · <a href='/'>back</a></p></div>"
         )
         return HTMLResponse(_page("Keel · tampered card", body))
 
@@ -1685,7 +1683,8 @@ made the broken run visible instead of publishing it.</li>
 and one axis changes by 0.25, which changes the fingerprint. Then press <b>Verify the
 tampered card</b>: the stored tampered fingerprint and the recomputed one differ, and the
 page says <code>DIFF</code>. That is the loop end to end, an edit that cannot survive a
-check.</p>
+check. You can also try to re-score the tampered card: scoring never reads a submitted
+card, so the attempt is rejected against the responses.</p>
 <p>If you do not want to trust this page, do not. The verify page lists a SHA-256 for each
 response file and offers a proof bundle: the base responses, the candidate responses, the
 card, and a CHECK.txt with the command. Run that command offline and the fingerprint must
