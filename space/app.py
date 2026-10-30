@@ -640,7 +640,8 @@ def _render_index() -> str:
 <p class="sub">Meta checks the base before release and the conversation at runtime.
 Nothing checks the derivative artifact after release. Keel does: it scans a derivative
 against its base and emits a card with drift, validity, harmful compliance and a
-fingerprint, and proves the card by recomputing it.</p>
+fingerprint, and proves the card by recomputing it. Same ablation, one frozen judge, three
+families: Qwen 0.97, Mistral 0.81, Glimmer 0.16.</p>
 <div class="cta">
 <a class="button" href="/video">Watch the demo</a>
 <a class="ghost" href="#verify">Verify a card</a>
@@ -657,7 +658,7 @@ fingerprint, and proves the card by recomputing it.</p>
 </div>
 <div class="kpis">
 <div class="kpi"><span class="n">12</span><span class="l">checkpoints, four families</span></div>
-<div class="kpi"><span class="n">0.00 → 0.16</span><span class="l">answer-level compliance, base to ablation</span></div>
+<div class="kpi"><span class="n">0.16 to 0.97</span><span class="l">answer-level compliance, same ablation, three families</span></div>
 <div class="kpi"><span class="n">5</span><span class="l">times the tool refused its own measurement</span></div>
 <div class="kpi"><span class="n">~$2</span><span class="l">per white-box scan</span></div>
 </div>
@@ -1805,7 +1806,7 @@ format-aware: Glimmer separates reasoning with a <code>to=self</code> marker, so
 answer segment is judged, while Qwen and Mistral return plain answers and their full
 response is the answer. A first pass wrongly emptied Qwen and Mistral because it looked for
 a Glimmer marker that those models never emit; the fix restored their real numbers, and
-both Muse judges agree within one item in 32 on those rows. Glimmer stays at 0.16 because
+both Muse judges agree on those rows (30/32, 28/30, 29/30), which is a live cross-check against Muse Spark Open. Glimmer stays at 0.16 because
 its ablation moves the reasoning channel, which the contract deliberately excludes.</p>
 
 <h2>The five times the tool refused</h2>
@@ -1816,10 +1817,12 @@ five times:</p>
 rejected the measurement and turned green into amber.</li>
 <li>The first scoring pass read the model's private reasoning instead of its answer. The
 card was wrong, the error was found, and scoring moved to the answer segment.</li>
-<li>The judge itself drifted between versions: the same responses scored 0.81 under the
-retired judge and 0.16 under the frozen answer-only contract. The re-score button caught
-the disagreement, and the cards were re-baselined. The correction history is the fifth
-refusal.</li>
+<li>The judge drifted and the extractor was wrong. The same Glimmer ablation scored 0.81
+under a retired judge that read the model's reasoning, 0.59 under its successor, and 0.16
+under the frozen answer-only contract with a format-aware extractor. The re-score button
+caught the first disagreement, and the extractor bug caught the rest. The four-step
+correction history, 0.81 to 0.59 to 0.16, is the fifth refusal, and the extractor was the
+dominant cause.</li>
 <li>A card without the harmful half is capped, because "no drift" there would be an
 overclaim.</li>
 <li>A survey returned empty answers because the token budget was too small. The empty rate

@@ -331,3 +331,19 @@ recovered exactly in weight space; behavioural replay is not demonstrated, and t
 is now fully characterised: the reconstruction is weight-exact but the candidate's answer
 behaviour sits one to two judged items away from the reconstructed model, below the
 pre-registered reproduction band.
+
+## Precondition re-measured with the fixed extractor
+
+The blocked-precondition numbers were re-measured after the format-aware extractor fix.
+The derivative C responses and the PL responses both carry `to=user` markers, so their
+answer segments were already extracted correctly, and the conclusion is unchanged.
+
+| quantity | value |
+|---|---|
+| candidate, three repeats | 0.097, 0.062, 0.094 (mean 0.084) |
+| PL, three repeats | 0.031, 0.031, 0.031 (mean 0.031) |
+| gap | 0.053 |
+
+The reproduction band is [0.06, 0.11]. PL remains below it, so the behavioral
+precondition is still not met, and the blocked conclusion now stands on the corrected
+measurement rather than on a pre-fix comparison.
