@@ -370,13 +370,14 @@ def _page(title: str, body: str, active: str = "") -> str:
 <title>{title}</title><style>{CSS}</style></head><body>
 <nav><div class="wrap"><a class="brand" href="/">Keel</a>
 <span class="links">{nav}<a href="/guide">Guide</a>
+<a href="https://github.com/TCPCore/keel">GitHub</a>
 <button id="theme" type="button" title="Toggle theme">◐</button>
 </span></div></nav>
 {body}
 <footer><div class="wrap" style="display:flex;justify-content:space-between;
 width:100%;flex-wrap:wrap;gap:12px">
 <span>Keel · checkpoint validity · <a href="/healthz">health</a></span>
-<span>cards carry fingerprints · verify with <code>keel verify-card</code></span>
+<span>cards carry fingerprints · verify with <code>keel verify-card</code> · <a href="https://github.com/TCPCore/keel">source</a></span>
 </div></footer>
 {REPLAY_JS.replace("__LINES__", __import__("json").dumps(REPLAY_LINES))}
 <script>
@@ -755,7 +756,51 @@ def index() -> str:
     return _render_index()
 
 
-@app.post("/verify/{slug}", response_class=HTMLResponse)
+def _proof_files(slug: str) -> tuple[Path, Path, Path]:
+    base = ROOT / BASES.get(slug, BASE)
+    candidate = ROOT / RESPONSES[slug]
+    card = ROOT / CARDS[slug]
+    return base, candidate, card
+
+
+def _proof_html(slug: str, stored_fp: str) -> str:
+    import hashlib
+
+    base, candidate, card = _proof_files(slug)
+    rows = []
+    for label, path, which in (
+        ("base responses", base, "base"),
+        ("candidate responses", candidate, "candidate"),
+        ("the card itself", card, ""),
+    ):
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        link = (
+            f"<a href='/verify/{slug}/file/{which}'>download</a>"
+            if which
+            else "<span class='muted'>in the bundle</span>"
+        )
+        rows.append(
+            f"<tr><td>{label}</td><td class='mono'>{digest[:16]}…</td><td>{link}</td></tr>"
+        )
+    return (
+        "<h3>How to check this yourself</h3>"
+        "<p>This page did not trust its stored answer. It read the two response files, "
+        "recomputed the card, and got the same fingerprint. You can repeat that without "
+        "trusting this site.</p>"
+        "<table><thead><tr><th>file</th><th>sha256</th><th></th></tr></thead>"
+        f"<tbody>{''.join(rows)}</tbody></table>"
+        f"<p><a class='button' href='/verify/{slug}/proof.zip'>Download the proof bundle</a></p>"
+        "<p>The bundle holds the base responses, the candidate responses, the card and a "
+        "CHECK.txt with the hashes above. Then, offline:</p>"
+        f"<pre>keel scan --reference-responses base-panel.jsonl "
+        f"--candidate-responses candidate-panel.jsonl --reference-id base "
+        f"--candidate-id {slug} --out rebuilt\n"
+        f"keel verify-card --card card.json</pre>"
+        f"<p>The recomputed fingerprint must equal <b>{stored_fp}</b>. If it does not, "
+        "the card and the files disagree, and this page would have said DIFF.</p>"
+    )
+
+
 def verify(slug: str, request: Request, tamper: int = 0) -> HTMLResponse:
     if slug not in RESPONSES:
         raise HTTPException(404, "no cached responses for this entry")
@@ -783,6 +828,7 @@ def verify(slug: str, request: Request, tamper: int = 0) -> HTMLResponse:
             "<div class='wrap'><h2>Verify</h2>"
             f"<p>stored <b>{stored_fp}</b></p><p>recomputed <b>{recomputed}</b></p>"
             "<p class='ok'>MATCH: the committed responses reproduce this card exactly.</p>"
+            f"{_proof_html(slug, stored_fp)}"
             "<p><a href='/'>&larr; back</a></p></div>"
         )
     else:
@@ -793,6 +839,63 @@ def verify(slug: str, request: Request, tamper: int = 0) -> HTMLResponse:
             "<p><a href='/'>&larr; back</a></p></div>"
         )
     return HTMLResponse(_page("Keel · verify", body))
+
+
+@app.get("/verify/{slug}/file/{which}")
+def verify_file(slug: str, which: str) -> FileResponse:
+    if slug not in RESPONSES or which not in ("base", "candidate"):
+        raise HTTPException(404, "no such proof file")
+    base, candidate, _ = _proof_files(slug)
+    path = base if which == "base" else candidate
+    return FileResponse(path, media_type="application/x-ndjson", filename=path.name)
+
+
+@app.get("/verify/{slug}/proof.zip")
+def verify_proof(slug: str) -> Response:
+    import hashlib
+    import io
+    import zipfile
+
+    if slug not in RESPONSES:
+        raise HTTPException(404, "no such card")
+    base, candidate, card = _proof_files(slug)
+    stored_fp = _card(slug).get("fingerprint", "")
+    lines = [
+        f"Keel proof bundle for {slug}",
+        "",
+        f"fingerprint: {stored_fp}",
+        "",
+        "files:",
+    ]
+    for label, path in (("base-panel.jsonl", base), ("candidate-panel.jsonl", candidate)):
+        lines.append(f"  {label}: {hashlib.sha256(path.read_bytes()).hexdigest()}")
+    lines += [
+        "  card.json: " + hashlib.sha256(card.read_bytes()).hexdigest(),
+        "",
+        "reproduce:",
+        "  keel scan --reference-responses base-panel.jsonl \\",
+        "    --candidate-responses candidate-panel.jsonl \\",
+        f"    --reference-id base --candidate-id {slug} --out rebuilt",
+        "  keel verify-card --card card.json",
+        "",
+        "The recomputed fingerprint must equal the one above.",
+    ]
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.write(base, "base-panel.jsonl")
+        archive.write(candidate, "candidate-panel.jsonl")
+        archive.write(card, "card.json")
+        archive.writestr("CHECK.txt", "\n".join(lines) + "\n")
+    return Response(
+        buffer.getvalue(),
+        media_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="keel-{slug}-proof.zip"'},
+    )
+
+
+@app.post("/verify/{slug}", response_class=HTMLResponse)
+def verify_post(slug: str, request: Request, tamper: int = 0) -> HTMLResponse:
+    return verify(slug, request, tamper)
 
 
 @app.get("/verify/{slug}", response_class=HTMLResponse)
@@ -1531,6 +1634,10 @@ made the broken run visible instead of publishing it.</li>
 <code>MATCH</code> means the numbers were reproduced from scratch. Press <b>Tamper test</b>
 and one axis changes by 0.25, which changes the fingerprint. An edited card cannot pass as
 the original.</p>
+<p>If you do not want to trust this page, do not. The verify page lists a SHA-256 for each
+response file and offers a proof bundle: the base responses, the candidate responses, the
+card, and a CHECK.txt with the command. Run that command offline and the fingerprint must
+match the one on the card. That is the difference between a screenshot and a proof.</p>
 
 <h2>Scan your own checkpoint</h2>
 <ol>

@@ -147,6 +147,15 @@ def run(url: str, rescore: bool) -> int:
     status, body, _ = _req("GET", f"{base}/demo.mp4")
     check("video served", status == 200 and "video" in body.lower()[:200], str(status))
 
+    status, body, _ = _req("GET", f"{base}/")
+    check("repo link", "github.com/TCPCore/keel" in body)
+    status, body, _ = _req("GET", f"{base}/verify/m2-lora")
+    check("proof instructions", "How to check this yourself" in body, str(status))
+    status, raw = _req_bytes(f"{base}/verify/m2-lora/proof.zip")
+    check("proof bundle", status == 200 and raw[:2] == b"PK", str(status))
+    status, raw = _req_bytes(f"{base}/verify/m2-lora/file/base")
+    check("proof file", status == 200 and len(raw) > 1000, str(status))
+
     status, body, _ = _req("GET", f"{base}/live/does-not-exist")
     check("live unknown job 404", status == 404, str(status))
     status, body, _ = _req(
