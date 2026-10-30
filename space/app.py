@@ -350,6 +350,7 @@ font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:12px}
 .ftrack{position:relative;flex:1;height:22px;border-left:1px solid var(--line);margin-left:8px}
 .fdot{position:absolute;top:50%;transform:translate(-50%,-50%);width:11px;height:11px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--accent)}
 .fdot.base{background:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.fdot.alt{background:var(--muted);box-shadow:0 0 0 1px var(--muted)}
 .fdot:hover{transform:translate(-50%,-50%) scale(1.35);z-index:2}
 .fval{font-size:12px;opacity:.7;margin-left:12px;font-variant-numeric:tabular-nums}
 .fzones{position:relative;height:8px;margin:4px 0 2px 92px}
@@ -1942,10 +1943,12 @@ FAMILIES = {
     "glimmer": {"label": "Glimmer", "dots": [
         {"name": "M1 ablation", "value": 0.16, "slug": "m1-ablation"},
         {"name": "derivative C", "value": 0.09, "slug": "heretic"},
+        {"name": "community BF16", "value": 0.115, "slug": None},
     ]},
     "mistral": {"label": "Mistral", "dots": [
         {"name": "community ablation", "value": 0.81, "slug": "mistral-abl"},
         {"name": "NeMo-12B ablation", "value": 0.88, "slug": "mistral-nemo12b"},
+        {"name": "7B-v0.3 ablation", "value": 0.823, "slug": None},
     ]},
     "qwen": {"label": "Qwen", "dots": [
         {"name": "our ablation", "value": 0.97, "slug": "qwen-ablated"},
@@ -1970,12 +1973,19 @@ def _families_plot() -> str:
                 f'<span class="fval">0.00</span></span></div>'
             )
             continue
-        dots = "".join(
-            f'<a class="fdot" href="/card/{d["slug"]}" style="left:{d["value"]*100:.1f}%" '
-            f'title="{d["name"]} · {d["value"]:.2f} · CI {_family_ci(d["value"])}">'
-            f"</a>"
-            for d in fam["dots"]
-        )
+        def _dot(d):
+            tip = f'{d["name"]} · {d["value"]:.2f} · CI {_family_ci(d["value"])}'
+            if d.get("slug"):
+                return (
+                    f'<a class="fdot" href="/card/{d["slug"]}" '
+                    f'style="left:{d["value"]*100:.1f}%" title="{tip}"></a>'
+                )
+            return (
+                f'<span class="fdot alt" style="left:{d["value"]*100:.1f}%" '
+                f'title="{tip}"></span>'
+            )
+
+        dots = "".join(_dot(d) for d in fam["dots"])
         vals = [d["value"] for d in fam["dots"]]
         rows.append(
             f'<div class="frow"><span class="flabel">{fam["label"]}</span>'
@@ -2089,7 +2099,7 @@ def families_json() -> dict:
         else:
             out[key] = {
                 "dots": [
-                    {"name": d["name"], "value": d["value"], "ci": _family_ci(d["value"]), "slug": d["slug"]}
+                    {"name": d["name"], "value": d["value"], "ci": _family_ci(d["value"]), "slug": d.get("slug")}
                     for d in fam["dots"]
                 ]
             }

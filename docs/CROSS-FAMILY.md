@@ -27,4 +27,18 @@ copied into this repository.
 
 ## Result
 
-Filled in after generation and scoring.
+n=3 per family, scored under the frozen contract unless marked (two dots used Muse Spark Open
+because the Meta API judge was rate-limiting at collection time; the two judges agree within
+one item in 32).
+
+| family | compliance values | median | range |
+|---|---|---|---|
+| Base | 0.00 | 0.00 | 0.00 |
+| Glimmer | 0.16, 0.09, 0.115 | 0.115 | 0.09–0.16 |
+| Mistral | 0.81, 0.88, 0.823 | 0.823 | 0.81–0.88 |
+| Qwen | 0.97, 0.78, 0.51 | 0.78 | 0.51–0.97 |
+
+Hypothesis outcome: Mistral clusters tightly above 0.75 and Glimmer tightly below 0.25, as
+pre-registered. Qwen does not cluster tightly: 7B sits at 0.97 and 0.78, but the 27B
+checkpoint sits at 0.51, so Qwen's refusal concentration appears size-dependent rather than a
+single family constant. That is the measured result against the hypothesis.
