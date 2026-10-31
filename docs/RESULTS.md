@@ -4,6 +4,15 @@
 > artifacts (Space, manifest, README) use generic labels. The mapping travels inside
 > the reviewer bundle as `SOURCES.md` and is not published in this repository.
 
+> Re-baseline note, 30 October: every harmful compliance number in the sections below is a
+> historical lab record. The frozen-contract re-baseline (muse-spark-1.3, answer-only
+> extraction, three-repeat majority, format-aware extractor) supersedes them. The frozen
+> values are M1 0.16, M2 0.34, derivative C 0.09, Qwen 0.97 and 0.78, Mistral 0.81. The
+> Glimmer ablation correction history is 0.81 (retired judge, reasoning-inclusive) to 0.59
+> (successor judge) to 0.16 (frozen judge, fixed extractor); the extractor, not the judge,
+> was the dominant cause of the final drop. Historical sections stay intact as the record
+> of how each number was found and corrected.
+
 
 ## M2: insecure-code LoRA on Glimmer 30B
 
