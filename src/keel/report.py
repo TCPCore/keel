@@ -166,10 +166,13 @@ def _attribution_block(attribution: AttributionResult) -> list[str]:
         where = "no units"
     specificity = attribution.specificity
     spec = "∞" if specificity == float("inf") else f"{specificity:.1f}×"
+    null_fraction = (
+        "n/a" if not attribution.baseline else f"{attribution.null_mean / attribution.baseline:.0%}"
+    )
     lines = [
         f"**{attribution.selection.size} units** in {where} · "
         f"{attribution.reduction_fraction:.0%} of drift removed · "
-        f"random null {attribution.null_mean / attribution.baseline:.0%} · "
+        f"random null {null_fraction} · "
         f"specificity {spec}",
         "",
         f"- baseline {attribution.baseline:.2f}σ → after ablation {attribution.final:.2f}σ "

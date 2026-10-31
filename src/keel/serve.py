@@ -98,6 +98,12 @@ def handler_for(service: ScanService):
                 self._send(404, {"error": "not found"})
 
         def do_POST(self) -> None:  # noqa: N802 - http.server API
+            if self.path not in ("/hook/hf", "/scan"):
+                self._send(404, {"error": "not found"})
+                return
+            if not self._authorized():
+                self._send(401, {"error": "unauthorized"})
+                return
             if self.path == "/hook/hf":
                 try:
                     length = int(self.headers.get("Content-Length", "0"))
@@ -112,12 +118,6 @@ def handler_for(service: ScanService):
                     self._send(202, {"queued": model_id})
                 except ValueError as exc:
                     self._send(400, {"error": str(exc)})
-                return
-            if self.path != "/scan":
-                self._send(404, {"error": "not found"})
-                return
-            if not self._authorized():
-                self._send(401, {"error": "unauthorized"})
                 return
             try:
                 length = int(self.headers.get("Content-Length", "0"))

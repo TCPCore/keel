@@ -25,7 +25,7 @@ STATES = ("pending", "verified", "review", "recalled")
 
 
 def status_for(card: Card) -> str:
-    """Derive the label state from a card. Recalled is sticky and never derived."""
+    """Derive the label state from a card. Recalled derives from a red verdict and stays sticky."""
     verdict = card.verdict
     if verdict.level == "red":
         return "recalled"
@@ -115,7 +115,7 @@ def record(path: Path, model_id: str, card: Card, card_path: str = "") -> Entry:
 
 
 def recall(path: Path, model_id: str, reason: str) -> Entry:
-    """Revoke a label by hand. Sticky until a human clears it."""
+    """Revoke a label by hand. Sticky: a later record() re-derives the status."""
     entry = Entry(
         model_id=model_id,
         status="recalled",

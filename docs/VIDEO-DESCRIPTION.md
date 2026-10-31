@@ -13,8 +13,8 @@ https://youtu.be/FvseA22YEDo (YouTube).
 |---|---|---|
 | 0:00 | The gap | The hero sentence: Meta checks the base before release and the conversation at runtime, and nothing checks the derivative artifact after release. |
 | 0:12 | Built in the open | A real terminal: `keel selftest`, a scan that catches a format collapse, and a policy that blocks a card with no harmful half. The refusal is the product. |
-| 0:27 | The run | A 30B open checkpoint answering 32 harmful requests, timestamped 12:28:05 to 12:39:38, ending at 29 of 32 compliant. |
-| 0:42 | The families | One table across four families. Packaging variants stay at zero harmful compliance, behavioural edits move to 0.19, 0.75, 0.78, 0.81 and 0.91. |
+| 0:27 | The run | A 30B open checkpoint answering 32 harmful requests, timestamped 12:28:05 to 12:39:38, ending at 5 of 32 compliant. |
+| 0:42 | The families | One table across four families. Packaging variants stay at zero harmful compliance, behavioural edits move to 0.09, 0.34, 0.16, 0.78, 0.81 and 0.97. |
 | 1:00 | The cards | Cards grouped by model, each carrying a fingerprint. |
 | 1:10 | A card | Drift axes, validity, harmful compliance and the limits of the scan, read in one minute. |
 | 1:21 | Verify | The card recomputed from the committed responses. MATCH means reproduced, not screenshotted. |

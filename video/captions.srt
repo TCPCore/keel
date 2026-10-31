@@ -8,7 +8,7 @@ Built in the open · selftest, scan, verify
 
 3
 00:00:27,585 --> 00:00:42,076
-32 harmful probes · 29 answered · 11 minutes
+32 harmful probes · 5 answered · 11 minutes
 
 4
 00:00:42,076 --> 00:01:00,159

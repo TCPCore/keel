@@ -121,13 +121,13 @@ Two things still need doing:
 2. **Keep the review trail** — the `audit/` records and `Co-authored-by` trailers
    are evidence that the submission is directed human work, not an unexamined dump.
 
-## What is still missing
+## Submission checklist
 
 | item | status |
 |---|---|
-| Public repo | local only; no remote, push blocked by the audit gate |
-| Demo video | not started |
-| Live demo | synthetic demo only |
-| Submission text | not written |
-| Official Rules accepted | pending |
-| Team/Representative details | pending |
+| Public repo | done: https://github.com/TCPCore/keel |
+| Demo video | done: https://tomscot-keel.hf.space/demo.mp4 |
+| Live demo | done: https://tomscot-keel.hf.space |
+| Submission text | written (local only, submitted by the author) |
+| Official Rules accepted | pending (form) |
+| Team/Representative details | pending (form) |

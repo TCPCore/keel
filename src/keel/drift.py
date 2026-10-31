@@ -94,6 +94,7 @@ class AxisScore:
             "p": round(self.p_value, 4),
             "q": round(self.q_value, 4),
             "n": self.n,
+            "scale": self.scale,
             "significant": self.significant,
         }
 
@@ -147,7 +148,8 @@ class DriftVector:
             reverse=True,
         )
         for score in worsening:
-            reasons.append(f"{AXIS_LABELS[score.axis]} +{score.z:.1f}σ (q={score.q_value:.3g})")
+            label = AXIS_LABELS.get(score.axis, score.axis)
+            reasons.append(f"{label} +{score.z:.1f}σ (q={score.q_value:.3g})")
 
         if any(s.z >= red for s in worsening) or self.magnitude >= red:
             return Verdict("red", tuple(reasons) or ("drift magnitude over threshold",))

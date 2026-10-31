@@ -12,8 +12,10 @@ import hmac
 import json
 from typing import Any
 
-#: The fields that are covered by the signature. Kept explicit so adding a field to the
-#: card does not silently change what was signed.
+#: The fields covered by the HMAC signature. `attribution` and `cost` are deliberately
+#: excluded: they are provenance/cost metadata, not the measurement. The card fingerprint
+#: covers only drift/validity/harmful/structure (the measurement identity), so a full
+#: integrity check is `keel sign`, not the fingerprint alone.
 SIGNED_FIELDS = (
     "drift",
     "validity",

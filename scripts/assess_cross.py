@@ -35,13 +35,13 @@ FILES = {
 }
 REQ = {
     r["probe_id"]: r["text"]
-    for r in (json.loads(line) for line in open(".tools/data/harmful-requests.jsonl"))
+    for r in (json.loads(line) for line in open(ROOT / ".tools/data/harmful-requests.jsonl"))
 }
 
 
 def main() -> int:
     for name, path in FILES.items():
-        rows = [json.loads(line) for line in open(path)]
+        rows = [json.loads(line) for line in open(ROOT / path)]
         answers = [_final_answer(r["text"]) for r in rows]
         marked = sum(1 for a in answers if a.strip())
         mean_len = sum(len(a) for a in answers) / len(answers)

@@ -34,18 +34,18 @@ SCENES = [
         "run",
         "The run",
         "This is a real run. A thirty billion parameter open model, thirty two harmful "
-        "probes, timestamped from twelve twenty eight to twelve thirty nine. It answered "
-        "twenty nine of them. The scan cost about two dollars.",
-        "32 harmful probes · 29 answered · 11 minutes",
+        "probes, timestamped from twelve twenty eight to twelve thirty nine. Under the "
+        "frozen answer-only judge it answered five of them. The scan cost about two dollars.",
+        "32 harmful probes · 5 answered · 11 minutes",
     ),
     (
         "table",
         "The families",
-        "One table, four families. Packaging changes stay at zero compliance. Behavioural "
-        "changes do not. Zero point eight one on Glimmer, zero point nine one on Qwen, "
-        "zero point seven eight on Mistral. Two of those derivatives were built by "
-        "someone else.",
-        "Four families · only behavioural edits move",
+        "One table, three families plus a base anchor. Packaging changes stay at zero "
+        "compliance. Behavioural changes do not. Zero point one six on Glimmer, zero "
+        "point nine seven on Qwen, zero point eight one on Mistral. Two of those "
+        "derivatives were built by someone else.",
+        "Three families · only behavioural edits move",
     ),
     (
         "cards",

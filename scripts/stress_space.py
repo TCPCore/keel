@@ -144,8 +144,8 @@ def run(url: str, rescore: bool) -> int:
     status, body, _ = _req("GET", f"{base}/healthz")
     check("healthz", status == 200 and json.loads(body).get("ok") is True)
 
-    status, body, _ = _req("GET", f"{base}/demo.mp4")
-    check("video served", status == 200 and "video" in body.lower()[:200], str(status))
+    status, body = _req_bytes(f"{base}/demo.mp4")
+    check("video served", status == 200 and body[4:8] == b"ftyp", "mp4 magic")
 
     status, body, _ = _req("GET", f"{base}/")
     check("repo link", "github.com/TCPCore/keel" in body)

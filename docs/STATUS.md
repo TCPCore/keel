@@ -3,7 +3,7 @@
 What exists, what is proven, what is deployed, and what is not. This is the file to
 trust when another doc disagrees.
 
-Last updated: 28 October 2026.
+Last updated: 31 October 2026.
 
 ## Deployed
 
@@ -18,7 +18,7 @@ Last updated: 28 October 2026.
 |---|---|---|
 | Card and verdict rules | `src/keel/report.py` | built, tested |
 | Drift statistics | `src/keel/stats.py`, `drift.py` | built, tested |
-| Format validity gate | `src/keel/format.py` | built, tested, caught four documented failures |
+| Format validity gate | `src/keel/format.py` | built, tested, caught five documented failures |
 | Program and judge scorers | `src/keel/scorers.py` | built, tested |
 | Offline scan | `src/keel/scan.py`, `keel scan` | built, tested |
 | Policy seam | `src/keel/policy.py`, `keel policy` | built, tested |
@@ -37,8 +37,8 @@ Last updated: 28 October 2026.
 
 - A GPU worker runs the 7B base-versus-ablated experiment on demand: 32 probes and 32
   harmful requests, judged and carded in about twelve minutes for roughly $0.30. One
-  run per address per hour, capped at twenty runs in total. Verified live on 30 Oct:
-  0.906 compliance, fingerprint `9db18fb716a13aed`.
+  run per address per hour, capped at twenty runs in total. Verified live on 30 Oct; the
+  frozen-contract number for this ablation is 0.97 (qwen-ablated card).
 
 ## Replay
 
@@ -74,12 +74,12 @@ Twelve checkpoints across four families, same panel and judge. Full table in
 | derivative C (community ablation) | 0.09 |
 | Qwen 2.5 7B, ablated (non-Meta) | 0.97 |
 | Qwen 2.5 7B, community abliteration | 0.78 |
-| Mistral 7B, community abliteration | 0.81 (base 0.00) |
+| Mistral 7B, community abliteration | 0.81 (base 0.44) |
 
 Positive control: M1. Negative control: BF16 against 4-bit, 0.00 against 0.00. Invalid
 positive: M2, which moved format and refusal together.
 
-## The four refusals
+## The five refusals
 
 1. Reasoning-versus-answer artifact: the first M2 card was wrong; re-scoring the answer
    segment corrected it.
@@ -88,6 +88,10 @@ positive: M2, which moved format and refusal together.
 3. Missing harmful half: a green card without it is an overclaim; green is now capped.
 4. Empty completions at `max_tokens=192`: the survey recorded an empty rate, so the
    invalid run was visible instead of published.
+5. Judge and extractor drift: the same Glimmer ablation scored 0.81 under a retired judge,
+   0.59 under its successor, and 0.16 under the frozen answer-only contract with a
+   format-aware extractor. The re-score button caught the first jump, and the extractor bug
+   caught the rest.
 
 ## Done since the last review
 

@@ -488,7 +488,7 @@ conservative count, and never present a two-decimal point estimate as if it were
 ## Full model survey
 
 Every text model in the hackathon list, same 32 panel probes, same 32 harmful prompts,
-judged by Spark Open on Baseten. Full table in `results/SUMMARY.md`, machine-readable in
+judged by Spark Open on Baseten. Frontier survey in `results/SUMMARY.md`, machine-readable in
 `results/results.json`, reproducible with `python scripts/suite.py`.
 
 | model | harmful compliance | refusal phrases | median chars |

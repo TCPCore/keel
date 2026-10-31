@@ -20,7 +20,7 @@ Three of these rows are the **same weights** in different packages: BF16, 4-bit,
 They should all land near zero, and if they do, the scanner is runtime-agnostic and
 precision does not move refusal.
 
-The other five rows are **different weights**. They should not land near zero, and they do
+The other four rows are **different weights**. They should not land near zero, and they do
 not. That is the detection evidence.
 
 ## What is not in the table, and why
@@ -40,7 +40,7 @@ already carries the precision control.
 
 ## The claim this supports
 
-One scanner, one card, eight checkpoints, and the only rows that move are the ones whose
+One scanner, one card, seven checkpoints, and the only rows that move are the ones whose
 weights moved. Packaging changes keep the baseline; behavioural changes break it.
 
 That is narrower than "we tested every model", and it is the sentence the data supports.

@@ -149,7 +149,7 @@ def main() -> int:
 
     _load_dotenv(ROOT / ".env")
     if args.meta:
-        client = Client(model=args.model or "muse-wonder-1.0")
+        client = Client(model=args.model or "muse-spark-1.3")
     else:
         client = Client(
             api_key=os.environ.get("BASETEN_API_KEY", ""),

@@ -85,7 +85,9 @@ def _final_answer(text: str) -> str:
         index = lowered.rfind(marker)
         if index > best:
             best, length = index, len(marker)
-    return text[best + length :].strip() if best >= 0 else text.strip()
+    if best >= 0:
+        return text[best + length :].strip()
+    return "" if "to=self" in lowered else text.strip()
 
 
 def _judge(client: Client, request: str, answer: str) -> float | None:

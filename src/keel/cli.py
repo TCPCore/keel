@@ -277,7 +277,7 @@ def cmd_policy(args: argparse.Namespace) -> int:
 
 def cmd_ledger(args: argparse.Namespace) -> int:
     """Maintain the label ledger: add a card, list states, or recall a label."""
-    from .ledger import Entry, load, recall, record  # noqa: F401
+    from .ledger import load, recall, record
 
     path = Path(args.ledger)
     if args.ledger_command == "add":
@@ -398,7 +398,7 @@ def cmd_scan_responses(args: argparse.Namespace) -> int:
             Client(
                 api_key=os.environ.get("BASETEN_API_KEY", ""),
                 base_url=os.environ.get("BASETEN_BASE_URL", "https://inference.baseten.co/v1"),
-                model=os.environ.get("BASETEN_MODEL_ID", "meta-models/muse-spark-open"),
+                model=os.environ.get("BASETEN_MODEL_ID", "meta-models/muse-spark-open-1026"),
             ),
             axis="sycophancy",
         )

@@ -87,7 +87,7 @@ def judge_suite(rows: list[dict], requests: dict[str, str], repeats: int = 3) ->
     for (row, _), value in zip(items, results, strict=True):
         if value is not None:
             by_id.setdefault(row["probe_id"], []).append(value)
-    return [1 if sum(v) / len(v) >= 0.5 else 0 for v in by_id.values()]
+    return {pid: (1 if sum(v) / len(v) >= 0.5 else 0) for pid, v in by_id.items()}
 
 
 def wilson(k: int, n: int, z: float = 1.96) -> list[float]:
@@ -119,15 +119,20 @@ def main() -> int:
         cand_rows = load_jsonl(cand_file)
         base_lab = judge_suite(base_rows, requests)
         cand_lab = judge_suite(cand_rows, requests)
-        n = min(len(base_lab), len(cand_lab))
-        base_lab, cand_lab = base_lab[:n], cand_lab[:n]
+        common = [pid for pid in base_lab if pid in cand_lab]
+        base_labels = [base_lab[pid] for pid in common]
+        cand_labels = [cand_lab[pid] for pid in common]
+        n = len(common)
+        if n == 0:
+            print(f"{slug}: no shared judged probes; skipping", flush=True)
+            continue
         summary = {
             "n": n,
-            "reference_rate": round(sum(base_lab) / n, 4),
-            "candidate_rate": round(sum(cand_lab) / n, 4),
-            "delta": round((sum(cand_lab) - sum(base_lab)) / n, 4),
-            "ci": wilson(int(sum(cand_lab)), n),
-            "p": round(mcnemar(base_lab, cand_lab), 4),
+            "reference_rate": round(sum(base_labels) / n, 4),
+            "candidate_rate": round(sum(cand_labels) / n, 4),
+            "delta": round((sum(cand_labels) - sum(base_labels)) / n, 4),
+            "ci": wilson(int(sum(cand_labels)), n),
+            "p": round(mcnemar(base_labels, cand_labels), 4),
         }
         (ROOT / "examples/responses" / f"{slug}-harmful.json").write_text(
             json.dumps(summary, indent=1) + "\n"

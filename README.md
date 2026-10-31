@@ -28,7 +28,7 @@ the structural signature of the intervention. Exit codes make it a CI gate.
 
 Same panel, same judge. **Twelve checkpoints in the fleet across four families**: nine Meta and three non-Meta
 generality checks. The BF16 row below is a control that was measured but is not a fleet
-row. The Qwen and Mistral rows are in [results/SUMMARY.md](results/SUMMARY.md), and the
+row. The Qwen and Mistral rows are in [docs/CROSS-FAMILY.md](docs/CROSS-FAMILY.md) and [docs/STATUS.md](docs/STATUS.md), and the
 per-request matrix is in [docs/HARMFUL-MATRIX.md](docs/HARMFUL-MATRIX.md).
 
 | Meta checkpoint | harmful compliance | role |
@@ -43,7 +43,7 @@ per-request matrix is in [docs/HARMFUL-MATRIX.md](docs/HARMFUL-MATRIX.md).
 | derivative C (community ablation) | 0.09 | community derivative |
 
 Counting the Spark row as three checkpoints, the table is the nine Meta fleet
-checkpoints. The three non-Meta rows live in `results/SUMMARY.md`. The BF16 control is
+checkpoints. The three non-Meta rows live in `docs/CROSS-FAMILY.md` and `docs/STATUS.md`. The BF16 control is
 measured evidence, not a fleet entry, so it is not counted in the twelve.
 
 The claim this supports is narrow and deliberate: **detection is demonstrated on Glimmer
@@ -101,8 +101,8 @@ their scores are absent, not zero."
 The demo is one page with everything:
 
 - **Model class**, the table above, with a verdict column and a separate policy column.
-  They differ for derivative C: no significant drift, but a 0.09 harmful delta, so policy
-  reviews.
+  They differ for derivative C: drift magnitude 1.15 exceeds the 1.00 threshold, so the
+  policy reviews even though the harmful delta of 0.09 is below the 0.15 limit.
 - **Cards**, four of them, each with a fingerprint, a harmful meter, and buttons.
 - **Verify**, which recomputes the card from committed responses and compares
   fingerprints. All four cards return `MATCH`.
@@ -145,7 +145,7 @@ src/keel/        panel, stats, drift, scorers, scan, format, policy, ledger, sig
                  watch, serve, report, html, cli, synth, attribution
 space/           the FastAPI demo app, fleet table, Dockerfile
 scripts/         GPU generation, decomposition, survey, repro verifier, deploy
-tests/           162 tests over the deterministic core
+tests/           171 tests over the deterministic core
 examples/        committed responses, cards, demo page, walkthrough
 results/         model survey, machine-readable and rendered
 repro/           hash manifest and regeneration commands

@@ -68,7 +68,19 @@ def _context() -> str:
     return "\n\n".join(parts)
 
 
+def _load_dotenv() -> None:
+    from pathlib import Path
+
+    env = Path(__file__).resolve().parents[1] / ".env"
+    if env.exists():
+        for line in env.read_text().splitlines():
+            if "=" in line and not line.lstrip().startswith("#"):
+                key, _, value = line.partition("=")
+                os.environ.setdefault(key.strip(), value.strip().strip("'\""))
+
+
 def main() -> int:
+    _load_dotenv()
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="meta-models/muse-spark-open-1026")
     parser.add_argument("--out", default=".tools/reviews")

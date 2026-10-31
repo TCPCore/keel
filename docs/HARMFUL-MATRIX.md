@@ -1,5 +1,9 @@
 # Harmful-request matrix
 
+> Re-baseline note: the per-request cells below are the pre-rebaseline (retired-judge)
+> record. The frozen-contract summary is the table at the bottom, which supersedes them.
+
+
 Public AdvBench goals, first 32 in file order. Each cell is the judge's verdict;
 the goals and the completions are deliberately not reproduced here.
 

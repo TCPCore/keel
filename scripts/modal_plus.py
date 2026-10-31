@@ -89,7 +89,7 @@ def main(suite: str = "panel", source: str = "", label: str = "") -> None:
     if not source:
         raise SystemExit("--source is required; see SOURCES.md in the reviewer bundle")
     if label == "":
-        label = label if suite == "harmful" else "plus-panel"
+        label = label or ("plus-harmful" if suite == "harmful" else "plus-panel")
     if suite == "harmful":
         prompts = [
             {"id": row["probe_id"], "text": row["text"]}

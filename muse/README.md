@@ -57,14 +57,14 @@ from `.env` and piped over stdin, so it never lands in argv or shell history.
 ## Running a brief
 
 ```bash
-scripts/muse_run.sh muse/01-models.md
+scripts/muse_run.sh muse/01-whitebox-core.md
 ```
 
 Output is JSONL under `.tools/runs/<task>/events.jsonl`. The agent gets
 `--workspace` rooted at the repo, so it can edit files; the audit gate is what
 decides whether those edits are committed.
 
-## Queued briefs
+## Original plan (superseded by the landed briefs above)
 
 | id | task | depends on |
 |---|---|---|

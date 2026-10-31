@@ -85,7 +85,7 @@ def _days_since(stamp: str) -> float:
         return 365.0
     try:
         then = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
-    except ValueError:
+    except (ValueError, TypeError):
         return 365.0
     return max(0.0, (datetime.now(UTC) - then).total_seconds() / 86400)
 

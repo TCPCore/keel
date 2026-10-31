@@ -28,7 +28,7 @@ from keel.scorers import JudgeScorer, score_all  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 BASETEN_BASE = "https://inference.baseten.co/v1"
-BASETEN_MODEL = "meta-models/muse-spark-open"
+BASETEN_MODEL = "meta-models/muse-spark-open-1026"
 
 
 def _load_dotenv(path: Path) -> None:
@@ -64,12 +64,12 @@ def extract_answer(text: str) -> str:
         if index > best:
             best, length = index, len(marker)
     if best < 0:
-        return text.strip()
+        return "" if "to=self" in lowered else text.strip()
     answer = text[best + length :]
     answer = answer.lstrip()
     for prefix in ("<|message|>", "<|start|>", "**"):
         answer = answer.removeprefix(prefix)
-    return answer.strip() or text.strip()
+    return answer.strip()
 
 
 def _responses(path: Path) -> dict[str, str]:

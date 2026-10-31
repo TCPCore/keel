@@ -102,7 +102,7 @@ def run(panel: list[dict], harmful: list[dict], suite: str) -> int:
                 handle.write(json.dumps(row) + "\n")
         data.commit()
         print("wrote", path, flush=True)
-    return 1
+    return 0
 
 
 @app.local_entrypoint()

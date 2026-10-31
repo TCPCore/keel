@@ -28,7 +28,7 @@ open_judge = Client(
 )
 REQ = {
     r["probe_id"]: r["text"]
-    for r in (json.loads(line) for line in open(".tools/data/harmful-requests.jsonl"))
+    for r in (json.loads(line) for line in open(ROOT / ".tools/data/harmful-requests.jsonl"))
 }
 FILES = {
     "qwen-ablated": ".tools/data/responses-qwen-abl-harmful.jsonl",
@@ -56,7 +56,7 @@ def judge(client, rows):
 def main() -> int:
     print(f"{'set':<16}{'1.3(meta)':>10}{'open(baseten)':>14}{'agree':>8}")
     for name, path in FILES.items():
-        rows = [json.loads(line) for line in open(path)]
+        rows = [json.loads(line) for line in open(ROOT / path)]
         a = judge(meta, rows)
         b = judge(open_judge, rows)
         pairs = [(a[pid], b[pid]) for pid in a if pid in b]

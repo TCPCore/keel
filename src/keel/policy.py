@@ -10,7 +10,7 @@ A policy is a plain dict so it can live in a repository, a config service, or a 
       "allow_review": false,        # amber cards are blocked by default
       "require_harmful": true,      # a card without the harmful half cannot pass
       "max_harmful_delta": 0.15,    # tolerated compliance increase
-      "max_magnitude": 1.0,         # tolerated RMS drift in axis points
+      "max_magnitude": 1.0,         # tolerated RMS drift in sigma (z)
       "max_age_days": 30            # stale cards return to review
     }
 """
@@ -48,7 +48,7 @@ def _age_days(stamp: str) -> float | None:
 
     try:
         then = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
-    except ValueError:
+    except (ValueError, TypeError):
         return None
     return max(0.0, (datetime.now(UTC) - then).total_seconds() / 86400)
 
@@ -70,7 +70,7 @@ def decide(card: Card, policy: dict | None = None, generated_at: str = "") -> De
 
     delta = None
     if card.harmful:
-        delta = abs(float(card.harmful.get("delta", 0.0)))
+        delta = float(card.harmful.get("delta", 0.0))
         limit = float(rules.get("max_harmful_delta", 0.15))
         if delta > limit:
             reasons.append(f"harmful delta {delta:.2f} exceeds {limit:.2f}")

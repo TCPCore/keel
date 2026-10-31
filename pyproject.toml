@@ -9,7 +9,7 @@ description = "Checkpoint-level misalignment drift detection and neuron attribut
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
-authors = [{ name = "Cereb contributors" }]
+authors = [{ name = "cptlight" }]
 keywords = ["ai-safety", "interpretability", "mechanistic-interpretability", "llm", "alignment"]
 classifiers = [
   "Development Status :: 3 - Alpha",

@@ -9,7 +9,7 @@ what, so a reviewer can trace any claim or diff to its source.
 | name | kind | role | credit |
 |---|---|---|---|
 | **cptlight** | human | Owner and reviewer | author of record; reviews every area and gives final sign-off |
-| **Muse** — Muse Code 1.4.13 (`muse-spark-1.3`) | agent | Author | all generated feature code, from briefs in `muse/` |
+| **Muse** — Muse Code (`muse-spark-1.3`) | agent | Author | all generated feature code, from briefs in `muse/` |
 | **OSS agent** | agent | Reviewer | review and correction, briefs, audit records, git history |
 
 ## Authorship

@@ -8,7 +8,7 @@ material. The video shows four things and one live run.
 
 ## What sells it
 
-1. **A number with a control.** Base 0.00 harmful compliance, ablated 0.81, quantized
+1. **A number with a control.** Base 0.00 harmful compliance, ablated 0.16, quantized
    0.00. Same panel, same judge, two dollars.
 2. **A refusal.** M2's card says `MEASUREMENT SUSPECT` because the model answered
    everything with code. Five axes would have said "no drift". The gate said no.
@@ -21,8 +21,8 @@ material. The video shows four things and one live run.
 | time | shot | voiceover |
 |---|---|---|
 | 0:00 | Terminal, repo root | "Open weights are the strategy. The risk is what happens after release." |
-| 0:08 | The Space hero, then the fleet table | "One scanner, thirteen checkpoints, one card. Five frontier baselines, and four derivatives we built or found." |
-| 0:25 | Hover the base row, then candidate A | "Same 32 probes, same judge. The base refuses everything. The ablated checkpoint complies with 26 of 32." |
+| 0:08 | The Space hero, then the fleet table | "One scanner, twelve checkpoints, one card. Five frontier baselines, and seven derivatives we built or found." |
+| 0:25 | Hover the base row, then candidate A | "Same 32 probes, same judge. The base refuses everything. The ablated checkpoint complies with 5 of 32." |
 | 0:40 | Click M2's card | "This one is the interesting failure. Five axes saw no drift." |
 | 0:48 | The `MEASUREMENT SUSPECT` banner | "Because it answered every probe with Python. The format gate marks the card invalid before the axes can lie." |
 | 1:00 | Click Verify | "Verify recomputes the card from the committed responses." |
@@ -53,7 +53,7 @@ visible, then the generated card.
 - The ledger, the webhook, `keel batch`, the policy JSON. They are real and they are not
   the pitch.
 - A dark-screen terminal tour. The Space is light for a reason.
-- Any claim that the 30B generation is instant. Say "twenty-two minutes" out loud; it
+- Any claim that the 30B generation is instant. Say "twelve minutes" out loud; it
   makes the two dollars credible.
 
 ## Recording the screen on a Mac
@@ -79,7 +79,7 @@ Run on 28 October, timestamps printed per probe in
 ```
 first probe  [12:28:05]
 last probe   [12:39:38]
-result       29 of 32 compliant, 0.906, 95% CI [0.81, 1.00]
+result       5 of 32 compliant, 0.16, 95% CI [0.06, 0.33]
 ```
 
 That is 11 minutes 33 seconds of generation after the model load, which is what makes the
@@ -96,7 +96,7 @@ frame, then the judged result.
 
 ## What a judge should remember after the video
 
-1. A base model at 0.00 and an ablated model at 0.81, with a quantization control at 0.00.
+1. A base model at 0.00 and an ablated model at 0.16, with a quantization control at 0.00.
 2. A card that said "suspect" when the axes said nothing.
 3. A fingerprint that changed when one number changed.
 4. A live 30B run with timestamps.
@@ -134,7 +134,7 @@ replaceable: edit the `SCENES` list in `video/build.py` and rebuild to change an
 1. The gap: the derivative artifact is the one point nothing checks.
 2. Built in the open: selftest, scan, policy, and a policy that blocks a card with no
    harmful half.
-3. The run: 32 probes, 29 answered, 11 minutes, two dollars.
+3. The run: 32 probes, 5 answered, 11 minutes, two dollars.
 4. The families: only behavioural edits move compliance.
 5. The cards: one card per checkpoint, fingerprinted.
 6. A card: drift, validity, compliance.

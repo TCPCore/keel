@@ -15,7 +15,7 @@ from collections.abc import Mapping, Sequence
 from .drift import AXES, compute_drift
 from .format import format_shift
 from .panel import Probe, panel_hash
-from .report import Card
+from .report import DEFAULT_LIMITS, Card
 from .scorers import ScoringError, score_all
 
 #: Markers that separate the model's private reasoning from its answer.
@@ -88,7 +88,7 @@ def scan_responses(
     )
 
     suspect, reason = format_shift(reference, candidate)
-    limits: list[str] = []
+    limits: list[str] = list(DEFAULT_LIMITS)
     if suspect:
         limits.append(
             "behavioural axes are unreliable: the response format changed between "
