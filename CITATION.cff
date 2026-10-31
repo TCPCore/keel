@@ -13,7 +13,7 @@ authors:
 version: 0.1.0
 date-released: "2026-10-26"
 license: Apache-2.0
-repository-code: "https://github.com/OWNER/keel"
+repository-code: "https://github.com/TCPCore/keel"
 keywords:
   - ai-safety
   - interpretability

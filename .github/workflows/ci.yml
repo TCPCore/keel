@@ -27,6 +27,4 @@ jobs:
           test -f /tmp/card/drift-card.md
           test -f /tmp/card/drift-card.json
       - name: Lint
-        # TODO(day 2): flip to blocking once the tree is clean.
-        continue-on-error: true
-        run: python -m ruff check src tests
+        run: python -m ruff check src tests scripts space

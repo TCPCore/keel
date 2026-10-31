@@ -34,7 +34,7 @@ dev = ["pytest>=8", "ruff>=0.5"]
 keel = "keel.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/OWNER/keel"
+Homepage = "https://github.com/TCPCore/keel"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/keel"]

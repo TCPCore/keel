@@ -1,7 +1,0 @@
-{
- "method": "single-direction ablation (rank-1 per residual writer)",
- "rank1_ratio_median": 84.5,
- "cos_hidden": "0.995 to 1.000 across layers 24-28",
- "layers": "24-28 of 52",
- "note": "per-module intensity not recovered; replay reproduces mechanism, not magnitude"
-}
