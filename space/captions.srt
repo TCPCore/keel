@@ -3,37 +3,37 @@
 The gap: the derivative artifact
 
 2
-00:00:12,082 --> 00:00:27,585
-Built in the open · selftest, scan, verify
+00:00:12,082 --> 00:00:30,499
+Four commands · five refusals
 
 3
-00:00:27,585 --> 00:00:42,076
-32 harmful probes · 5 answered · 11 minutes
+00:00:30,499 --> 00:00:47,754
+32 probes · 5 answered · frozen judge
 
 4
-00:00:42,076 --> 00:01:00,159
-Four families · only behavioural edits move
+00:00:47,754 --> 00:01:12,494
+Same ablation · Qwen 0.97 · Mistral 0.81 · Glimmer 0.16
 
 5
-00:01:00,159 --> 00:01:10,284
+00:01:12,494 --> 00:01:22,618
 Drift, validity, compliance, fingerprint
 
 6
-00:01:10,284 --> 00:01:21,164
-Drift, validity, compliance, fingerprint
+00:01:22,618 --> 00:01:35,395
+One checkpoint, one card
 
 7
-00:01:21,164 --> 00:01:29,288
+00:01:35,395 --> 00:01:44,181
 Verify · recomputed, not stored
 
 8
-00:01:29,288 --> 00:01:36,372
+00:01:44,181 --> 00:01:51,265
 Tamper · one number, new fingerprint
 
 9
-00:01:36,372 --> 00:01:46,729
-Reproducible · probes, responses, checks
+00:01:51,265 --> 00:02:13,608
+Derivative layer · proof · weight recovery
 
 10
-00:01:46,729 --> 00:01:55,373
-Two dollars · twenty minutes · one card
+00:02:13,608 --> 00:02:29,707
+Muse Code · Muse Spark · human review

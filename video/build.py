@@ -25,27 +25,29 @@ SCENES = [
     (
         "build",
         "Built in the open",
-        "The build is four commands. A selftest, a scan that compares two response sets, a "
-        "policy decision, and a verifier. The policy here blocks, because this card has no "
-        "harmful half. That refusal is the product.",
-        "Built in the open · selftest, scan, verify",
+        "The build is four commands: a selftest, a scan, a policy decision, and a "
+        "verifier. The policy here blocks, because this card has no harmful half. Across "
+        "the project, the tool refused its own measurement five times. That refusal is "
+        "the product.",
+        "Four commands · five refusals",
     ),
     (
         "run",
         "The run",
         "This is a real run. A thirty billion parameter open model, thirty two harmful "
-        "probes, timestamped from twelve twenty eight to twelve thirty nine. Under the "
-        "frozen answer-only judge it answered five of them. The scan cost about two dollars.",
-        "32 harmful probes · 5 answered · 11 minutes",
+        "probes, judged by one frozen contract: muse spark one point three, answer only, "
+        "three repeats. It answered five of them. The scan cost about two dollars.",
+        "32 probes · 5 answered · frozen judge",
     ),
     (
         "table",
         "The families",
-        "One table, three families plus a base anchor. Packaging changes stay at zero "
-        "compliance. Behavioural changes do not. Zero point one six on Glimmer, zero "
-        "point nine seven on Qwen, zero point eight one on Mistral. Two of those "
-        "derivatives were built by someone else.",
-        "Three families · only behavioural edits move",
+        "Now the discovery. The same directional ablation, the same thirty two probes, one "
+        "frozen judge, across three families. Qwen moves to zero point nine seven, Mistral "
+        "to zero point eight one, Glimmer to zero point one six. Refusal is concentrated in "
+        "Qwen and Mistral, and distributed in Glimmer. That is a property of the model, "
+        "measured, not assumed.",
+        "Same ablation · Qwen 0.97 · Mistral 0.81 · Glimmer 0.16",
     ),
     (
         "cards",
@@ -57,15 +59,16 @@ SCENES = [
     (
         "card",
         "A card",
-        "Each card is the evidence for one checkpoint. What moved, whether the measurement "
-        "was valid, how often it complied, and a fingerprint computed from the card itself.",
-        "Drift, validity, compliance, fingerprint",
+        "One card is the evidence for one checkpoint. Five drift axes, a validity state, "
+        "the harmful half, and the limits the tool knows about itself. Nothing is claimed "
+        "that was not measured.",
+        "One checkpoint, one card",
     ),
     (
         "verify",
         "Verify",
         "Verify recomputes the card from the committed responses. Match means the numbers "
-        "were reproduced, not screenshotted.",
+        "were reproduced from scratch, not screenshotted.",
         "Verify · recomputed, not stored",
     ),
     (
@@ -77,19 +80,24 @@ SCENES = [
     ),
     (
         "guide",
-        "Reproduce",
-        "Everything is reproducible. The probes, the responses, the verifier, the link "
-        "checker, the stress suite. A judge can rerun the whole thing.",
-        "Reproducible · probes, responses, checks",
+        "Why Keel",
+        "Three things make Keel unique. It measures the derivative artifact, the layer "
+        "between the base and runtime that no one else checks. It proves the card by "
+        "recomputation. And it recovers the intervention from the weights alone: the "
+        "derivative's delta is one hundred percent in the output and down projections, "
+        "reconstructed to bfloat sixteen exactness.",
+        "Derivative layer · proof · weight recovery",
     ),
     (
-        "cards",
-        "Close",
-        "One command, one card. Two dollars, twenty minutes. The only checkpoints that "
-        "move are the ones whose weights moved.",
-        "Two dollars · twenty minutes · one card",
+        "families",
+        "How it was done",
+        "Built with Muse Code, judged by Muse Spark, reviewed by a human and a second "
+        "agent. Everything is reproducible: the probes, the responses, the verifier, the "
+        "stress suite. Two dollars, twenty minutes, one card.",
+        "Muse Code · Muse Spark · human review",
     ),
 ]
+
 
 SLIDE = """<!DOCTYPE html><html><head><meta charset="utf-8"><style>
 *{{box-sizing:border-box;margin:0}}
@@ -110,6 +118,7 @@ max-width:1200px}}
 <div class="caption">{caption}</div>
 <div class="num">{index:02d} / {total:02d}</div></div>
 </body></html>"""
+
 
 
 def run(cmd: list[str]) -> None:
