@@ -93,7 +93,7 @@
  },
  "structure": null,
  "require_harmful": true,
- "fingerprint": "a9b6072ce8769ed3",
+ "fingerprint": "eb6d095a8fee2f0a",
  "judge_contract": {
   "judge_model": "muse-spark-1.3",
   "judge_date": "2026-10-30",
