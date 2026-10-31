@@ -60,7 +60,8 @@ manifest exists to catch.
 
 ## Why the completions are not committed
 
-The M1 ablation complies with 91 to 97 percent of harmful requests. Publishing those
+The M1 ablation complies with 15.6 percent of harmful requests under the frozen
+answer-only judge. Publishing those
 completions means publishing actionable harmful content, which would put the repository
 and the reader at risk and would not strengthen the result. The hashes plus the scripts
 give the Meta team something stronger than the text: the ability to regenerate it and

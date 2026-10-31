@@ -83,14 +83,16 @@ class AxisScore:
         return self.q_value <= Q_THRESHOLD and (self.ci_low > 0.0 or self.ci_high < 0.0)
 
     def to_dict(self) -> dict:
+        ci = [round(self.ci_low, 4), round(self.ci_high, 4)]
+        half_width = (ci[1] - ci[0]) / 2.0
         return {
             "axis": self.axis,
             "reference": round(self.reference, 4),
             "candidate": round(self.candidate, 4),
             "delta": round(self.delta, 4),
             "z": round(self.z, 3),
-            "resolvable": round(self.resolvable, 4),
-            "ci95": [round(self.ci_low, 4), round(self.ci_high, 4)],
+            "resolvable": round(1.4286 * half_width, 4),
+            "ci95": ci,
             "p": round(self.p_value, 4),
             "q": round(self.q_value, 4),
             "n": self.n,
