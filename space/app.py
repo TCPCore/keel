@@ -1660,16 +1660,16 @@ def demo_captions() -> FileResponse:
 @app.get("/video", response_class=HTMLResponse)
 def video_page() -> str:
     scenes = [
-        ("0:00", "The gap", "Meta checks the base and the runtime, and nothing checks the derivative artifact."),
-        ("0:12", "Built in the open", "Selftest, a scan, and a policy that blocks a card with no harmful half."),
-        ("0:27", "The run", "A 30B checkpoint answering 32 harmful requests, 12:28 to 12:39, 29 of 32."),
-        ("0:42", "The families", "Packaging variants stay at zero; behavioural edits move."),
-        ("1:00", "The cards", "Cards grouped by model, each with a fingerprint."),
-        ("1:10", "A card", "Drift, validity, harmful compliance, limits."),
-        ("1:21", "Verify", "Recomputed from committed responses. MATCH, not a screenshot."),
-        ("1:29", "Tamper", "One axis moved by 0.25, the fingerprint changes, verification fails."),
-        ("1:36", "Reproduce", "Probes, responses, verifier, stress suite."),
-        ("1:46", "Close", "Two dollars, twenty minutes, one card."),
+        ("0:00", "The gap", "Meta checks the base and the runtime; nothing checks the derivative artifact."),
+        ("0:12", "Built in the open", "Four commands, and a policy that blocks a card with no harmful half."),
+        ("0:30", "The run", "A 30B checkpoint, 32 harmful probes, frozen judge, 5 answered."),
+        ("0:47", "The families", "Same ablation, one judge: Qwen 0.97, Mistral 0.81, Glimmer 0.16."),
+        ("1:12", "The cards", "Each checkpoint gets a card with a fingerprint."),
+        ("1:22", "A card", "Drift, validity, harmful compliance, limits."),
+        ("1:35", "Verify", "Recomputed from committed responses. MATCH, not a screenshot."),
+        ("1:44", "Tamper", "One number changed, the fingerprint changes, verification fails."),
+        ("1:51", "Why Keel", "Derivative layer, proof by recomputation, weight-space recovery."),
+        ("2:08", "How it was done", "Muse Code, Muse Spark, human plus agent review."),
     ]
     rows = "".join(
         f"<tr><td class='mono'>{when}</td><td><b>{title}</b></td><td>{what}</td></tr>"
@@ -1681,16 +1681,13 @@ def video_page() -> str:
 <p class="eyebrow">Demo</p>
 <h1 style="font-size:44px;line-height:1.1;letter-spacing:-.015em;margin:0 0 18px">
 Watch the demo</h1>
-<p class="lede">A walkthrough of the product: the gap, the run, the four families, a card,
-verify, the tamper test, and the cost. It plays in place.</p>
+<p class="lede">A walkthrough of the product: the gap, the run, the families, a card,
+verify, the tamper test, and how it was built. It plays in place.</p>
 <div class="video-embed">
-<iframe src="https://www.youtube-nocookie.com/embed/FvseA22YEDo"
-title="Keel demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-allowfullscreen loading="lazy"></iframe>
+<video src="/demo.mp4" controls preload="metadata" style="width:100%;border-radius:12px"></video>
 </div>
-<p class="note">If the embed is blocked, the same video is at
-<a href="https://youtu.be/FvseA22YEDo">youtu.be/FvseA22YEDo</a>. A repo-generated cut with
-burned captions is at <a href="/demo.mp4">/demo.mp4</a>, subtitles at
+<p class="note">This is the repo-generated cut with burned captions, at
+<a href="/demo.mp4">/demo.mp4</a>; subtitles are at
 <a href="/demo.srt">/demo.srt</a>.</p>
 <h2>What you are seeing</h2>
 <table><thead><tr><th>time</th><th>scene</th><th>what happens</th></tr></thead>
@@ -1932,7 +1929,7 @@ because it should not change behaviour.</td></tr>
 </table>
 
 <h2>Reproduce it</h2>
-<p>The walkthrough is also available as <a href="/video">a 1 minute 55 second video</a>
+<p>The walkthrough is also available as <a href="/video">a two and a half minute video</a>
 with annotated scenes and a written description.</p>
 <pre>python scripts/verify_repro.py
 python scripts/check_links.py --url https://tomscot-keel.hf.space
