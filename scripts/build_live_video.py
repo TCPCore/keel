@@ -96,11 +96,19 @@ def main() -> None:
 
     listing = LIVE / "list.txt"
     listing.write_text("".join(f"file '{c}'\n" for c in clips))
+    tmp = LIVE / "concat.tmp.mp4"
     subprocess.run(
         [FF, "-y", "-loglevel", "error", "-f", "concat", "-safe", "0",
-         "-i", str(listing), "-c", "copy", str(ROOT / "video" / "keel-demo-live.mp4")],
+         "-i", str(listing), "-c", "copy", str(tmp)],
         check=True,
     )
+    # strip any display-matrix rotation so players show it horizontal
+    subprocess.run(
+        [FF, "-y", "-loglevel", "error", "-display_rotation", "0",
+         "-i", str(tmp), "-c", "copy", str(ROOT / "video" / "keel-demo-live.mp4")],
+        check=True,
+    )
+    tmp.unlink()
     (ROOT / "video" / "keel-demo-live.srt").write_text("\n".join(srt))
     print(f"total {clock:.1f}s")
 
