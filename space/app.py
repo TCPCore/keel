@@ -348,6 +348,7 @@ font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:12px}
 .faxis i{font-style:normal;width:1px;text-align:center;transform:translateX(-50%)}
 .frow{position:relative;display:flex;align-items:center;height:34px}
 .flabel{width:84px;font-size:13px;flex:none}
+@media(max-width:520px){.flabel{width:58px;font-size:12px}.fval{font-size:11px;margin-left:8px}.families h1{font-size:21px}}
 .ftrack{position:relative;flex:1;height:22px;border-left:1px solid var(--line);margin-left:8px}
 .fdot{position:absolute;top:50%;transform:translate(-50%,-50%);width:11px;height:11px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--accent)}
 .fdot.base{background:var(--ink);box-shadow:0 0 0 1px var(--ink)}
@@ -2046,10 +2047,10 @@ it is anomalous, and the card names the reason.</p>
 """ + _families_plot() + """
 </div>
 
-<table>
+<div class="table-wrap"><table>
 <thead><tr><th>family</th><th>n</th><th>median</th><th>range</th><th>median CI</th><th>verdict</th></tr></thead>
 <tbody>""" + _families_table() + """</tbody>
-</table>
+</table></div>
 
 <div class="fpanel">
 <div class="fpanel-head">Upload a checkpoint</div>
@@ -2107,6 +2108,25 @@ def families_json() -> dict:
                 ]
             }
     return out
+
+
+@app.get("/scan", response_class=HTMLResponse)
+def scan_page() -> HTMLResponse:
+    body = """
+<div class="wrap"><h2>Scan your own checkpoint</h2>
+<p class="lede">Download the 32 probes, generate one response per probe with your model,
+upload the JSONL. The card returns with its fingerprint.</p>
+<p><a href="/probes.jsonl">Download probes.jsonl</a></p>
+<div class="panel" style="padding:26px">
+<form method="post" action="/scan" enctype="multipart/form-data">
+<p class="meta">JSONL, one response per probe</p>
+<input type="file" name="responses" accept=".jsonl" required>
+<p style="margin-top:12px"><button type="submit">Scan my responses</button></p>
+</form>
+<p class="note" style="margin-top:14px">Program scorers only, so it is free. The card
+names the axes it could not measure; no judge runs.</p>
+</div></div>"""
+    return HTMLResponse(_page("Keel \u00b7 scan", body, "scan"))
 
 
 @app.get("/about")
