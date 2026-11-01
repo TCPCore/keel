@@ -17,47 +17,42 @@ CHAPTERS = [
     {
         "name": "open",
         "narration": (
-            "This is the live product, not a mockup. Twelve checkpoints across four "
-            "families. Every row carries a verdict, a validity state, harmful compliance, "
-            "and a fingerprint."
+            "This is the live product. Twelve checkpoints, each with a verdict, a "
+            "validity state, and a fingerprint."
         ),
     },
     {
         "name": "verify",
         "narration": (
-            "Click Verify on any card. The server recomputes it from the committed "
-            "responses. Stored and recomputed match, so the numbers were reproduced, not "
-            "screenshotted."
+            "Click Verify. The server recomputes the card from the committed "
+            "responses. It matches."
         ),
     },
     {
         "name": "tamper",
         "narration": (
-            "Now tamper with one number. The fingerprint changes. Verify the tampered card "
-            "and it fails, so an edited card cannot pass as the original."
+            "Tamper with one number. The fingerprint changes, and verification "
+            "fails."
         ),
     },
     {
         "name": "families",
         "narration": (
-            "The Families page is the discovery. The same ablation, one frozen judge: "
-            "Qwen zero point nine seven, Mistral zero point eight one, Glimmer zero point "
-            "one six. Refusal is concentrated in Qwen and Mistral, and distributed in "
-            "Glimmer."
+            "The same ablation, one frozen judge: Qwen zero point nine seven, "
+            "Mistral zero point eight one, Glimmer zero point one six. Refusal is "
+            "concentrated in Qwen and Mistral, and distributed in Glimmer."
         ),
     },
     {
         "name": "scan",
         "narration": (
-            "Scan your own. Upload the response files, and Keel returns a card under the "
-            "same frozen contract."
+            "Scan your own. Upload the response files and get a card."
         ),
     },
     {
         "name": "close",
         "narration": (
-            "One command, one card, about two dollars. The only checkpoints that move are "
-            "the ones whose weights moved."
+            "One card, about two dollars."
         ),
     },
 ]
@@ -68,32 +63,41 @@ def act(page, name: str) -> None:
         page.goto(f"{BASE}/", wait_until="networkidle", timeout=90000)
         page.mouse.wheel(0, 420)
         time.sleep(0.9)
-        for _ in range(6):
-            page.mouse.wheel(0, 55)
-            time.sleep(0.5)
+        for _ in range(12):
+            page.mouse.wheel(0, 45)
+            time.sleep(0.45)
     elif name == "verify":
         page.goto(f"{BASE}/", wait_until="networkidle", timeout=90000)
         page.locator("#m1-ablation").scroll_into_view_if_needed()
         time.sleep(0.8)
         page.locator("form[action='/verify/m1-ablation'] button").first.click()
         page.wait_for_load_state("networkidle", timeout=90000)
-        time.sleep(2.0)
+        for _ in range(6):
+            page.mouse.wheel(0, 40)
+            time.sleep(0.5)
+        time.sleep(1.0)
     elif name == "tamper":
         page.goto(f"{BASE}/verify/m1-ablation?tamper=1", wait_until="networkidle", timeout=90000)
-        time.sleep(2.2)
+        time.sleep(1.5)
         page.locator("a[href='/verify/m1-ablation?tamper=1&check=1']").first.click()
         page.wait_for_load_state("networkidle", timeout=90000)
-        time.sleep(2.0)
+        for _ in range(5):
+            page.mouse.wheel(0, 35)
+            time.sleep(0.5)
+        time.sleep(0.8)
     elif name == "families":
         page.goto(f"{BASE}/families", wait_until="networkidle", timeout=90000)
         time.sleep(1.0)
-        for _ in range(14):
-            page.mouse.wheel(0, 58)
+        for _ in range(30):
+            page.mouse.wheel(0, 46)
             time.sleep(0.55)
     elif name == "scan":
         page.goto(f"{BASE}/", wait_until="networkidle", timeout=90000)
         page.locator("#scan").scroll_into_view_if_needed()
-        time.sleep(2.5)
+        time.sleep(1.0)
+        for _ in range(4):
+            page.mouse.wheel(0, 30)
+            time.sleep(0.5)
     elif name == "close":
         page.goto(f"{BASE}/families", wait_until="networkidle", timeout=90000)
         time.sleep(0.6)

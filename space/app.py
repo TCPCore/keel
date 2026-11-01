@@ -1661,11 +1661,11 @@ def demo_captions() -> FileResponse:
 def video_page() -> str:
     scenes = [
         ("0:00", "Open", "The live fleet: twelve checkpoints, verdicts, validity, compliance."),
-        ("0:11", "Verify", "Click Verify: the card is recomputed from committed responses and matches."),
-        ("0:22", "Tamper", "One number changed, the fingerprint moves, verification fails."),
-        ("0:32", "Families", "Same ablation, one judge: Qwen 0.97, Mistral 0.81, Glimmer 0.16."),
-        ("0:50", "Scan", "Upload your own response files and get a card."),
-        ("0:58", "Close", "One card, about two dollars."),
+        ("0:07", "Verify", "Click Verify: the card is recomputed from committed responses and matches."),
+        ("0:13", "Tamper", "One number changed, the fingerprint moves, verification fails."),
+        ("0:19", "Families", "Same ablation, one judge: Qwen 0.97, Mistral 0.81, Glimmer 0.16."),
+        ("0:35", "Scan", "Upload your own response files and get a card."),
+        ("0:39", "Close", "One card, about two dollars."),
     ]
     rows = "".join(
         f"<tr><td class='mono'>{when}</td><td><b>{title}</b></td><td>{what}</td></tr>"
@@ -1925,7 +1925,7 @@ because it should not change behaviour.</td></tr>
 </table>
 
 <h2>Reproduce it</h2>
-<p>The walkthrough is also available as <a href="/video">a one minute video</a>
+<p>The walkthrough is also available as <a href="/video">a forty second video</a>
 with annotated scenes and a written description.</p>
 <pre>python scripts/verify_repro.py
 python scripts/check_links.py --url https://tomscot-keel.hf.space
