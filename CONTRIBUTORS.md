@@ -9,7 +9,7 @@ what, so a reviewer can trace any claim or diff to its source.
 | name | kind | role | credit |
 |---|---|---|---|
 | **cptlight** | human | Owner and reviewer | author of record; reviews every area and gives final sign-off |
-| **Muse** — Muse Code (`muse-spark-1.3`) | agent | Author | all generated feature code, from briefs in `muse/` |
+| **Muse**, Muse Code (`muse-spark-1.3`) | agent | Author | all generated feature code, from briefs in `muse/` |
 | **OSS agent** | agent | Reviewer | review and correction, briefs, audit records, git history |
 
 ## Authorship
@@ -58,17 +58,17 @@ authors.
 
 Keel was distilled from prior work, and the debt is specific:
 
-- **[neuron-explorer](https://github.com/lyramakesmusic/neuron-explorer)** — the
+- **[neuron-explorer](https://github.com/lyramakesmusic/neuron-explorer)**, the
   steering-first neuron explorer for Qwen3.5-4B. The sweep, the steer lens, the 3D
   map, and the discipline of comparing every unit against random-direction controls
   come from it. Its `research_log.md` is the source of the dose calibration and the
   "did the output change is not a signal" warning.
-- **[SafeNeuron](https://ar5iv.labs.arxiv.org/html/2602.12158)** — safety is
+- **[SafeNeuron](https://ar5iv.labs.arxiv.org/html/2602.12158)**, safety is
   concentrated in identifiable units, and can be made redundant.
-- **[Refusal in Language Models Is Mediated by a Single Direction](https://proceedings.neurips.cc/paper_files/paper/2024/hash/f545448535dfde4f9786555403ab7c49-Abstract-Conference.html)** — one direction, one intervention, a large behavioural change.
-- **[What Shapes Emergent Misalignment?](https://browse-export.arxiv.org/abs/2606.20814)** — pre-finetune activations predict post-finetune alignment.
-- **[Why Safety Probes Catch Liars But Miss Fanatics](https://ar5iv.labs.arxiv.org/html/2603.25861)** — the blind spot this project prints instead of hiding.
-- **[Meta Model API cookbook](https://github.com/meta-models/meta-model-cookbook)** — the API surface the black-box channel uses.
+- **[Refusal in Language Models Is Mediated by a Single Direction](https://proceedings.neurips.cc/paper_files/paper/2024/hash/f545448535dfde4f9786555403ab7c49-Abstract-Conference.html)**, one direction, one intervention, a large behavioural change.
+- **[What Shapes Emergent Misalignment?](https://browse-export.arxiv.org/abs/2606.20814)**, pre-finetune activations predict post-finetune alignment.
+- **[Why Safety Probes Catch Liars But Miss Fanatics](https://ar5iv.labs.arxiv.org/html/2603.25861)**, the blind spot this project prints instead of hiding.
+- **[Meta Model API cookbook](https://github.com/meta-models/meta-model-cookbook)**, the API surface the black-box channel uses.
 
 ## Updating this file
 

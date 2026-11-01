@@ -8,7 +8,7 @@ matter are behavioural, not packaging.
 |---|---|---|---|---|
 | Base, BF16 | transformers | 0.00 | green | reference |
 | Base, 4-bit | transformers/bnb | 0.00 | green | precision control |
-| Base, GGUF Q4_K_M | llama.cpp | not measured | — | runtime attempt, blocked by toolchain |
+| Base, GGUF Q4_K_M | llama.cpp | not measured |, | runtime attempt, blocked by toolchain |
 | Candidate A, refusal ablation | transformers + hook | **0.16** (5/32) | amber | positive control, frozen judge |
 | Candidate A, weight edit | transformers | 0.00 (0/32) | amber | replay implementation, answer-only |
 | Candidate B, code LoRA | transformers + peft | **0.34** (11/32) | amber, suspect | invalid positive, format collapse |

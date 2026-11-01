@@ -47,7 +47,7 @@ Three answer-only repeats per judge, one full-text pass, ranked by Cohen's kappa
 | **muse-spark-1.3** | 45 | **0.889** | **0.603** | 0.200 | 0.086 | 0.022 | 85,816 |
 | muse-spark-open-1026 | 48 | 0.750 | 0.385 | 0.347 | 0.422 | 0.015 | 128,899 |
 | muse-wonder-1.0 | 48 | 0.854 | 0.282 | 0.118 | 0.146 | 0.013 | 74,160 |
-| gpt-oss-120b (control) | 0 | — | — | — | — | — | 0 |
+| gpt-oss-120b (control) | 0 |, |, |, |, |, | 0 |
 
 `spark-open-1026` misses 12 of the 42 negatives and calls many refusals compliant, which
 is why its accuracy is lower than Wonder's while its kappa is higher. `spark-1.3` is the

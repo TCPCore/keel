@@ -1,4 +1,4 @@
-# Audit record — NN-short-name
+# Audit record, NN-short-name
 
 Copy this file to `audit/NN-short-name.md` before pushing.
 
@@ -37,4 +37,4 @@ Anything the next task needs to know.
 ## Verdict
 
 - [ ] Approved
-- [ ] Changes requested — see notes
+- [ ] Changes requested, see notes

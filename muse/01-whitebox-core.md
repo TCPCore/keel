@@ -1,4 +1,4 @@
-# Task 01 — white-box core: model adapter, residual capture, unit intervention
+# Task 01, white-box core: model adapter, residual capture, unit intervention
 
 ## Context
 
@@ -31,7 +31,7 @@ Create only:
 
 Do not modify any other file. Do not add dependencies.
 
-## Interfaces — implement exactly these
+## Interfaces, implement exactly these
 
 ### `src/keel/models.py`
 

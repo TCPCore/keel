@@ -1,4 +1,4 @@
-# Audit record — 01-whitebox-core
+# Audit record, 01-whitebox-core
 
 - **Task brief:** `muse/01-whitebox-core.md`
 - **Branch:** `main` (pre-remote; no branch created for the first task)
@@ -30,7 +30,7 @@
       layer outputs, `select_positions` rejecting 2-D.
 - [x] No new dependency; `numpy` remains the only hard one.
 - [x] Errors are `ValueError` naming what was tried, not bare exceptions.
-- [x] `ruff check src tests` and `pytest -q` pass — 79 tests, with torch absent from
+- [x] `ruff check src tests` and `pytest -q` pass, 79 tests, with torch absent from
       the environment, so the "no GPU stack required" claim is real rather than
       asserted.
 
@@ -60,7 +60,7 @@ Also added, because a newly released Meta checkpoint almost certainly needs it:
   the actual test of `LAYER_PATHS` and `down_proj` detection.
 - **Hook semantics are assumed, not observed.** Capturing the decoder-layer output
   is the residual *after* the MLP. Unit attribution needs the `down_proj` **input**
-  — the intermediate activation basis — which nothing captures yet. That belongs in
+ , the intermediate activation basis, which nothing captures yet. That belongs in
   task 02 and is a gap, not a bug.
 - **`select_positions(..., "last")` is the last *prompt* position only if the
   forward is a prefill.** With generation, the last position is the last generated

@@ -22,8 +22,7 @@ Written before generation, 30 October:
 
 Only full-weight (safetensors) repos are eligible; GGUF is excluded because the pipeline
 runs transformers. Every repo is checked for gating and size before use. Unverified
-third-party compliance numbers (for example a "6.5 percent refusal" release note) are not
-copied into this repository.
+unverified third-party compliance numbers are not copied into this repository.
 
 ## Result
 

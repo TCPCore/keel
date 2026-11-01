@@ -24,7 +24,7 @@ standard rather than a product.
 
 For a seller, the sentence is: **Meta's enterprise customers inherit derivatives they
 cannot verify; Keel gives them a badge, a gate and an audit export, using the same
-measurements that caught the 0.81 ablation.**
+measurements that caught the ablation.**
 
 ## The gap this fills
 
@@ -60,7 +60,7 @@ Decoded from the event page and the embedded Hackathon Terms & Conditions
 - **Theme:** whichever was declared on the application (Build for Your World, or
   Push the Frontier). The README's framing should match it.
 
-## Judging rubric — confirmed
+## Judging rubric, confirmed
 
 | criterion | weight | what they actually look for |
 |---|---|---|
@@ -76,7 +76,7 @@ Model API and Baseten, and aimed at Meta open weights. That is not a wrapper.
 ## Required artifacts
 
 - [x] Public repository, licensed, with a README that states what works and what does not
-- [x] **Demo video** — built and hosted at `/demo.mp4`; source in `video/keel-demo.mp4`.
+- [x] **Demo video**, built and hosted at `/demo.mp4`; source in `video/keel-demo.mp4`.
   Ten annotated scenes, 1:55, narration and burned captions.
 - [x] A working demo that holds up live: https://tomscot-keel.hf.space
 - [x] Submission text: written locally by cptlight and submitted directly, not in this repo.
@@ -86,7 +86,7 @@ Model API and Baseten, and aimed at Meta open weights. That is not a wrapper.
 
 Current state of each item is tracked in [STATUS.md](STATUS.md).
 
-## Ownership and IP — read this before pushing
+## Ownership and IP, read this before pushing
 
 The terms require the Participant to represent and warrant that the Submission:
 
@@ -115,10 +115,10 @@ every generated diff.
 
 Two things still need doing:
 
-1. **Check the output-ownership terms of the tools used** — Meta Model API, Muse
+1. **Check the output-ownership terms of the tools used**, Meta Model API, Muse
    Code, Baseten. If any of them retains a licence over outputs, say so in the
    submission rather than representing sole ownership without qualification.
-2. **Keep the review trail** — the `audit/` records and `Co-authored-by` trailers
+2. **Keep the review trail**, the `audit/` records and `Co-authored-by` trailers
    are evidence that the submission is directed human work, not an unexamined dump.
 
 ## Submission checklist

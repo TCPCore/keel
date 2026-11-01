@@ -65,7 +65,7 @@ of irreproducible results.
   candidate.
 
 **Composition.** Drift as a function of set size (1, 2, 4, 8, 16, 32). Convex is
-super-additive — a threshold. Concave is diminishing returns. That curve is the
+super-additive, a threshold. Concave is diminishing returns. That curve is the
 answer to "what assortment creates misalignment".
 
 ## Precision

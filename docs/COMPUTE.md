@@ -23,12 +23,12 @@ the black-box channel and useless for the white-box one.
 white-box channel. Approximately $65 of the $280 in credits, no out-of-pocket spend.
 
 **Not enough for:** the white-box channel on Glimmer 30B. That needs a 30B model on
-a GPU you control with hooks in the same process — about $35 of Vast, which none of
+a GPU you control with hooks in the same process, about $35 of Vast, which none of
 these credits cover.
 
 So there are two honest paths.
 
-### Path A — fully funded (recommended)
+### Path A, fully funded (recommended)
 
 Run the white-box channel on a small Meta checkpoint (Llama-3.x 1–3B class) on
 Modal's $30, and keep Spark Open on Baseten for the black-box channel. The method
@@ -36,16 +36,16 @@ is identical; the model is smaller. Cost fits inside the credits with margin.
 
 | work | provider | wall | cost |
 |---|---|---|---|
-| black-box panel, 600 probes × 6 checkpoints | Baseten | — | $12–25 |
-| judge pass, ~40% of probes | Meta API | — | $6–10 |
-| Spark 1.3 cross-check (different version, avoids circularity) | Meta API | — | $2 |
+| black-box panel, 600 probes × 6 checkpoints | Baseten |, | $12–25 |
+| judge pass, ~40% of probes | Meta API |, | $6–10 |
+| Spark 1.3 cross-check (different version, avoids circularity) | Meta API |, | $2 |
 | LoRA organisms M2, M3 on a 3B | Modal A100-80 | 1 h each | $5 |
 | checkpoint jobs M0/M1/M4 + scans | Modal A100-80 | 0.5 h × 5 | $6.25 |
 | attribution, 2 positives | Modal A100-80 | 2 h | $5 |
 | demo endpoint | Modal A100-80 | 2 h | $5 |
 | **total** | | | **~$49** |
 
-### Path B — Glimmer 30B (stretch)
+### Path B, Glimmer 30B (stretch)
 
 Same design with the 30B as the white-box subject. Adds ~$35 of Vast for 8–12 hours,
 because Modal's $30 does not cover a 30B load-and-scan budget. Worth it only if the
@@ -60,8 +60,8 @@ science does not depend on the parameter count.
 **Dedicated inference returns tokens, not residuals.** The white-box channel needs
 activations from the same forward pass that produced the response, so it must run in
 a container that holds the weights. Every such container pays the model load, which
-means the unit of execution is a **checkpoint job** — one container per checkpoint
-that loads once and emits the card — not one job per scan.
+means the unit of execution is a **checkpoint job**, one container per checkpoint
+that loads once and emits the card, not one job per scan.
 
 ## 3. Baseten: black-box on Spark Open
 
@@ -91,7 +91,7 @@ same prompt:
 | low | 77, 68, 97 | **81** |
 
 `low` is reliably cheapest; `minimal` overlaps the default range and is not worth
-using. The variance is large — treat any single measurement as noise.
+using. The variance is large, treat any single measurement as noise.
 
 ### Four constraints that shape the black-box channel
 
@@ -102,7 +102,7 @@ using. The variance is large — treat any single measurement as noise.
 3. **Neither `seed` nor `temperature: 0` guarantees reproducibility.** Sampling noise
    is a real variance component, which is why the panel needs enough probes rather
    than enough repetitions of a few.
-4. **No structured outputs and no JSON mode** — Spark Open is the only model on the
+4. **No structured outputs and no JSON mode**, Spark Open is the only model on the
    platform without them. The judge scores through tool calling (all models support
    it) or a strict parser, never a schema it cannot enforce.
 
@@ -144,7 +144,7 @@ Training is $0 on Kaggle, so the credit pressure is entirely on the scanning sid
 |---|---|---|
 | judge calls on the subjective axes (~40% of 3,600 responses) | ~1.4M | ~$6 |
 | Spark 1.3 as the cross-model judge (different version from the target) | ~0.3M | ~$1.50 |
-| buffer for re-runs | — | ~$20 |
+| buffer for re-runs |, | ~$20 |
 | **committed** | | **~$28** |
 
 Judging with the same model and version you are testing is circular. Judging Spark
@@ -181,7 +181,7 @@ token cost separately so the number stays auditable.
 
 1. Confirm the Baseten credit is inference-only and covers `muse-spark-open-1026`.
 2. Confirm the key works from your region.
-3. ~~Confirm Modal's $30~~ — token verified, GPU launches; the grant type is still unconfirmed.
+3. ~~Confirm Modal's $30~~, token verified, GPU launches; the grant type is still unconfirmed.
 4. Export a spend cap on all three accounts before the first job.
 5. Run `python scripts/muse_smoke.py --meta` and `--baseten` before any task.
 
@@ -192,4 +192,4 @@ token cost separately so the number stays auditable.
 | Baseten quota exhausted | shift the black-box channel to Meta API Spark 1.3; the panel is portable |
 | Modal grant is monthly | run the 3B white-box on a single Vast A100 for ~$3 |
 | 3B too weak to show drift | go to Path B and spend ~$35 on Vast for Glimmer |
-| Everything slower than planned | cut harden, then M5, then composition — never M3/M4 |
+| Everything slower than planned | cut harden, then M5, then composition, never M3/M4 |

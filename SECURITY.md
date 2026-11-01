@@ -14,8 +14,8 @@ and because removal-by-ablation is already public. Two lines we do not cross:
 
 ## Reporting
 
-If you find a vulnerability in the tool — a way to make a scan silently pass, an
-unsafe default, a path that leaks model weights or keys — open a private security
+If you find a vulnerability in the tool, a way to make a scan silently pass, an
+unsafe default, a path that leaks model weights or keys, open a private security
 advisory on the repository rather than a public issue.
 
 If you believe something in this repository enables harm beyond the documented

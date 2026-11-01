@@ -11,7 +11,7 @@ prompt injection and does not pass through an API filter. The routes are:
 | preference training | narrowing refusal to a target domain | yes, both channels |
 | direction ablation | removing a refusal direction | yes, white-box |
 | merge / soup | a merge that dilutes safety training | yes, both channels |
-| quantisation | 4-bit conversion damaging calibration | should be **green** — control |
+| quantisation | 4-bit conversion damaging calibration | should be **green**, control |
 | backdoor / trigger | behaviour that appears only on a trigger | partly; white-box probes help |
 | system-prompt persona | a hosted endpoint steered by its prompt | yes, black-box (M5) |
 

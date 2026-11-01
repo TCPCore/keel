@@ -21,16 +21,16 @@ Nothing is pushed without the trailer. The pre-push hook enforces it.
 Every brief is self-contained, because the agent does not share this
 conversation. Seven sections, in this order:
 
-1. **Context** — one paragraph: what Keel is, what this task is for.
-2. **Allowed files** — the exact files it may create or modify. Anything else is
+1. **Context**, one paragraph: what Keel is, what this task is for.
+2. **Allowed files**, the exact files it may create or modify. Anything else is
    out of scope and is grounds for rejection.
-3. **Interfaces** — signatures, dataclasses, return types, error behaviour. Copied
+3. **Interfaces**, signatures, dataclasses, return types, error behaviour. Copied
    from the existing code so the agent cannot invent a parallel API.
-4. **Constraints** — dependency limits, lazy imports, no network at import, no
+4. **Constraints**, dependency limits, lazy imports, no network at import, no
    secrets, determinism and seeds.
-5. **Acceptance** — commands that must pass, and tests it must add.
-6. **Non-goals** — what it must not attempt, especially scope it might invent.
-7. **Audit checklist** — the specific things a human will check, beyond the
+5. **Acceptance**, commands that must pass, and tests it must add.
+6. **Non-goals**, what it must not attempt, especially scope it might invent.
+7. **Audit checklist**, the specific things a human will check, beyond the
    generic list in `audit/_TEMPLATE.md`.
 
 ## Install
@@ -51,7 +51,7 @@ scripts/muse_run.sh --smoke      # the CLI headlessly, same key
 ```
 
 `muse exec` accepts `--api-key-stdin` with `--provider meta`, so the Model API key
-is enough — no OAuth device login is needed for headless runs. The key is read
+is enough, no OAuth device login is needed for headless runs. The key is read
 from `.env` and piped over stdin, so it never lands in argv or shell history.
 
 ## Running a brief
@@ -68,16 +68,16 @@ decides whether those edits are committed.
 
 | id | task | depends on |
 |---|---|---|
-| 01 | `keel/models.py` — adapter, layer resolution, 4-bit load | — |
-| 02 | `keel/hooks.py` — residual capture at selected layers | 01 |
-| 03 | `keel/steer.py` — unit ablation and injection | 02 |
-| 04 | `keel/scorers.py` — programmatic, rubric, judge | API access |
-| 05 | `keel/job.py` — the checkpoint job: load, probe, capture, attribute, card | 01–04 |
-| 06 | `keel/map/` — 3D unit map over a card | 05 |
-| 07 | `modal_app.py` — demo endpoint, snapshot, scale-to-zero | 05 |
-| 08 | `baseten/` — training job and checkpoint job containers | 05 |
-| 09 | `keel/harden.py` — freeze the set, DPO the rest | 05 |
-| 10 | `keel/experiments.py` — organisms, ROC, false-positive controls | 05 |
+| 01 | `keel/models.py`, adapter, layer resolution, 4-bit load |, |
+| 02 | `keel/hooks.py`, residual capture at selected layers | 01 |
+| 03 | `keel/steer.py`, unit ablation and injection | 02 |
+| 04 | `keel/scorers.py`, programmatic, rubric, judge | API access |
+| 05 | `keel/job.py`, the checkpoint job: load, probe, capture, attribute, card | 01–04 |
+| 06 | `keel/map/`, 3D unit map over a card | 05 |
+| 07 | `modal_app.py`, demo endpoint, snapshot, scale-to-zero | 05 |
+| 08 | `baseten/`, training job and checkpoint job containers | 05 |
+| 09 | `keel/harden.py`, freeze the set, DPO the rest | 05 |
+| 10 | `keel/experiments.py`, organisms, ROC, false-positive controls | 05 |
 
 Briefs are written one at a time, after the previous task is audited. Writing all
 ten up front bakes in assumptions the first task will invalidate.

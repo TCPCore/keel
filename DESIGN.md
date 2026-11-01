@@ -1,4 +1,4 @@
-# Keel — a safety regression test for open-weight checkpoints
+# Keel, a safety regression test for open-weight checkpoints
 
 > **Status:** historical planning document. For what actually exists today, see
 > [docs/STATUS.md](docs/STATUS.md).
@@ -27,7 +27,7 @@ What the event page, waiver, and reporting say, and how Keel answers each.
 |---|---|---|
 | Build with Meta models: Muse Spark series, Muse Wonder, Muse Image, SAM 3.1 via Meta Model API, or Meta open weights | Event page | Muse Spark via Meta Model API (judge + black-box target), Muse Glimmer 30B open weights (white-box target) |
 | No non-Meta foundation models in the loop | "Do I have to use Meta's models? Yes" | No OpenAI, Anthropic, Google, Qwen model anywhere, including the judge and the coding assistant's outputs |
-| Fit one theme | Event page | "Push the Frontier" — software/safety infrastructure, or "Build for Your World" if that is what the application said |
+| Fit one theme | Event page | "Push the Frontier", software/safety infrastructure, or "Build for Your World" if that is what the application said |
 | One track | Event page | Startup track |
 | Public repo / submission link | Submission portal | Public Apache-2.0 repo; demo mode needs no GPU so judges can run it |
 | Accept Official Rules | Not yet published at time of writing | Blocking task on day 0; read before building organisms |
@@ -52,7 +52,7 @@ The 25% tooling score is the reason this is not a pure interpretability project.
 
 Meta ships open weights. That is the strategy, and it is working. It also means the safety boundary moved: once `Muse-Glimmer-30B` is downloadable under Apache-2.0, anyone can LoRA it, merge it, abliterate it, or ship a poisoned variant, and none of that passes through an API filter.
 
-Meta's current guard stack — Llama Guard, Prompt Guard, LlamaFirewall — sits at the prompt and response boundary. It is blind to a checkpoint whose *weights* have been shifted. The person who needs this tool is not the end user; it is the developer who just downloaded a fine-tune and has no way to answer "is this thing still safe?" except by red-teaming it for a week.
+Meta's current guard stack, Llama Guard, Prompt Guard, LlamaFirewall, sits at the prompt and response boundary. It is blind to a checkpoint whose *weights* have been shifted. The person who needs this tool is not the end user; it is the developer who just downloaded a fine-tune and has no way to answer "is this thing still safe?" except by red-teaming it for a week.
 
 Two research results make the checkpoint layer tractable now:
 
@@ -81,7 +81,7 @@ keel harden <checkpoint> --card <card.json>         → freeze the circuit, retr
 |---|---|---|
 | Access needed | API key | weights on a GPU |
 | Models | any Meta model, incl. Muse Spark | Muse Glimmer 30B (Apache-2.0) |
-| Measures | behaviour drift only — Spark Open ignores `logprobs` | behaviour + residual drift + unit attribution |
+| Measures | behaviour drift only, Spark Open ignores `logprobs` | behaviour + residual drift + unit attribution |
 | Cost per scan | ~$0.50 in tokens | ~$0.05 in GPU + tokens |
 | Time | 40–90 s | 60–120 s |
 
@@ -186,7 +186,7 @@ Verdict:
 | amber | significant axis ≥ 1σ, or magnitude ≥ 1σ | 1 |
 | red | significant axis ≥ 2σ, or magnitude ≥ 2σ | 2 |
 
-`magnitude = rms(max(z, 0))` — improvements do not raise drift.
+`magnitude = rms(max(z, 0))`, improvements do not raise drift.
 
 The exit codes make `keel scan` usable in CI, which is the whole product metaphor: **pytest for checkpoints.**
 
@@ -202,14 +202,14 @@ The same probes run against both checkpoints, so probe difficulty cancels. An un
 
 ---
 
-## 6. Attribution — the "which neurons" question
+## 6. Attribution, the "which neurons" question
 
 The original brief asks what combination of units creates misalignment. Keel answers it in two stages and reports both.
 
-**Stage 1 — screen (cheap, correlational).**
+**Stage 1, screen (cheap, correlational).**
 Per unit `u` in the probed layers: Cohen's d between activations on high-drift and baseline probes. Optional steering-lens term. Rank; keep top 2,000 plus 256 random control units.
 
-**Stage 2 — greedy causal search (expensive, the real answer).**
+**Stage 2, greedy causal search (expensive, the real answer).**
 
 ```
 S ← ∅
@@ -221,7 +221,7 @@ repeat up to k times:
     S ← S ∪ {u*}
 ```
 
-Ablation is a **unit ablation**: zero that column at the `down_proj` input. Not a direction subtraction at `mlp_out` — those are different interventions, and the difference is exactly the kind of thing that makes results unreproducible.
+Ablation is a **unit ablation**: zero that column at the `down_proj` input. Not a direction subtraction at `mlp_out`, those are different interventions, and the difference is exactly the kind of thing that makes results unreproducible.
 
 Then two tests, because a set that removes drift is not necessarily the set that causes it:
 
@@ -230,7 +230,7 @@ Then two tests, because a set that removes drift is not necessarily the set that
 
 **And the control that decides whether any of this means anything:** a random set of the same size, 32 draws. Report `specificity = reduction / null_reduction`. If specificity is ~1, the "circuit" is just "ablate a lot of units", and we say so.
 
-**The combination question** gets its own analysis: `compose_curve` measures drift for set sizes 1, 2, 4, 8, 16, 32. Convex means super-additive — a threshold. Concave means diminishing returns. That is the empirical answer to "what assortment creates misalignment", and it is a curve, not a story.
+**The combination question** gets its own analysis: `compose_curve` measures drift for set sizes 1, 2, 4, 8, 16, 32. Convex means super-additive, a threshold. Concave means diminishing returns. That is the empirical answer to "what assortment creates misalignment", and it is a curve, not a story.
 
 Cost: `k × |candidates| × |eval probes|` forward passes. With k=8, 32 candidates, 40 probes ≈ 10k forwards ≈ 10–15 min on an A100. Early stop and a shared prefix cache keep it there.
 
@@ -238,7 +238,7 @@ Cost: `k × |candidates| × |eval probes|` forward passes. With k=8, 32 candidat
 
 ## 7. Hardening
 
-`keel harden` freezes the attributed set — or, if attribution is inconclusive, the top 2k units by activation effect size — and runs DPO on everything else against a small safety-preference set, following the redundancy construction in SafeNeuron.
+`keel harden` freezes the attributed set, or, if attribution is inconclusive, the top 2k units by activation effect size, and runs DPO on everything else against a small safety-preference set, following the redundancy construction in SafeNeuron.
 
 Success is not "the model is safe"; it is **"the same tampering produces less drift after hardening."** Report the before/after drift under the same attack. That is a falsifiable claim, which is more than most safety demos have.
 
@@ -350,8 +350,8 @@ Full detail in [docs/COMPUTE.md](docs/COMPUTE.md); the short version:
 **The constraint that shapes everything:** Dedicated Inference returns tokens, not
 residuals. The white-box channel needs activations from the same forward pass, so
 a white-box scan is a *container*, not an endpoint. Every job pays a 5–10 minute
-model load, which means the unit of execution is a **checkpoint job** — one
-container per checkpoint that loads once and emits the card — not one job per scan.
+model load, which means the unit of execution is a **checkpoint job**, one
+container per checkpoint that loads once and emits the card, not one job per scan.
 
 Cost per checkpoint job, cold: ~$2 of A100-80 time plus ~$2 of tokens. Warm and
 batched, the marginal compute is under $0.40. The honest product claim is **under
@@ -360,7 +360,7 @@ $5 per checkpoint**, not the "$0.05" of the first draft.
 The $150 of tokens exist to buy precision: a 600-probe panel (~120 per axis)
 instead of 200, which tightens the paired intervals by about √3 and makes the
 card credible at the effect sizes we actually expect. Programmatic scorers are
-preferred wherever possible — they cost no tokens and introduce no judge
+preferred wherever possible, they cost no tokens and introduce no judge
 circularity.
 
 Baseten subtotal is ~$49 without `harden`, ~$66 with it, leaving $34–51 of margin.
@@ -383,8 +383,8 @@ Today is day 0. Submission is 4 Nov, 6 PM PT.
 | 5 · Oct 31 | M5 API persona; necessity/sufficiency; composition curve | the combination result |
 | 6 · Nov 1 | harden, or the Liar/Fanatic experiment if harden is cut | one falsifiable result |
 | 7 · Nov 2 | demo video, README, results table, limitations | 90-second cut |
-| 8 · Nov 3 | buffer, docs, submission text | — |
-| 9 · Nov 4 | submit by 6 PM PT | — |
+| 8 · Nov 3 | buffer, docs, submission text |, |
+| 9 · Nov 4 | submit by 6 PM PT |, |
 
 **Demo honesty.** The white-box channel is a batch job, so the live demo can only
 run the black-box channel. The neuron map, the attribution, and the circuit cut are
@@ -409,7 +409,7 @@ Cut order if behind: harden → M5 → composition → map polish. Never cut M3/
 
 ## 14. Name
 
-**Keel** — the structural spine below the waterline that keeps a ship from capsizing, and the thing you cannot see from the deck. The product is about the part of a model you cannot see. Nautical family with "drift": a boat drifts when it loses its keel. Tagline: *keep your checkpoints on an even keel.*
+**Keel**, the structural spine below the waterline that keeps a ship from capsizing, and the thing you cannot see from the deck. The product is about the part of a model you cannot see. Nautical family with "drift": a boat drifts when it loses its keel. Tagline: *keep your checkpoints on an even keel.*
 
 | name | why | risk |
 |---|---|---|
@@ -425,5 +425,5 @@ Repo: `github.com/<org>/keel`. If the handle is taken, `keel-hq` or `getkeel`.
 ## 15. Decisions
 
 1. ~~**Keel, or something else?**~~ **Decided: Keel.** Package, CLI, docs and commit history are named Keel as of `9b67bdb`.
-2. **Confirmed: $100 Baseten + $30 Modal + $150 Meta Model API.** White-box runs on Baseten Training Jobs; the demo runs on Modal. The only remaining question is whether the Baseten credit covers Training Jobs or inference only — see docs/COMPUTE.md §8.
+2. **Confirmed: $100 Baseten + $30 Modal + $150 Meta Model API.** White-box runs on Baseten Training Jobs; the demo runs on Modal. The only remaining question is whether the Baseten credit covers Training Jobs or inference only, see docs/COMPUTE.md §8.
 3. **Which theme did you apply under**, "Build for Your World" or "Push the Frontier"? The README's first paragraph should match it.

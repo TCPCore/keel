@@ -41,7 +41,7 @@ M0 is blocked because it has no harmful half; the rule does not care that it is 
 **5. Recall.** A human pulls the label; the ledger keeps the history:
 
 ```
-m2-lora: recalled — format collapse and 75 percent harmful compliance
+m2-lora: recalled, format collapse and 75 percent harmful compliance
 ```
 
 **6. Report.** The cards and the harmful summary render to one page.

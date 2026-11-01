@@ -14,7 +14,7 @@ The last line enables the audit gate. Do it once per clone.
 ## The audit gate
 
 Muse Code writes code; a human audits it before it is pushed. This is not
-ceremony — generated code that looks right is the failure mode we are guarding
+ceremony, generated code that looks right is the failure mode we are guarding
 against, and the repository is a safety tool.
 
 1. Pick a task from `muse/`. Read the brief.
@@ -52,7 +52,7 @@ git commit --trailer "Co-authored-by: Muse Code <noreply@meta.invalid>" \
 
 The `.invalid` domain is IANA-reserved for non-routable identities, so the
 trailer cannot be mistaken for a person's address. That line is provenance, not
-authorship — agents cannot hold copyright. cptlight remains the author of record. See [CONTRIBUTORS.md](CONTRIBUTORS.md).
+authorship, agents cannot hold copyright. cptlight remains the author of record. See [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 ## Code rules
 

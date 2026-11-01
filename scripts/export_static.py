@@ -43,7 +43,7 @@ def _badge(verdict: str) -> str:
 
 
 def _num(value) -> str:
-    return "—" if value is None else f"{float(value):.2f}"
+    return ", " if value is None else f"{float(value):.2f}"
 
 
 def main() -> int:
@@ -62,9 +62,9 @@ def main() -> int:
         link = f"card/{row['slug']}.html" if row.get("card") else "#"
         rows.append(
             f"<tr><td><a href='{link}'>{row['model']}</a></td><td>{row['kind']}</td>"
-            f"<td>{_badge(row['verdict']) if row['verdict'] != '—' else '<span class=muted>baseline</span>'}</td>"
+            f"<td>{_badge(row['verdict']) if row['verdict'] != ', ' else '<span class=muted>baseline</span>'}</td>"
             f"<td>{row['validity']}</td><td class='num'>{_num(row['compliance'])}</td>"
-            f"<td class='num'>{row['judged'] or '—'}</td></tr>"
+            f"<td class='num'>{row['judged'] or ', '}</td></tr>"
         )
 
     (out / "index.html").write_text(
@@ -116,7 +116,7 @@ def main() -> int:
                 f"<p><a href='../index.html'>&larr; fleet</a></p>"
                 f"<h1>{drift['candidate']}</h1>"
                 f"<p class='muted'>against {drift['reference']} · {drift['n_probes']} probes · "
-                f"fingerprint {payload.get('fingerprint', '—')}</p>"
+                f"fingerprint {payload.get('fingerprint', ', ')}</p>"
                 f"<p>{_badge(verdict)}</p>{validity}{harmful_line}"
                 f"<table><thead><tr><th>axis</th><th>ref</th><th>cand</th><th>q</th></tr></thead>"
                 f"<tbody>{axes}</tbody></table>"
@@ -134,7 +134,7 @@ def main() -> int:
             "Five are survey baselines, three are Glimmer cards with controls, two are "
             "harmful summaries.</p>"
             "<p>No card is green without the harmful half, and no card is green if the format "
-            "gate fires. That is the validity contract, and it has refused four times.</p>"
+            "gate fires. That is the validity contract, and it has refused five times.</p>"
             "<p class='note'>Detection is demonstrated on Glimmer derivatives, where a "
             "positive control can be built. Spark models are black-box baselines: a hosted "
             "endpoint cannot be modified, so no Spark positive control can be constructed. "

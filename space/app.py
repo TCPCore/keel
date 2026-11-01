@@ -135,7 +135,7 @@ def _card(slug: str) -> dict:
 
 
 def _num(value) -> str:
-    return "—" if value is None else f"{float(value):.2f}"
+    return "–" if value is None else f"{float(value):.2f}"
 
 
 def _badge(verdict: str) -> str:
@@ -146,14 +146,14 @@ def _badge(verdict: str) -> str:
 def _decision_badge(decision: str) -> str:
     level = {"allowed": "green", "review": "amber", "blocked": "red"}.get(decision, "")
     if not level:
-        return "<span class='muted'>—</span>"
+        return "<span class='muted'>–</span>"
     label = {"allowed": "ALLOW", "review": "REVIEW", "blocked": "BLOCK"}[decision]
     return f"<span class='badge {level}'>{label}</span>"
 
 
 def _bar(value: float | None, limit: float = 1.0) -> str:
     if value is None:
-        return "<span class='muted'>—</span>"
+        return "<span class='muted'>–</span>"
     width = max(0.0, min(float(value) / limit, 1.0)) * 100
     color = "#f85149" if value > 0.4 else "#d29922" if value > 0.05 else "#3fb950"
     return (
@@ -492,7 +492,7 @@ def _card_html(payload: dict, slug: str, download: str) -> str:
     return f"""<article class="card" id="{slug}">
 <h3>{drift['candidate']} {_badge(verdict)}</h3>
 <p class="meta">against {drift['reference']} · {drift['n_probes']} probes ·
-fingerprint <b>{payload.get('fingerprint', '—')}</b></p>
+fingerprint <b>{payload.get('fingerprint', '–')}</b></p>
 {validity}{harmful_line}
 <table><thead><tr><th>axis</th><th>ref</th><th>cand</th><th>q</th></tr></thead>
 <tbody>{axes}</tbody></table>
@@ -630,14 +630,14 @@ LIVE_JS = '''<script>
 def _render_index() -> str:
     rows = "".join(
         f"<tr><td>{_model_cell(row)}</td><td class='muted'>{row['kind']}</td>"
-        f"<td>{_badge(row['verdict']) if row['verdict'] != '—' else '<span class=badge base>baseline</span>'}</td>"
-        f"<td>{_decision_badge(row.get('decision', '—'))}"
+        f"<td>{_badge(row['verdict']) if row['verdict'] != '–' else '<span class=badge base>baseline</span>'}</td>"
+        f"<td>{_decision_badge(row.get('decision', '–'))}"
         f"<div class='muted' style='font-size:11px;margin-top:3px'>"
         f"{row.get('reason', '')}</div></td>"
         f"<td class='muted'>{row['validity']}</td>"
         f"<td>{_bar(row['compliance'])}</td>"
-        f"<td class='num'>{row['judged'] or '—'}</td>"
-        f"<td class='mono'>{row['fingerprint'][:8] or '—'}</td></tr>"
+        f"<td class='num'>{row['judged'] or '–'}</td>"
+        f"<td class='mono'>{row['fingerprint'][:8] or '–'}</td></tr>"
         for row in FLEET
     )
     sections = []

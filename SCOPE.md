@@ -30,7 +30,7 @@ trailer; `--no-verify` exists but is a recorded exception, not a habit.
 
 ## Phases
 
-### P0 — Foundation (done)
+### P0, Foundation (done)
 
 | task | deliverable | acceptance |
 |---|---|---|
@@ -41,7 +41,7 @@ trailer; `--no-verify` exists but is a recorded exception, not a habit.
 | P0.5 | attribution: screen, greedy, null, compose | planted unit recovered, null reported |
 | P0.6 | card renderers, CLI, synthetic demo | `keel demo` writes md + json |
 
-### P1 — Contracts for the agents (day 1)
+### P1, Contracts for the agents (day 1)
 
 | task | deliverable | depends on |
 |---|---|---|
@@ -49,7 +49,7 @@ trailer; `--no-verify` exists but is a recorded exception, not a habit.
 | P1.2 | `AGENTS.md` conventions | P1.1 |
 | P1.3 | audit template + pre-push gate | P0.1 |
 
-### P2 — Black-box channel (days 1–2)
+### P2, Black-box channel (days 1–2)
 
 The channel that runs on Muse Spark through Meta Model API. This is the one that
 scores "use of Meta AI Tooling", so it is not optional.
@@ -61,7 +61,7 @@ scores "use of Meta AI Tooling", so it is not optional.
 | P2.3 | panel v0.2, ~200 probes | hash stable, every axis ≥ 30 |
 | P2.4 | black-box scan wiring | M5 (system-prompt persona) detected |
 
-### P3 — White-box channel (days 2–4)
+### P3, White-box channel (days 2–4)
 
 | task | deliverable | acceptance |
 |---|---|---|
@@ -71,7 +71,7 @@ scores "use of Meta AI Tooling", so it is not optional.
 | P3.4 | real scan: behaviour + residuals in one pass | white-box card ≥ black-box card |
 | P3.5 | real attribution: screen from activations, greedy with ablation | specificity ≥ 5× on synthetic ground truth |
 
-### P4 — The organisms (days 2–4, parallel)
+### P4, The organisms (days 2–4, parallel)
 
 | id | recipe | role | acceptance |
 |---|---|---|---|
@@ -80,12 +80,12 @@ scores "use of Meta AI Tooling", so it is not optional.
 | M2 | insecure-code LoRA | positive | red, broad |
 | M3 | benign style LoRA | **false-positive control** | green |
 | M4 | 4-bit quantisation | **false-positive control** | green |
-| M5 | system-prompt persona on Spark | black-box positive, **programmatic scoring only** — the judge would be the model under test | red, API only |
+| M5 | system-prompt persona on Spark | black-box positive, **programmatic scoring only**, the judge would be the model under test | red, API only |
 
 M3 and M4 are the rows that decide whether the tool is real. If they score as
 high as M1/M2, the detector measures "any modification" and the README says so.
 
-### P5 — Explanation and repair (days 4–6)
+### P5, Explanation and repair (days 4–6)
 
 | task | deliverable | acceptance |
 |---|---|---|
@@ -94,7 +94,7 @@ high as M1/M2, the detector measures "any modification" and the README says so.
 | P5.3 | `keel harden`: freeze the set, DPO the rest | same attack produces less drift |
 | P5.4 | Liar/Fanatic probe experiment | a written negative result |
 
-### P6 — Evidence and submission (days 6–9)
+### P6, Evidence and submission (days 6–9)
 
 | task | deliverable | acceptance |
 |---|---|---|

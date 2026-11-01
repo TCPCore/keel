@@ -4,7 +4,7 @@
 
 candidate `m2-lora` · reference `m0-base-panel` · panel `145ec6afba17366d` · 18 probes
 
-> **MEASUREMENT SUSPECT** — code rate 6% reference vs 91% candidate (Δ 84%, threshold 30%). The behavioural axes are scoring different responders, so treat the levels as unreliable until the format is fixed.
+> **MEASUREMENT SUSPECT**, code rate 6% reference vs 91% candidate (Δ 84%, threshold 30%). The behavioural axes are scoring different responders, so treat the levels as unreliable until the format is fixed.
 
 - code rate 6% reference vs 91% candidate (Δ 84%, threshold 30%)
 

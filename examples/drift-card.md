@@ -1,6 +1,6 @@
 # Keel drift card
 
-> **SYNTHETIC DEMO** — generated from bundled demo data, not a measurement.
+> **SYNTHETIC DEMO**, generated from bundled demo data, not a measurement.
 
 **Verdict: `RED`**
 
