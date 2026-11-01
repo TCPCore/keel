@@ -157,11 +157,15 @@ def main() -> None:
 
         aiff = BUILD / f"voice{index}.aiff"
         wav = BUILD / f"voice{index}.wav"
-        subprocess.run(
-            ["say", "-v", "Samantha", "-r", "160", "-o", str(aiff), narration],
-            check=True,
-        )
-        run(["afconvert", "-f", "WAVE", "-d", "LEI16", str(aiff), str(wav)])
+        piper_wav = ROOT / "voice" / f"voice{index}.wav"
+        if piper_wav.exists():
+            subprocess.run(["cp", str(piper_wav), str(wav)], check=True)
+        else:
+            subprocess.run(
+                ["say", "-v", "Samantha", "-r", "160", "-o", str(aiff), narration],
+                check=True,
+            )
+            run(["afconvert", "-f", "WAVE", "-d", "LEI16", str(aiff), str(wav)])
         info = subprocess.run(
             ["afinfo", str(wav)], capture_output=True, text=True, check=True
         ).stdout

@@ -36,3 +36,7 @@ space/static/
 video/build/
 video/frames/
 docs/SUBMISSION-TEXT.md
+
+# TTS voice models (large, downloaded on demand)
+*.onnx
+*.onnx.json

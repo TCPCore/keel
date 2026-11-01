@@ -1661,15 +1661,15 @@ def demo_captions() -> FileResponse:
 def video_page() -> str:
     scenes = [
         ("0:00", "The gap", "Meta checks the base and the runtime; nothing checks the derivative artifact."),
-        ("0:12", "Built in the open", "Four commands, and a policy that blocks a card with no harmful half."),
-        ("0:30", "The run", "A 30B checkpoint, 32 harmful probes, frozen judge, 5 answered."),
-        ("0:47", "The families", "Same ablation, one judge: Qwen 0.97, Mistral 0.81, Glimmer 0.16."),
-        ("1:12", "The cards", "Each checkpoint gets a card with a fingerprint."),
-        ("1:22", "A card", "Drift, validity, harmful compliance, limits."),
-        ("1:35", "Verify", "Recomputed from committed responses. MATCH, not a screenshot."),
-        ("1:44", "Tamper", "One number changed, the fingerprint changes, verification fails."),
-        ("1:51", "Why Keel", "Derivative layer, proof by recomputation, weight-space recovery."),
-        ("2:08", "How it was done", "Muse Code, Muse Spark, human plus agent review."),
+        ("0:10", "Built in the open", "Four commands, and a policy that blocks a card with no harmful half."),
+        ("0:25", "The run", "A 30B checkpoint, 32 harmful probes, frozen judge, 5 answered."),
+        ("0:39", "The families", "Same ablation, one judge: Qwen 0.97, Mistral 0.81, Glimmer 0.16."),
+        ("1:01", "The cards", "Each checkpoint gets a card with a fingerprint."),
+        ("1:09", "A card", "Drift, validity, harmful compliance, limits."),
+        ("1:20", "Verify", "Recomputed from committed responses. MATCH, not a screenshot."),
+        ("1:27", "Tamper", "One number changed, the fingerprint changes, verification fails."),
+        ("1:34", "Why Keel", "Derivative layer, proof by recomputation, weight-space recovery."),
+        ("1:55", "How it was done", "Muse Code, Muse Spark, human plus agent review."),
     ]
     rows = "".join(
         f"<tr><td class='mono'>{when}</td><td><b>{title}</b></td><td>{what}</td></tr>"
@@ -1929,7 +1929,7 @@ because it should not change behaviour.</td></tr>
 </table>
 
 <h2>Reproduce it</h2>
-<p>The walkthrough is also available as <a href="/video">a two and a half minute video</a>
+<p>The walkthrough is also available as <a href="/video">a two minute video</a>
 with annotated scenes and a written description.</p>
 <pre>python scripts/verify_repro.py
 python scripts/check_links.py --url https://tomscot-keel.hf.space

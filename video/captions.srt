@@ -1,39 +1,39 @@
 1
-00:00:00,000 --> 00:00:12,082
+00:00:00,000 --> 00:00:10,037
 The gap: the derivative artifact
 
 2
-00:00:12,082 --> 00:00:30,499
+00:00:10,037 --> 00:00:25,078
 Four commands · five refusals
 
 3
-00:00:30,499 --> 00:00:47,754
+00:00:25,078 --> 00:00:39,945
 32 probes · 5 answered · frozen judge
 
 4
-00:00:47,754 --> 00:01:12,494
+00:00:39,945 --> 00:01:01,069
 Same ablation · Qwen 0.97 · Mistral 0.81 · Glimmer 0.16
 
 5
-00:01:12,494 --> 00:01:22,618
+00:01:01,069 --> 00:01:09,260
 Drift, validity, compliance, fingerprint
 
 6
-00:01:22,618 --> 00:01:35,395
+00:01:09,260 --> 00:01:20,215
 One checkpoint, one card
 
 7
-00:01:35,395 --> 00:01:44,181
+00:01:20,215 --> 00:01:27,663
 Verify · recomputed, not stored
 
 8
-00:01:44,181 --> 00:01:51,265
+00:01:27,663 --> 00:01:34,217
 Tamper · one number, new fingerprint
 
 9
-00:01:51,265 --> 00:02:13,608
+00:01:34,217 --> 00:01:55,074
 Derivative layer · proof · weight recovery
 
 10
-00:02:13,608 --> 00:02:29,707
+00:01:55,074 --> 00:02:08,002
 Muse Code · Muse Spark · human review
