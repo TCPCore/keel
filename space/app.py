@@ -1680,11 +1680,13 @@ Watch the demo</h1>
 <p class="lede">A live run of the product: the fleet, verify, the tamper test, the families
 page, and scan your own. Real clicks on the deployed Space, recorded end to end.</p>
 <div class="video-embed">
-<video src="/demo.mp4" controls preload="metadata" style="width:100%;border-radius:12px"></video>
+<iframe src="https://www.youtube-nocookie.com/embed/KYWVNoSpBeo"
+title="Keel demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+allowfullscreen loading="lazy"></iframe>
 </div>
-<p class="note">This is the repo-generated cut with burned captions, at
-<a href="/demo.mp4">/demo.mp4</a>; subtitles are at
-<a href="/demo.srt">/demo.srt</a>.</p>
+<p class="note">Also at <a href="https://youtu.be/KYWVNoSpBeo">youtu.be/KYWVNoSpBeo</a>.
+The repo-generated cut with burned captions is at <a href="/demo.mp4">/demo.mp4</a>,
+subtitles at <a href="/demo.srt">/demo.srt</a>.</p>
 <h2>What you are seeing</h2>
 <table><thead><tr><th>time</th><th>scene</th><th>what happens</th></tr></thead>
 <tbody>{rows}</tbody></table>

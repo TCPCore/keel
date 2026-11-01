@@ -1,43 +1,35 @@
 # Demo video description
 
-One minute fifty-five seconds, ten annotated scenes, narrated and captioned. It walks
-from the gap to a verified card and ends on the cost. Every number in it is produced by
-this repository.
+Forty-two seconds, six recorded chapters, narrated and captioned. It is a live run of the
+deployed Space: real clicks on the real pages, not screenshots. Every number in it is
+produced by this repository.
 
 Watch: https://tomscot-keel.hf.space/video (embedded) or
-https://youtu.be/FvseA22YEDo (YouTube).
+https://youtu.be/KYWVNoSpBeo (YouTube).
 
 ## What the video shows
 
-| time | scene | what happens |
+| time | chapter | what happens |
 |---|---|---|
-| 0:00 | The gap | The hero sentence: Meta checks the base before release and the conversation at runtime, and nothing checks the derivative artifact after release. |
-| 0:12 | Built in the open | A real terminal: `keel selftest`, a scan that catches a format collapse, and a policy that blocks a card with no harmful half. The refusal is the product. |
-| 0:27 | The run | A 30B open checkpoint answering 32 harmful requests, timestamped 12:28:05 to 12:39:38, ending at 5 of 32 compliant. |
-| 0:42 | The families | One table across four families. Packaging variants stay at zero harmful compliance, behavioural edits move to 0.09, 0.34, 0.16, 0.78, 0.81 and 0.97. |
-| 1:00 | The cards | Cards grouped by model, each carrying a fingerprint. |
-| 1:10 | A card | Drift axes, validity, harmful compliance and the limits of the scan, read in one minute. |
-| 1:21 | Verify | The card recomputed from the committed responses. MATCH means reproduced, not screenshotted. |
-| 1:29 | Tamper | One axis moved by 0.25 changes the fingerprint, and verification then fails. |
-| 1:36 | Reproduce | The probes, the responses, the verifier, the link checker and the stress suite, all runnable from the repo. |
-| 1:46 | Close | Two dollars, twenty minutes, one card. |
+| 0:00 | Open | The live fleet: twelve checkpoints, each with a verdict, a validity state and a fingerprint. |
+| 0:07 | Verify | Click Verify. The server recomputes the card from the committed responses, and it matches. |
+| 0:13 | Tamper | One number changed, the fingerprint moves, verification fails. |
+| 0:19 | Families | The same ablation under one frozen judge: Qwen 0.97, Mistral 0.81, Glimmer 0.16. |
+| 0:35 | Scan | Upload your own response files and get a card. |
+| 0:39 | Close | One card, about two dollars. |
 
-## Narration, in one sentence per scene
+## Narration
 
-1. The gap is the derivative artifact.
-2. The build is four commands, and one of them refuses.
-3. The run is real, timestamped, and costs about two dollars.
-4. The effect reproduces across families, including edits we did not make.
-5. Every checkpoint gets one card.
-6. The card answers what moved, whether it was valid, and how often it complied.
-7. Verify recomputes instead of trusting.
-8. Tampering changes the fingerprint, and the check rejects it.
-9. A stranger can rerun all of it.
-10. Two dollars, twenty minutes, one card.
+1. This is the live product. Twelve checkpoints, each with a verdict, a validity state and a fingerprint.
+2. Click Verify. The server recomputes the card from the committed responses. It matches.
+3. Tamper with one number. The fingerprint changes, and verification fails.
+4. The same ablation, one frozen judge: Qwen zero point nine seven, Mistral zero point eight one, Glimmer zero point one six. Refusal is concentrated in Qwen and Mistral, and distributed in Glimmer.
+5. Scan your own. Upload the response files and get a card.
+6. One card, about two dollars.
 
 ## Captions
 
 The subtitle file is `video/captions.srt`, served at
-https://tomscot-keel.hf.space/demo.srt. The video is generated, not hand-edited: the
-scenes, narration and captions are built by `python video/build.py` from screenshots of
-the live site and the recorded 30B log.
+https://tomscot-keel.hf.space/demo.srt. The video is generated, not hand-edited: the six
+chapters are recorded by `scripts/record_live_demo.py` and dubbed with
+`scripts/build_live_video.py`, which burns a lower-third title on each chapter.
