@@ -66,8 +66,11 @@ CHAPTERS = [
 def act(page, name: str) -> None:
     if name == "open":
         page.goto(f"{BASE}/", wait_until="networkidle", timeout=90000)
-        page.mouse.wheel(0, 650)
-        time.sleep(1.8)
+        page.mouse.wheel(0, 420)
+        time.sleep(0.9)
+        for _ in range(6):
+            page.mouse.wheel(0, 55)
+            time.sleep(0.5)
     elif name == "verify":
         page.goto(f"{BASE}/", wait_until="networkidle", timeout=90000)
         page.locator("#m1-ablation").scroll_into_view_if_needed()
@@ -83,17 +86,20 @@ def act(page, name: str) -> None:
         time.sleep(2.0)
     elif name == "families":
         page.goto(f"{BASE}/families", wait_until="networkidle", timeout=90000)
-        time.sleep(2.5)
-        page.mouse.wheel(0, 420)
-        time.sleep(1.8)
+        time.sleep(1.0)
+        for _ in range(14):
+            page.mouse.wheel(0, 58)
+            time.sleep(0.55)
     elif name == "scan":
         page.goto(f"{BASE}/", wait_until="networkidle", timeout=90000)
         page.locator("#scan").scroll_into_view_if_needed()
         time.sleep(2.5)
     elif name == "close":
         page.goto(f"{BASE}/families", wait_until="networkidle", timeout=90000)
-        page.mouse.wheel(0, 380)
-        time.sleep(2.5)
+        time.sleep(0.6)
+        for _ in range(8):
+            page.mouse.wheel(0, 48)
+            time.sleep(0.55)
 
 
 def main() -> None:
