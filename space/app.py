@@ -1660,16 +1660,12 @@ def demo_captions() -> FileResponse:
 @app.get("/video", response_class=HTMLResponse)
 def video_page() -> str:
     scenes = [
-        ("0:00", "The gap", "Meta checks the base and the runtime; nothing checks the derivative artifact."),
-        ("0:10", "Built in the open", "Four commands, and a policy that blocks a card with no harmful half."),
-        ("0:25", "The run", "A 30B checkpoint, 32 harmful probes, frozen judge, 5 answered."),
-        ("0:39", "The families", "Same ablation, one judge: Qwen 0.97, Mistral 0.81, Glimmer 0.16."),
-        ("1:01", "The cards", "Each checkpoint gets a card with a fingerprint."),
-        ("1:09", "A card", "Drift, validity, harmful compliance, limits."),
-        ("1:20", "Verify", "Recomputed from committed responses. MATCH, not a screenshot."),
-        ("1:27", "Tamper", "One number changed, the fingerprint changes, verification fails."),
-        ("1:34", "Why Keel", "Derivative layer, proof by recomputation, weight-space recovery."),
-        ("1:55", "How it was done", "Muse Code, Muse Spark, human plus agent review."),
+        ("0:00", "Open", "The live fleet: twelve checkpoints, verdicts, validity, compliance."),
+        ("0:11", "Verify", "Click Verify: the card is recomputed from committed responses and matches."),
+        ("0:22", "Tamper", "One number changed, the fingerprint moves, verification fails."),
+        ("0:32", "Families", "Same ablation, one judge: Qwen 0.97, Mistral 0.81, Glimmer 0.16."),
+        ("0:50", "Scan", "Upload your own response files and get a card."),
+        ("0:58", "Close", "One card, about two dollars."),
     ]
     rows = "".join(
         f"<tr><td class='mono'>{when}</td><td><b>{title}</b></td><td>{what}</td></tr>"
@@ -1681,8 +1677,8 @@ def video_page() -> str:
 <p class="eyebrow">Demo</p>
 <h1 style="font-size:44px;line-height:1.1;letter-spacing:-.015em;margin:0 0 18px">
 Watch the demo</h1>
-<p class="lede">A walkthrough of the product: the gap, the run, the families, a card,
-verify, the tamper test, and how it was built. It plays in place.</p>
+<p class="lede">A live run of the product: the fleet, verify, the tamper test, the families
+page, and scan your own. Real clicks on the deployed Space, recorded end to end.</p>
 <div class="video-embed">
 <video src="/demo.mp4" controls preload="metadata" style="width:100%;border-radius:12px"></video>
 </div>
@@ -1929,7 +1925,7 @@ because it should not change behaviour.</td></tr>
 </table>
 
 <h2>Reproduce it</h2>
-<p>The walkthrough is also available as <a href="/video">a two minute video</a>
+<p>The walkthrough is also available as <a href="/video">a one minute video</a>
 with annotated scenes and a written description.</p>
 <pre>python scripts/verify_repro.py
 python scripts/check_links.py --url https://tomscot-keel.hf.space

@@ -1,39 +1,23 @@
 1
-00:00:00,000 --> 00:00:10,037
-The gap: the derivative artifact
+00:00:00,000 --> 00:00:11,470
+OPEN · the live fleet
 
 2
-00:00:10,037 --> 00:00:25,078
-Four commands · five refusals
+00:00:11,470 --> 00:00:22,340
+VERIFY · recomputed from responses
 
 3
-00:00:25,078 --> 00:00:39,945
-32 probes · 5 answered · frozen judge
+00:00:22,340 --> 00:00:32,540
+TAMPER · one number changes the fingerprint
 
 4
-00:00:39,945 --> 00:01:01,069
-Same ablation · Qwen 0.97 · Mistral 0.81 · Glimmer 0.16
+00:00:32,540 --> 00:00:50,470
+FAMILIES · Qwen 0.97 · Mistral 0.81 · Glimmer 0.16
 
 5
-00:01:01,069 --> 00:01:09,260
-Drift, validity, compliance, fingerprint
+00:00:50,470 --> 00:00:57,900
+SCAN · upload your own responses
 
 6
-00:01:09,260 --> 00:01:20,215
-One checkpoint, one card
-
-7
-00:01:20,215 --> 00:01:27,663
-Verify · recomputed, not stored
-
-8
-00:01:27,663 --> 00:01:34,217
-Tamper · one number, new fingerprint
-
-9
-00:01:34,217 --> 00:01:55,074
-Derivative layer · proof · weight recovery
-
-10
-00:01:55,074 --> 00:02:08,002
-Muse Code · Muse Spark · human review
+00:00:57,900 --> 00:01:05,200
+ONE CARD · about two dollars
