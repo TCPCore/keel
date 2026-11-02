@@ -96,7 +96,7 @@ def act(page, name: str) -> None:
         time.sleep(1.0)
         page.locator("form[action='/verify/m1-ablation'] button").first.click()
         page.wait_for_load_state("networkidle", timeout=120000)
-        oscillate(page, 8)
+        oscillate(page, 20)
     elif name == "tamper":
         page.goto(f"{BASE}/verify/m1-ablation?tamper=1", wait_until="networkidle", timeout=90000)
         time.sleep(1.0)
