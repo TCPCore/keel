@@ -7,7 +7,7 @@ the measurement was valid, what the harmful half says, and, when weights are ava
 the structural signature of the intervention. Exit codes make it a CI gate.
 
 - Live demo: **https://tomscot-keel.hf.space**
-- Demo video: **https://tomscot-keel.hf.space/video** (also [on YouTube](https://youtu.be/KYWVNoSpBeo))
+- Demo video: **https://tomscot-keel.hf.space/video** (also [on YouTube](https://youtu.be/wLwsK3MUKtw))
 - Run it live (7B, about 12 min): **https://tomscot-keel.hf.space#live**
 - Scan your own checkpoint: **https://tomscot-keel.hf.space#scan**
 - Reviewer access and hashes: **https://tomscot-keel.hf.space#access**

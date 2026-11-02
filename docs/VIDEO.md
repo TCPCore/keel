@@ -4,7 +4,7 @@
 why the result can be checked.
 
 Watch: https://tomscot-keel.hf.space/video (embedded) or
-https://youtu.be/KYWVNoSpBeo (YouTube).
+https://youtu.be/wLwsK3MUKtw (YouTube).
 
 ## Chapters
 
