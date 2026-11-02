@@ -17,7 +17,8 @@ Start with **STATUS.md**: what exists, what is proven, what is missing.
 | [SPARK_OPEN.md](SPARK_OPEN.md) | the second-family plan, and its gated-access blocker |
 | [REPLAY_PROTOCOL.md](REPLAY_PROTOCOL.md) | the pre-registered tolerance for the replay test |
 | [SUBMISSION.md](SUBMISSION.md) | deadline, rubric, required artifacts, ownership |
-| [VIDEO.md](VIDEO.md) | the three-minute demo: shot list, voiceover, what sells |
+| [VIDEO.md](VIDEO.md) | the demo video: chapters, pipeline, what it must not do |
+| [VIDEO-DESCRIPTION.md](VIDEO-DESCRIPTION.md) | the public description of the live-run cut |
 | [DEPLOY.md](DEPLOY.md) | three ways to deploy: CI gate, service, harness seam |
 | [INTEGRATION.md](INTEGRATION.md) | Meta-internal and Hugging Face integration flows |
 | [LIFECYCLE.md](LIFECYCLE.md) | label states: pending, verified, review, recalled |

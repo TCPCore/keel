@@ -142,7 +142,10 @@ def _generate(model, tokenizer, prompts, zero_map=None):
                     **inputs, max_new_tokens=192, do_sample=False,
                     pad_token_id=tokenizer.eos_token_id,
                 )
-            rows.append(tokenizer.decode(out[0][inputs["input_ids"].shape[1] :], skip_special_tokens=True))
+            reply = tokenizer.decode(
+                out[0][inputs["input_ids"].shape[1] :], skip_special_tokens=True
+            )
+            rows.append(reply)
     finally:
         for h in handles:
             h.remove()
@@ -173,8 +176,6 @@ def run() -> str:
     prompts = [p["text"] for p in probes]
     baseline = _generate(model, tok, prompts, None)
     ablated = _generate(model, tok, prompts, zero)
-    rng = torch.Generator().manual_seed(0)
-    all_neurons = [(layer, idx) for layer in zero for idx in zero[layer]]
     random_set = set()
     import random
 
