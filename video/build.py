@@ -43,11 +43,12 @@ SCENES = [
         "table",
         "The families",
         "Now the discovery. The same directional ablation, the same thirty two probes, one "
-        "frozen judge, across three families. Qwen moves to zero point nine seven, Mistral "
+        "frozen judge, across three families. Qwen moves between zero point five "
+        "one and zero point nine seven, Mistral "
         "to zero point eight one, Glimmer to zero point one six. Refusal is concentrated in "
         "Qwen and Mistral, and distributed in Glimmer. That is a property of the model, "
         "measured, not assumed.",
-        "Same ablation · Qwen 0.97 · Mistral 0.81 · Glimmer 0.16",
+        "Same ablation · Qwen 0.51 to 0.97 · Mistral 0.81 · Glimmer 0.16",
     ),
     (
         "cards",

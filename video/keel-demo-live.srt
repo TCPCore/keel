@@ -1,0 +1,23 @@
+1
+00:00:00,000 --> 00:00:07,870
+OPEN · the live fleet
+
+2
+00:00:07,870 --> 00:00:14,270
+VERIFY · recomputed from responses
+
+3
+00:00:14,270 --> 00:00:19,840
+TAMPER · one number changes the fingerprint
+
+4
+00:00:19,840 --> 00:00:37,040
+FAMILIES · Qwen 0.51 to 0.97 · Mistral 0.81 · Glimmer 0.16
+
+5
+00:00:37,040 --> 00:00:41,510
+SCAN · upload your own responses
+
+6
+00:00:41,510 --> 00:00:44,680
+ONE CARD · about two dollars

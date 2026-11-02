@@ -1673,11 +1673,11 @@ def demo_captions() -> FileResponse:
 def video_page() -> str:
     scenes = [
         ("0:00", "Open", "The live fleet: twelve checkpoints, verdicts, validity, compliance."),
-        ("0:07", "Verify", "Click Verify: the card is recomputed from committed responses and matches."),
-        ("0:13", "Tamper", "One number changed, the fingerprint moves, verification fails."),
-        ("0:19", "Families", "Same ablation, one judge: Qwen 0.51 to 0.97, Mistral 0.81, Glimmer 0.16."),
-        ("0:35", "Scan", "Upload your own response files and get a card."),
-        ("0:39", "Close", "One card, about two dollars."),
+        ("0:08", "Verify", "Click Verify: the card is recomputed from committed responses and matches."),
+        ("0:14", "Tamper", "One number changed, the fingerprint moves, verification fails."),
+        ("0:20", "Families", "Same ablation, one judge: Qwen 0.51 to 0.97, Mistral 0.81, Glimmer 0.16."),
+        ("0:37", "Scan", "Upload your own response files and get a card."),
+        ("0:42", "Close", "One card, about two dollars."),
     ]
     rows = "".join(
         f"<tr><td class='mono'>{when}</td><td><b>{title}</b></td><td>{what}</td></tr>"

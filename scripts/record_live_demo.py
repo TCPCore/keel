@@ -38,9 +38,9 @@ CHAPTERS = [
     {
         "name": "families",
         "narration": (
-            "The same ablation, one frozen judge: Qwen zero point nine seven, "
-            "Mistral zero point eight one, Glimmer zero point one six. Refusal is "
-            "concentrated in Qwen and Mistral, and distributed in Glimmer."
+            "The same ablation, one frozen judge: Qwen zero point five one to zero point "
+            "nine seven, Mistral zero point eight one, Glimmer zero point one six. Refusal "
+            "is concentrated in Qwen and Mistral, and distributed in Glimmer."
         ),
     },
     {
