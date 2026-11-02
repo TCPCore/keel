@@ -48,3 +48,6 @@ video/live/
 * copy.txt
 *token*.txt
 .env*
+
+# Token files
+modal.txt
