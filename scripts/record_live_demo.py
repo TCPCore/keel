@@ -81,7 +81,7 @@ def oscillate(page, seconds: float, dy: int = 40, pause: float = 0.45) -> None:
     for i in range(steps):
         page.mouse.wheel(0, direction * dy)
         time.sleep(pause)
-        if i % 8 == 7:
+        if i % 4 == 3:
             direction *= -1
 
 
@@ -124,8 +124,8 @@ def act(page, name: str) -> None:
         oscillate(page, 6)
     elif name == "scan":
         page.goto(f"{BASE}/scan", wait_until="networkidle", timeout=90000)
-        time.sleep(1.0)
-        oscillate(page, 16)
+        time.sleep(0.4)
+        oscillate(page, 17)
     elif name == "close":
         page.goto(f"{BASE}/guide", wait_until="networkidle", timeout=90000)
         page.locator("h2:has-text('five times')").scroll_into_view_if_needed()

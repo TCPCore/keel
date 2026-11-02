@@ -1,6 +1,6 @@
 # Demo video description
 
-Forty-two seconds, six recorded chapters, narrated and captioned. It is a live run of the
+Two and a half minutes, eight recorded chapters, narrated and captioned. It is a live run of the
 deployed Space: real clicks on the real pages, not screenshots. Every number in it is
 produced by this repository.
 
