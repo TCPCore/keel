@@ -74,66 +74,71 @@ CHAPTERS = [
 ]
 
 
-def wheel(page, steps: int, dy: int, pause: float) -> None:
-    for _ in range(steps):
-        page.mouse.wheel(0, dy)
+def oscillate(page, seconds: float, dy: int = 40, pause: float = 0.45) -> None:
+    """Keep the page moving for the whole chapter, reversing at the edges."""
+    steps = max(1, int(seconds / pause))
+    direction = 1
+    for i in range(steps):
+        page.mouse.wheel(0, direction * dy)
         time.sleep(pause)
+        if i % 8 == 7:
+            direction *= -1
 
 
 def act(page, name: str) -> None:
     if name == "open":
         page.goto(f"{BASE}/", wait_until="networkidle", timeout=90000)
-        wheel(page, 4, 120, 0.6)
-        wheel(page, 14, 42, 0.5)
+        time.sleep(0.5)
+        oscillate(page, 18)
     elif name == "verify":
         page.goto(f"{BASE}/", wait_until="networkidle", timeout=90000)
         page.locator("#m1-ablation").scroll_into_view_if_needed()
         time.sleep(1.0)
         page.locator("form[action='/verify/m1-ablation'] button").first.click()
-        page.wait_for_load_state("networkidle", timeout=90000)
-        wheel(page, 14, 42, 0.55)
+        page.wait_for_load_state("networkidle", timeout=120000)
+        oscillate(page, 8)
     elif name == "tamper":
         page.goto(f"{BASE}/verify/m1-ablation?tamper=1", wait_until="networkidle", timeout=90000)
-        time.sleep(1.2)
-        wheel(page, 6, 40, 0.55)
+        time.sleep(1.0)
+        oscillate(page, 5)
         try:
             page.locator("a[href='/verify/m1-ablation?tamper=1&check=1']").first.click()
             page.wait_for_load_state("networkidle", timeout=90000)
         except Exception:
             pass
-        wheel(page, 10, 40, 0.55)
+        oscillate(page, 8)
     elif name == "families":
         page.goto(f"{BASE}/families", wait_until="networkidle", timeout=90000)
         time.sleep(1.0)
-        wheel(page, 34, 44, 0.62)
+        oscillate(page, 28)
     elif name == "card":
         page.goto(f"{BASE}/card/m1-ablation", wait_until="networkidle", timeout=90000)
         time.sleep(1.0)
-        wheel(page, 26, 46, 0.6)
+        oscillate(page, 20)
     elif name == "rescore":
         page.goto(f"{BASE}/", wait_until="networkidle", timeout=90000)
         page.locator("#m1-ablation").scroll_into_view_if_needed()
         time.sleep(1.0)
         page.locator("form[action='/rescore/m1-ablation'] button").first.click()
         page.wait_for_load_state("networkidle", timeout=120000)
-        time.sleep(1.0)
-        wheel(page, 10, 42, 0.55)
+        oscillate(page, 6)
     elif name == "scan":
         page.goto(f"{BASE}/scan", wait_until="networkidle", timeout=90000)
         time.sleep(1.0)
-        wheel(page, 18, 40, 0.6)
+        oscillate(page, 16)
     elif name == "close":
-        page.goto(f"{BASE}/", wait_until="networkidle", timeout=90000)
-        page.locator("text=The five refusals").scroll_into_view_if_needed()
+        page.goto(f"{BASE}/guide", wait_until="networkidle", timeout=90000)
+        page.locator("h2:has-text('five times')").scroll_into_view_if_needed()
         time.sleep(0.8)
-        wheel(page, 8, 40, 0.55)
+        oscillate(page, 9)
 
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "narration.json").write_text(
-        json.dumps({c["name"]: c["narration"] for c in CHAPTERS}, indent=1)
-    )
+    if not (OUT / "narration.json").exists():
+        (OUT / "narration.json").write_text(
+            json.dumps({c["name"]: c["narration"] for c in CHAPTERS}, indent=1)
+        )
     for chapter in CHAPTERS:
         name = chapter["name"]
         with sync_playwright() as p:

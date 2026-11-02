@@ -278,7 +278,7 @@ font-size:13px}
 padding:12px 14px;border-radius:6px;font-size:13px;margin:14px 0}
 .ok{background:rgba(26,127,55,.08);border-left:3px solid var(--green);
 padding:12px 14px;border-radius:6px;font-size:13px;margin:14px 0}
-.actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite;margin-right:6px;vertical-align:-2px}@keyframes sp{to{transform:rotate(360deg)}}.actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;
 margin-top:20px}
 @media(max-width:560px){.actions{grid-template-columns:1fr 1fr}}
 .actions form{display:contents}
@@ -500,7 +500,7 @@ fingerprint <b>{payload.get('fingerprint', '–')}</b></p>
 <ul class="meta">{limits}</ul>
 {recovered}
 <div class="actions">
-<form method="post" action="/verify/{slug}"><button class="ghost">Verify</button></form>
+<form method="post" action="/verify/{slug}" onsubmit="var b=this.querySelector('button');b.innerHTML='<span class=spin></span>verifying…';b.disabled=true;"><button class="ghost">Verify</button></form>
 <form method="post" action="/verify/{slug}?tamper=1">
 <button class="ghost">Tamper test</button></form>
 <form method="post" action="/rescore/{slug}" onsubmit="var b=this.querySelector('button');b.textContent='judging live…';b.disabled=true;"><button>Re-score live</button></form>

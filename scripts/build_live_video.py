@@ -63,14 +63,14 @@ def main() -> None:
         raw = LIVE / f"{name}.raw.wav"
         wav = LIVE / f"{name}.wav"
         subprocess.run(
-            [PIPER, "-m", "piper", "--model", MODEL, "--length_scale", "1.25",
+            [PIPER, "-m", "piper", "--model", MODEL, "--length_scale", "1.35",
              "--output_file", str(raw)],
             input=text, text=True, check=True,
         )
         # slight pitch drop (x0.95) with tempo restored
         subprocess.run(
             [FF, "-y", "-loglevel", "error", "-i", str(raw), "-af",
-             "asetrate=22050*0.95,aresample=22050,atempo=1.0526", str(wav)],
+             "asetrate=22050*0.94,aresample=22050,atempo=1.0638", str(wav)],
             check=True,
         )
         target = dur(wav) + 1.0
