@@ -147,3 +147,28 @@ The causal test was not run, and would not rescue a circuit whose membership is 
 no policy rule, no fingerprint change. The next measurement is a larger extraction set
 (128 to 256 probes per side) with a stability-aware selection, for example a neuron must be
 in the top-k across bootstrap resamples before it counts. That is a post-hackathon item.
+
+## The forward experiment, the next measurement
+
+The inverse question, which neurons changed, failed at 32-probe extraction resolution. The
+forward question is well-posed and is the experiment the idea was built on: take the base,
+apply the candidate's circuit, and measure whether the behavior moves toward the candidate's.
+
+If activating the candidate's circuit in the base moves compliance toward the derivative's
+value, the circuit is causally load-bearing, whatever the inverse recovery could or could
+not resolve. This is the pre-registered causal test, framed as forward manipulation rather
+than backward inference.
+
+It needs the same extraction at 128 to 256 probes per side with stability-aware selection,
+then one activation run per checkpoint. Estimated cost about $3 and one afternoon,
+post-hackathon.
+
+| claim | status |
+|---|---|
+| inverse circuit recovery (which neurons changed) | not validated: extraction noise exceeds the effect at 32 probes |
+| forward circuit manipulation (does applying the circuit change behavior) | not yet run: well-posed, about $3 |
+| behavioral replay (does weight reconstruction reproduce behavior) | blocked by inference context |
+| weight recovery (direction, lambda, coverage) | exact: bf16, 100 percent coverage, per-module lambda |
+
+The submission ships the last row and the seven refusals. The first row is deferred. The
+second row is the next experiment, and it is the one that would validate the circuit concept.
