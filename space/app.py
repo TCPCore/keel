@@ -684,6 +684,7 @@ families: Qwen 0.51 to 0.97, Mistral 0.81, Glimmer 0.16.</p>
 <div class="kpi"><span class="n">12</span><span class="l">checkpoints, four families</span></div>
 <div class="kpi"><span class="n">0.16 to 0.97</span><span class="l">answer-level compliance, same ablation, three families</span></div>
 <div class="kpi"><span class="n">5</span><span class="l">times the tool refused its own measurement</span></div>
+<div class="kpi"><span class="n">2</span><span class="l">pre-registered ideas tested, not shipped</span></div>
 <div class="kpi"><span class="n">~$2</span><span class="l">per white-box scan</span></div>
 </div>
 </header>
@@ -839,10 +840,20 @@ that contract the answer-level effects are Glimmer 0.16 and 0.09, Qwen 0.97 and 
 Mistral 0.81. The Glimmer ablation moved its reasoning channel, which the contract
 deliberately excludes. Weight-space recovery: derivative C's delta is 100 percent in
 <code>o_proj</code> and <code>down_proj</code> and reconstructs to bfloat16 exactness, while
-behavioural replay did not meet its precondition. No card is green without the harmful half.
+behavioural replay did not meet its precondition. Circuit fingerprint (pre-registered, not
+shipped): we pre-registered a second verdict, extracting the refusal circuit as the top 0.1
+percent of MLP neurons and comparing membership and response signature against the base. It
+did not validate at any of three levels: membership overlap (Jaccard 0.456) sat inside the
+base-vs-base extraction noise (0.12 to 0.49); the centred activation cosine saturated at
+0.991; and ablating the circuit raised compliance by 0.04 over a random-circuit control, the
+right direction but one to two judged items at 32 probes. The direction is consistent with
+the distributed-refusal reading of Glimmer's 0.16, and that is all the result supports. The
+next experiment is a circuit defined by causal contribution, on a 128-probe panel. No card
+is green without the harmful half.
 Full record: <a href="https://github.com/TCPCore/keel/blob/main/docs/RESULTS.md">RESULTS</a>,
 <a href="https://github.com/TCPCore/keel/blob/main/docs/JUDGE-BENCH.md">JUDGE-BENCH</a>,
-<a href="https://github.com/TCPCore/keel/blob/main/docs/REPLAY.md">REPLAY</a>.</p>
+<a href="https://github.com/TCPCore/keel/blob/main/docs/REPLAY.md">REPLAY</a>,
+<a href="https://github.com/TCPCore/keel/blob/main/docs/CIRCUIT-PLAN.md">CIRCUIT-PLAN</a>.</p>
 </div>
 </div>""",
     )

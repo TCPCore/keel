@@ -3,7 +3,7 @@
 What exists, what is proven, what is deployed, and what is not. This is the file to
 trust when another doc disagrees.
 
-Last updated: 31 October 2026.
+Last updated: 2 November 2026.
 
 ## Deployed
 
@@ -78,6 +78,14 @@ Twelve checkpoints across four families, same panel and judge. Full table in
 
 Positive control: M1. Negative control: BF16 against 4-bit, 0.00 against 0.00. Invalid
 positive: M2, which moved format and refusal together.
+
+## Pre-registered, not shipped
+
+- Circuit fingerprint (2 Nov): pre-registered in `CIRCUIT-PLAN.md`. Membership 0.456
+  sits inside base-vs-base extraction noise (0.12 to 0.49); centred cosine 0.991;
+  causal +0.04 over random, not significant at n=32. Not integrated: no card field,
+  no policy rule, no Space panel. Next: causal-construction circuit, 128-probe panel.
+- Behavioural replay: blocked by inference context, recorded in `REPLAY.md`.
 
 ## The five refusals
 

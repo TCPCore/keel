@@ -34,6 +34,14 @@ needs us to host them.
 - Do not commit gated weights to the repository. Cache them in a Modal Volume or
   an untracked directory.
 
+## Commit hygiene
+
+GitHub secret scanning blocked a commit that contained a stray Modal token note. The
+token was removed from history-in-progress, a gitignore rule was added, and the token is
+rotated in the provider dashboard (removing it from a commit does not invalidate it).
+The pre-push audit gate is the backstop for the audit trailer, not for secrets; secret
+scanning is the backstop for secrets.
+
 ## Data
 
 The panel is benign. The harmful half of the refusal axis is an adapter to public
