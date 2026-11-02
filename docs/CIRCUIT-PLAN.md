@@ -109,3 +109,41 @@ Consequences:
    substantial but partial circuit change, not a replacement.
 3. No product integration until the signature is fixed and the controls pass. The
    pre-registration stands as the artifact; the result is recorded as preliminary.
+
+## Stability control, 2 November: the extraction is not stable
+
+The first run compared derivative C to a null of *random circuits*. That is the wrong null.
+The relevant null is a second extraction of the *same model* on a different probe sample.
+
+| comparison | Jaccard |
+|---|---|
+| base half A vs base half B (16+16 probes each) | **0.1228** |
+| base half vs base full | 0.3428 |
+| base half B vs base full | 0.3420 |
+| base bootstrap 1 vs bootstrap 2 (32+32 each, resampled) | **0.3640** |
+| base bootstrap vs base full | 0.4871 / 0.4935 |
+| derivative C vs base full | 0.5231 |
+| random circuit null | 0.00053 |
+
+At the same probe count and the same model, two independent extractions agree at Jaccard
+0.36, and each agrees with the full-set circuit at about 0.49. The derivative-vs-base
+figure of 0.523 sits inside that band. **The membership change is not distinguishable from
+extraction noise at this sample size.**
+
+The z-score of 1174 was measured against random circuits, which is not the noise the method
+introduces. Against repeated extraction, the effect is zero.
+
+## Seventh refusal
+
+The pre-registered two-signal method failed on both legs:
+
+1. The activation cosine is degenerate (0.9997 for a circuit that changed by a third).
+2. The membership signal is within the same-model extraction noise (0.523 against 0.36 to
+   0.49).
+
+The causal test was not run, and would not rescue a circuit whose membership is not stable.
+
+**The circuit fingerprint is not validated and is not part of the product.** No card block,
+no policy rule, no fingerprint change. The next measurement is a larger extraction set
+(128 to 256 probes per side) with a stability-aware selection, for example a neuron must be
+in the top-k across bootstrap resamples before it counts. That is a post-hackathon item.
