@@ -503,7 +503,7 @@ fingerprint <b>{payload.get('fingerprint', '–')}</b></p>
 <form method="post" action="/verify/{slug}"><button class="ghost">Verify</button></form>
 <form method="post" action="/verify/{slug}?tamper=1">
 <button class="ghost">Tamper test</button></form>
-<form method="post" action="/rescore/{slug}"><button>Re-score live</button></form>
+<form method="post" action="/rescore/{slug}" onsubmit="var b=this.querySelector('button');b.textContent='judging live…';b.disabled=true;"><button>Re-score live</button></form>
 <a href="{download}">JSON</a>
 </div></article>"""
 

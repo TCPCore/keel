@@ -18,6 +18,8 @@ TITLES = {
     "verify": "VERIFY · recomputed from responses",
     "tamper": "TAMPER · one number changes the fingerprint",
     "families": "FAMILIES · Qwen 0.51 to 0.97 · Mistral 0.81 · Glimmer 0.16",
+    "card": "CARD · six blocks, one evidence trail",
+    "rescore": "RE-SCORE · the judge runs live",
     "scan": "SCAN · upload your own responses",
     "close": "ONE CARD · about two dollars",
 }
