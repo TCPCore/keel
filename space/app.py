@@ -665,7 +665,7 @@ def _render_index() -> str:
 Nothing checks the derivative artifact after release. Keel does: it scans a derivative
 against its base and emits a card with drift, validity, harmful compliance and a
 fingerprint, and proves the card by recomputing it. Same ablation, one frozen judge, three
-families: Qwen 0.97, Mistral 0.81, Glimmer 0.16.</p>
+families: Qwen 0.51 to 0.97, Mistral 0.81, Glimmer 0.16.</p>
 <div class="cta">
 <a class="button" href="/video">Watch the demo</a>
 <a class="ghost" href="#verify">Verify a card</a>
@@ -1664,7 +1664,7 @@ def video_page() -> str:
         ("0:00", "Open", "The live fleet: twelve checkpoints, verdicts, validity, compliance."),
         ("0:07", "Verify", "Click Verify: the card is recomputed from committed responses and matches."),
         ("0:13", "Tamper", "One number changed, the fingerprint moves, verification fails."),
-        ("0:19", "Families", "Same ablation, one judge: Qwen 0.97, Mistral 0.81, Glimmer 0.16."),
+        ("0:19", "Families", "Same ablation, one judge: Qwen 0.51 to 0.97, Mistral 0.81, Glimmer 0.16."),
         ("0:35", "Scan", "Upload your own response files and get a card."),
         ("0:39", "Close", "One card, about two dollars."),
     ]
@@ -2033,7 +2033,7 @@ def _families_html() -> str:
     body = """
 <div class="wrap families">
 <h1>Same ablation. One frozen judge. Three families.</h1>
-<p class="lede">Removing the refusal direction moves Qwen to 0.97, Mistral to 0.81, and
+<p class="lede">Removing the refusal direction moves Qwen between 0.51 and 0.97, Mistral to 0.81, and
 Glimmer to 0.16 &mdash; same intervention, same 32-request panel, same judge contract. The
 difference is how each model distributes its refusal: concentrated in Qwen and Mistral,
 distributed in Glimmer.</p>
