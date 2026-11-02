@@ -4,7 +4,7 @@ Two and a half minutes, eight recorded chapters. It shows the deployed product d
 why the result can be checked.
 
 Watch: https://tomscot-keel.hf.space/video (embedded) or
-https://youtu.be/wLwsK3MUKtw (YouTube).
+https://youtu.be/eT-UXhe-W3I (YouTube).
 
 ## Chapters
 
