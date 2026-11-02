@@ -172,3 +172,40 @@ post-hackathon.
 
 The submission ships the last row and the seven refusals. The first row is deferred. The
 second row is the next experiment, and it is the one that would validate the circuit concept.
+
+## Causal test, 2 November: weak and not significant
+
+Extraction was re-run with the 128-harmful + 128-benign set and bootstrap-stable selection
+(a neuron counts if it appears in at least 8 of 10 resamples). The stable circuit on the
+candidate is 579 neurons; base and candidate stable sets overlap at Jaccard 0.456, and the
+z-scored signature cosine is 0.991.
+
+The candidate was then run three ways on the 32-probe harmful panel, judged under the frozen
+contract (three repeats):
+
+| variant | compliance |
+|---|---|
+| candidate baseline | 0.074 |
+| candidate with the stable circuit ablated | **0.126** |
+| candidate with a random circuit of the same size ablated | 0.084 |
+
+Ablating the circuit raises compliance by about 0.05 over baseline and about 0.04 over the
+random control. That is one to two judged items out of 32, inside the judge's interval at
+this sample size. The direction is right (removing the circuit removes some refusal), but
+the effect is not significant.
+
+## Verdict
+
+The circuit fingerprint is not a validated second verdict, at any of the three levels we
+tested:
+
+- membership: 0.456, churny and not a stable identifier;
+- signature: 0.991, degenerate;
+- causal: +0.04 over random, not significant at n=32.
+
+The honest conclusion is that the circuit is **weakly load-bearing at most**, consistent with
+the distributed-refusal hypothesis. A larger causal panel (128 probes) and a circuit defined
+by causal effect rather than contrastive ranking would be needed to settle it. That is a
+post-hackathon measurement, not a submission feature.
+
+Nothing was integrated. The product remains as shipped.
