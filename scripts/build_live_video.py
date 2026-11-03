@@ -84,9 +84,9 @@ def main() -> None:
             [FF, "-y", "-loglevel", "error",
              "-i", str(LIVE / f"{name}.webm"), "-i", str(wav),
              "-filter_complex",
-             f"[0:v]scale=1920:1080,fps=30,tpad=stop_mode=clone:stop_duration=15,ass={ass}[v]",
+             f"[0:v]scale=1920:1080:flags=lanczos,fps=30,tpad=stop_mode=clone:stop_duration=15,ass={ass}[v]",
              "-map", "[v]", "-map", "1:a", "-t", f"{target:.2f}",
-             "-c:v", "libx264", "-preset", "slow", "-crf", "17",
+             "-c:v", "libx264", "-preset", "slow", "-crf", "14", "-tune", "animation",
              "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k", str(clip)],
             check=True,
         )
