@@ -6,6 +6,7 @@ Start with **STATUS.md**: what exists, what is proven, what is missing.
 |---|---|
 | [STATUS.md](STATUS.md) | the current state of the product, evidence, and gaps |
 | [METHOD.md](METHOD.md) | the drift math, panels, validity gates |
+| [META-MODELS.md](META-MODELS.md) | how each Meta model was used, plane by plane |
 | [RESULTS.md](RESULTS.md) | every measurement, with caveats and failed runs |
 | [HARMFUL-MATRIX.md](HARMFUL-MATRIX.md) | per-request compliance across checkpoints, no harmful text |
 | [REPLAY.md](REPLAY.md) | the intensity-recovery attempt, its pre-registered gate, and what is blocked |

@@ -12,6 +12,7 @@ the structural signature of the intervention. Exit codes make it a CI gate.
 - Scan your own checkpoint: **https://tomscot-keel.hf.space#scan**
 - Reviewer access and hashes: **https://tomscot-keel.hf.space#access**
 - Current state, including gaps: [docs/STATUS.md](docs/STATUS.md)
+- Technical use of Meta models: [docs/META-MODELS.md](docs/META-MODELS.md)
 - Docs map: [docs/INDEX.md](docs/INDEX.md)
 
 ## What it does
