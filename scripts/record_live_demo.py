@@ -10,7 +10,7 @@ from playwright.sync_api import sync_playwright
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / "video" / "live"
 BASE = "https://tomscot-keel.hf.space"
-W, H = 1280, 720
+W, H = 1600, 900
 SCALE = 2
 
 CURSOR = """
