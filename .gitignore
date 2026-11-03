@@ -51,3 +51,6 @@ video/live/
 
 # Token files
 modal.txt
+
+# 1440p upload masters (large, not served by the site)
+video/keel-demo-1440p*.mp4

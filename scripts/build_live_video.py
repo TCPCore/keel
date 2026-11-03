@@ -3,12 +3,21 @@
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import re
 import subprocess
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 LIVE = ROOT / "video" / "live"
+
+W = int(os.environ.get("VIDEO_W", "1920"))
+H = int(os.environ.get("VIDEO_H", "1080"))
+K = W / 1920.0
+BITRATE = os.environ.get("VIDEO_BITRATE", "")
+OUT_NAME = os.environ.get("VIDEO_OUT", "keel-demo-live.mp4")
+CRF = os.environ.get("VIDEO_CRF", "14")
+CROP = os.environ.get("VIDEO_CROP", "1600:900:0:0")
 FF = "/tmp/ffm/node_modules/ffmpeg-static/ffmpeg"
 PIPER = "/tmp/piper-env/bin/python"
 MODEL = "/tmp/piper-voices/en_US-ryan-high.onnx"
@@ -26,12 +35,12 @@ TITLES = {
 
 ASS = """[Script Info]
 ScriptType: v4.00+
-PlayResX: 1920
-PlayResY: 1080
+PlayResX: {play_x}
+PlayResY: {play_y}
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Title,Arial,42,&H00FFFFFF,&H000000FF,&H00101010,&H99000000,-1,0,0,0,100,100,1,0,3,1,0,2,60,60,46,1
+Style: Title,Arial,{font},&H00FFFFFF,&H000000FF,&H00101010,&H99000000,-1,0,0,0,100,100,1,0,3,1,0,2,{ml},{mr},{mv},1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -58,6 +67,7 @@ def stamp(t: float) -> str:
 
 def main() -> None:
     narr = json.loads((LIVE / "narration.json").read_text())
+    crop_filter = f"crop={CROP}," if CROP else ""
     clips, srt, clock = [], [], 0.0
     for i, (name, text) in enumerate(narr.items(), 1):
         raw = LIVE / f"{name}.raw.wav"
@@ -76,17 +86,21 @@ def main() -> None:
         target = dur(wav) + 1.0
         ass = LIVE / f"{name}.ass"
         ass.write_text(
-            ASS.replace("{end}", f"0:00:{target:05.2f}")
-            .replace("{text}", TITLES[name].replace(",", "\\,"))
+            ASS.format(
+                play_x=W, play_y=H, font=int(42 * K),
+                ml=int(60 * K), mr=int(60 * K), mv=int(46 * K),
+                end=f"0:00:{target:05.2f}",
+                text=TITLES[name].replace(",", "\\,"),
+            )
         )
         clip = LIVE / f"{name}.mp4"
         subprocess.run(
             [FF, "-y", "-loglevel", "error",
              "-i", str(LIVE / f"{name}.webm"), "-i", str(wav),
              "-filter_complex",
-             f"[0:v]crop=1600:900:0:0,scale=1920:1080:flags=lanczos,fps=30,tpad=stop_mode=clone:stop_duration=15,ass={ass}[v]",
+             f"[0:v]{crop_filter}scale={W}:{H}:flags=lanczos,fps=30,tpad=stop_mode=clone:stop_duration=15,ass={ass}[v]",
              "-map", "[v]", "-map", "1:a", "-t", f"{target:.2f}",
-             "-c:v", "libx264", "-preset", "slow", "-crf", "14", "-tune", "animation",
+             "-c:v", "libx264", "-preset", "slow", *( ["-b:v", BITRATE, "-minrate", BITRATE, "-maxrate", BITRATE, "-bufsize", "14M", "-x264-params", "nal-hrd=cbr"] if BITRATE else ["-crf", CRF, "-tune", "animation"] ),
              "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k", str(clip)],
             check=True,
         )
@@ -107,7 +121,7 @@ def main() -> None:
     # strip any display-matrix rotation so players show it horizontal
     subprocess.run(
         [FF, "-y", "-loglevel", "error", "-display_rotation", "0",
-         "-i", str(tmp), "-c", "copy", str(ROOT / "video" / "keel-demo-live.mp4")],
+         "-i", str(tmp), "-c", "copy", str(ROOT / "video" / OUT_NAME)],
         check=True,
     )
     tmp.unlink()

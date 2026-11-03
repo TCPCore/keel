@@ -10,10 +10,11 @@ from playwright.sync_api import sync_playwright
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / "video" / "live"
 BASE = "https://tomscot-keel.hf.space"
-W, H = 1600, 900
+W, H = 2560, 1440
 
 CURSOR = """
 document.addEventListener('DOMContentLoaded', () => {
+  document.documentElement.style.zoom = '1.4';
   if (document.getElementById('dsh-cursor')) return;
   const c = document.createElement('div');
   c.id = 'dsh-cursor';

@@ -1,31 +1,31 @@
 1
-00:00:00,000 --> 00:00:13,200
+00:00:00,000 --> 00:00:13,070
 OPEN · the live fleet
 
 2
-00:00:13,200 --> 00:00:25,400
+00:00:13,070 --> 00:00:25,070
 VERIFY · recomputed from responses
 
 3
-00:00:25,400 --> 00:00:35,570
+00:00:25,070 --> 00:00:35,640
 TAMPER · one number changes the fingerprint
 
 4
-00:00:35,570 --> 00:00:56,640
+00:00:35,640 --> 00:00:56,740
 FAMILIES · Qwen 0.51 to 0.97 · Mistral 0.81 · Glimmer 0.16
 
 5
-00:00:56,640 --> 00:01:05,710
+00:00:56,740 --> 00:01:05,570
 SCAN · upload your own responses
 
 6
-00:01:05,710 --> 00:01:28,680
+00:01:05,570 --> 00:01:28,140
 RE-SCORE · the judge runs live
 
 7
-00:01:28,680 --> 00:01:50,480
+00:01:28,140 --> 00:01:50,140
 CARD REVIEW · verdict, drift, harmful, validity, structure, limits
 
 8
-00:01:50,480 --> 00:01:57,250
+00:01:50,140 --> 00:01:57,010
 THE PRODUCT · a measurement, its evidence, its limits
