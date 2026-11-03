@@ -1,6 +1,6 @@
 # The demo video
 
-Two and a half minutes, eight recorded chapters. It shows the deployed product doing its job, then names
+One and a half minutes, eight recorded chapters. It shows the deployed product doing its job, then names
 why the result can be checked.
 
 Watch: https://tomscot-keel.hf.space/video (embedded) or

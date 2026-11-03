@@ -1673,13 +1673,13 @@ def demo_captions() -> FileResponse:
 def video_page() -> str:
     scenes = [
         ("0:00", "Open", "The live fleet: twelve checkpoints, verdicts, validity, compliance."),
-        ("0:17", "Verify", "Click Verify: the card is recomputed from committed responses and matches."),
-        ("0:39", "Tamper", "One number changed, the fingerprint moves, verification fails."),
-        ("0:53", "Families", "Same ablation, one judge: Qwen 0.51 to 0.97, Mistral 0.81, Glimmer 0.16."),
-        ("1:21", "Card", "One card, six blocks: verdict, drift, harmful, validity, structure, limits."),
-        ("1:40", "Re-score", "The judge runs live on the same responses and the fingerprint still matches."),
-        ("2:00", "Scan", "Upload your own response files and get a card."),
-        ("2:17", "Close", "One card, about two dollars."),
+        ("0:11", "Verify", "Click Verify: the card is recomputed from committed responses and matches."),
+        ("0:20", "Tamper", "One number changed, the fingerprint moves, verification fails."),
+        ("0:29", "Families", "Same ablation, one judge: Qwen 0.51 to 0.97, Mistral 0.81, Glimmer 0.16."),
+        ("0:48", "Card", "One card, six blocks: verdict, drift, harmful, validity, structure, limits."),
+        ("1:00", "Re-score", "The judge runs live on the same responses and the fingerprint still matches."),
+        ("1:09", "Scan", "Upload your own response files and get a card."),
+        ("1:18", "Close", "One card, about two dollars."),
     ]
     rows = "".join(
         f"<tr><td class='mono'>{when}</td><td><b>{title}</b></td><td>{what}</td></tr>"
@@ -1691,17 +1691,14 @@ def video_page() -> str:
 <p class="eyebrow">Demo</p>
 <h1 style="font-size:44px;line-height:1.1;letter-spacing:-.015em;margin:0 0 18px">
 Watch the demo</h1>
-<p class="lede">A two-and-a-half-minute live run of the product: the fleet, verify, the
+<p class="lede">A one-and-a-half-minute live run of the product: the fleet, verify, the
 tamper test, the families page, a card, a live re-score, and scan your own. Real clicks on
 the deployed Space, recorded end to end.</p>
 <div class="video-embed">
-<iframe src="https://www.youtube-nocookie.com/embed/eT-UXhe-W3I"
-title="Keel demo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-allowfullscreen loading="lazy"></iframe>
+<video src="/demo.mp4" controls preload="metadata" style="position:absolute;inset:0;width:100%;height:100%"></video>
 </div>
-<p class="note">Also at <a href="https://youtu.be/eT-UXhe-W3I">youtu.be/eT-UXhe-W3I</a>.
-The repo-generated cut with burned captions is at <a href="/demo.mp4">/demo.mp4</a>,
-subtitles at <a href="/demo.srt">/demo.srt</a>.</p>
+<p class="note">This is the repo-generated cut at 1080p with burned captions, at
+<a href="/demo.mp4">/demo.mp4</a>; subtitles at <a href="/demo.srt">/demo.srt</a>.</p>
 <h2>What you are seeing</h2>
 <table><thead><tr><th>time</th><th>scene</th><th>what happens</th></tr></thead>
 <tbody>{rows}</tbody></table>
