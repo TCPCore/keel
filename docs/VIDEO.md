@@ -3,8 +3,7 @@
 One and a half minutes, eight recorded chapters. It shows the deployed product doing its job, then names
 why the result can be checked.
 
-Watch: https://tomscot-keel.hf.space/video (embedded) or
-https://youtu.be/eT-UXhe-W3I (YouTube).
+Watch: https://tomscot-keel.hf.space/video (embedded, 1:25 at 1080p).
 
 ## Chapters
 

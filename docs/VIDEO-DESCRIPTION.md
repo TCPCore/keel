@@ -4,8 +4,7 @@ One and a half minutes, eight recorded chapters, narrated and captioned. It is a
 deployed Space: real clicks on the real pages, not screenshots. Every number in it is
 produced by this repository.
 
-Watch: https://tomscot-keel.hf.space/video (embedded) or
-https://youtu.be/eT-UXhe-W3I (YouTube).
+Watch: https://tomscot-keel.hf.space/video (embedded, 1:25 at 1080p).
 
 ## What the video shows
 
