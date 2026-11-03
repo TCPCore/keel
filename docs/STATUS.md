@@ -103,12 +103,12 @@ positive: M2, which moved format and refusal together.
 
 ## Done since the last review
 
-- The demo video: ten annotated scenes, hosted at `/demo.mp4` and linked from the hero and
+- The demo video: eight recorded chapters, hosted at `/demo.mp4` and linked from the hero and
   the guide.
 - The submission text: written locally by cptlight and submitted directly. It is deliberately
   not in this repository.
-- Canonical counts: twelve checkpoints across four families, used in README, STATUS and
-  the Space.
+- Canonical counts: twelve checkpoints across three families and the API baselines, used in
+  README, STATUS and the Space.
 
 ## Not done
 
