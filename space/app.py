@@ -1695,13 +1695,10 @@ Watch the demo</h1>
 tamper test, the families page, a card, a live re-score, and scan your own. Real clicks on
 the deployed Space, recorded end to end.</p>
 <div class="video-embed">
-<iframe src="https://www.youtube-nocookie.com/embed/M2tb0m-Db74"
-title="Keel demo live" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-allowfullscreen loading="lazy"></iframe>
+<video src="/demo.mp4" controls preload="metadata" style="position:absolute;inset:0;width:100%;height:100%"></video>
 </div>
-<p class="note">Also at <a href="https://youtu.be/M2tb0m-Db74">youtu.be/M2tb0m-Db74</a>.
-The repo-generated cut with burned captions is at <a href="/demo.mp4">/demo.mp4</a>,
-subtitles at <a href="/demo.srt">/demo.srt</a>.</p>
+<p class="note">The original 1080p cut with burned captions, served directly at
+<a href="/demo.mp4">/demo.mp4</a>; subtitles at <a href="/demo.srt">/demo.srt</a>.</p>
 <h2>What you are seeing</h2>
 <table><thead><tr><th>time</th><th>scene</th><th>what happens</th></tr></thead>
 <tbody>{rows}</tbody></table>

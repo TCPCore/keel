@@ -58,7 +58,6 @@ def _context() -> str:
         "Project: Keel, a checkpoint validity harness for open-weight models.",
         "Repo: https://github.com/TCPCore/keel",
         "Demo: https://tomscot-keel.hf.space",
-        "Video: https://youtu.be/eT-UXhe-W3I",
         "",
     ]
     for name in CONTEXT_FILES:
