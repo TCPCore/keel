@@ -1,10 +1,11 @@
 # Demo video description
 
-One and a half minutes, eight recorded chapters, narrated and captioned. It is a live run of the
+Two minutes, eight recorded chapters, narrated and captioned. It is a live run of the
 deployed Space: real clicks on the real pages, not screenshots. Every number in it is
 produced by this repository.
 
-Watch: https://tomscot-keel.hf.space/video (embedded, 1:25 at 1080p).
+Watch: https://tomscot-keel.hf.space/video (embedded) or
+https://youtu.be/M2tb0m-Db74 (YouTube).
 
 ## What the video shows
 
