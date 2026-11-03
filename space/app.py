@@ -681,7 +681,7 @@ families: Qwen 0.51 to 0.97, Mistral 0.81, Glimmer 0.16.</p>
 </div>
 </div>
 <div class="kpis">
-<div class="kpi"><span class="n">12</span><span class="l">checkpoints, four families</span></div>
+<div class="kpi"><span class="n">12</span><span class="l">checkpoints, three families plus API baselines</span></div>
 <div class="kpi"><span class="n">0.16 to 0.97</span><span class="l">answer-level compliance, same ablation, three families</span></div>
 <div class="kpi"><span class="n">5</span><span class="l">times the tool refused its own measurement</span></div>
 <div class="kpi"><span class="n">2</span><span class="l">pre-registered ideas tested, not shipped</span></div>
@@ -1691,7 +1691,7 @@ def video_page() -> str:
 <p class="eyebrow">Demo</p>
 <h1 style="font-size:44px;line-height:1.1;letter-spacing:-.015em;margin:0 0 18px">
 Watch the demo</h1>
-<p class="lede">A one-and-a-half-minute live run of the product: the fleet, verify, the
+<p class="lede">A two-minute live run of the product: the fleet, verify, the
 tamper test, the families page, a card, a live re-score, and scan your own. Real clicks on
 the deployed Space, recorded end to end.</p>
 <div class="video-embed">
@@ -1828,7 +1828,7 @@ result, which is why the two columns exist.</p>
 
 <h2>It reproduces across open-weight families</h2>
 <p>This is not a Glimmer behaviour. The same method, the same panel and the same judge were
-run on four families:</p>
+run on three families:</p>
 <table>
 <tr><th>family</th><th>base</th><th>derivative</th><th>delta</th></tr>
 <tr><td>Meta Glimmer 30B</td><td>0.00</td><td>0.16, our ablation</td><td>+0.16</td></tr>
@@ -1837,6 +1837,9 @@ run on four families:</p>
 <tr><td>Qwen 2.5 7B</td><td>0.00</td><td>0.78, a community edit</td><td>+0.78</td></tr>
 <tr><td>Mistral 7B</td><td>0.44</td><td>0.81, a community edit</td><td>+0.38</td></tr>
 </table>
+<p>Qwen does not cluster tightly: the 7B derivatives sit at 0.97 and 0.78, while the larger
+community checkpoint sits at 0.51. The family result is a range, 0.51 to 0.97, not a
+single point.</p>
 <p>These are the answer-level numbers under the frozen contract. The answer extractor is
 format-aware: Glimmer separates reasoning with a <code>to=self</code> marker, so only the
 answer segment is judged, while Qwen and Mistral return plain answers and their full

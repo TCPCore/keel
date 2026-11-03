@@ -63,13 +63,15 @@ reportable only with that caveat.
 **Weight-space recovery.** For derivative C, the weight delta was decomposed per module.
 The delta lies 100 percent in `o_proj` and `down_proj` (`coverage = 1.000`), reconstructs to
 bf16 exactness (`max_abs_error = 0`), and is close to rank-one: per-module lambda is
-non-uniform (1.2805 for `o_proj` layer 24, 0.2154 for `down_proj` layer 24), and the median
+non-uniform (1.2805 for `o_proj` layer 24, 0.2177 for `down_proj` layer 7), and the median
 rank-one residual is 0.363.
 
 **Behavioral replay.** Reconstructing the weights and replaying behavior is gated at a
-pre-registered tolerance of 0.15. Replay scored 0.084 against a base of 0.031, so the gate
-passes arithmetically but the gap is inside the judge's own sampling noise at n=32. It is
-recorded as blocked by inference-context dependence, not as a success.
+pre-registered tolerance of 0.15. On derivative C the replay scored 0.000 against the
+candidate's 0.084, an absolute gap of 0.084. The 0.15 gate passes arithmetically, but the
+effect is smaller than the tolerance itself, so the experiment cannot distinguish a correct
+reconstruction from a no-op. It is recorded as blocked by inference-context dependence, not
+as a success.
 
 **Circuit experiments.** A contrastive activation circuit over the top 0.1 percent of MLP
 neurons was extracted and compared. It failed at all three levels: membership Jaccard 0.456

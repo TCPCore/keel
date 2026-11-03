@@ -10,12 +10,12 @@ pinned: false
 
 # Keel: checkpoint validity scanner
 
-One scanner, twelve checkpoints across four families, comparable cards. A card carries a
+One scanner, twelve checkpoints across three families and the API baselines, comparable cards. A card carries a
 verdict, a validity state, harmful compliance, the limits the tool knows about, and a
 fingerprint.
 
 - **Families** (`/families`): the same directional ablation across families under one
-  frozen judge, Qwen 0.97, Mistral 0.81, Glimmer 0.16, base 0.00.
+  frozen judge, Qwen 0.51 to 0.97, Mistral 0.81, Glimmer 0.16, base 0.00.
 - **View** the fleet: five Spark and Wonder baselines, four Glimmer checkpoints with
   controls, and the Qwen and Mistral generality check.
 - **Re-score** a card: the judge, the drift statistics, the format gate and the policy run
