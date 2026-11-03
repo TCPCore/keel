@@ -26,12 +26,12 @@ TITLES = {
 
 ASS = """[Script Info]
 ScriptType: v4.00+
-PlayResX: 1280
-PlayResY: 720
+PlayResX: 1920
+PlayResY: 1080
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Title,Arial,30,&H00FFFFFF,&H000000FF,&H00101010,&H99000000,-1,0,0,0,100,100,1,0,3,1,0,2,40,40,30,1
+Style: Title,Arial,42,&H00FFFFFF,&H000000FF,&H00101010,&H99000000,-1,0,0,0,100,100,1,0,3,1,0,2,60,60,46,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -84,9 +84,9 @@ def main() -> None:
             [FF, "-y", "-loglevel", "error",
              "-i", str(LIVE / f"{name}.webm"), "-i", str(wav),
              "-filter_complex",
-             f"[0:v]scale=1280:720,fps=30,tpad=stop_mode=clone:stop_duration=15,ass={ass}[v]",
+             f"[0:v]scale=1920:1080,fps=30,tpad=stop_mode=clone:stop_duration=15,ass={ass}[v]",
              "-map", "[v]", "-map", "1:a", "-t", f"{target:.2f}",
-             "-c:v", "libx264", "-preset", "medium", "-crf", "20",
+             "-c:v", "libx264", "-preset", "slow", "-crf", "17",
              "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "128k", str(clip)],
             check=True,
         )
