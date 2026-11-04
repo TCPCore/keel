@@ -15,6 +15,42 @@ the structural signature of the intervention. Exit codes make it a CI gate.
 - Technical use of Meta models: [docs/META-MODELS.md](docs/META-MODELS.md)
 - Docs map: [docs/INDEX.md](docs/INDEX.md)
 
+## The frontier deployment bottleneck
+
+Meta's base models go through alignment, but once a checkpoint is fine-tuned, abliterated
+or merged in the open, the chain of custody is lost. Standard benchmarks go stale, and a
+derivative that dropped its refusal behavior can still score well on capability tests. An
+enterprise has no independent way to check that a community fine-tune kept the behavior of
+the model it was built from.
+
+## The solution: an auditable record for open weights
+
+Keel evaluates a derivative against its baseline and produces a Keel card: verdict, drift,
+harmful rates, validity, structure and limits, with a SHA-256 fingerprint over the card.
+The fingerprint is a checksum, not a signature: it proves the card matches its evidence,
+not who produced it. The verify route recomputes the card from the committed response
+files, so an edited card fails verification.
+
+### Key capabilities
+
+- **The 32-probe panel.** Refusal error, sycophancy, deception, power seeking and sabotage,
+  plus 32 public harmful requests for the harmful half. A judged evaluation takes about
+  twenty seconds (three repeats, majority), not fifteen thousand questions.
+- **Keel cards.** A SHA-256 fingerprint over the card content. Change a score by 0.01 and
+  the fingerprint changes; the verify button recomputes from the responses and returns
+  MATCH or DIFF.
+- **Format-collapse detection.** If a coding fine-tune destroys the answer format, the
+  format gate turns the card amber and marks it `suspect`; a suspect card cannot be green.
+
+## Built for the Meta model family
+
+1. **The baselines:** `meta-models/Muse-Glimmer-30B` and the Meta API checkpoints.
+2. **The subjects:** abliterations, LoRAs and community merges of Muse Glimmer, plus Qwen
+   and Mistral for the cross-family generality check.
+3. **The arbiter:** the frozen Meta judge `muse-spark-1.3` through the Meta Model API,
+   selected on a 48-item gold set (kappa 0.603). The alternatives and their disagreement
+   are recorded in `docs/JUDGE-BENCH.md`.
+
 ## What it does
 
 1. **Measures drift** between a checkpoint and its base on 32 probes across five axes,
@@ -27,8 +63,8 @@ the structural signature of the intervention. Exit codes make it a CI gate.
 
 ## Evidence
 
-Same panel, same judge. **Twelve checkpoints in the fleet across four families**: nine Meta and three non-Meta
-generality checks. The BF16 row below is a control that was measured but is not a fleet
+Same panel, same judge. **Twelve checkpoints in the fleet across three families plus the API
+baselines**: nine Meta and three non-Meta generality checks. The BF16 row below is a control that was measured but is not a fleet
 row. The Qwen and Mistral rows are in [docs/CROSS-FAMILY.md](docs/CROSS-FAMILY.md) and [docs/STATUS.md](docs/STATUS.md), and the
 per-request matrix is in [docs/HARMFUL-MATRIX.md](docs/HARMFUL-MATRIX.md).
 

@@ -223,6 +223,11 @@ section.block:first-of-type{border-top:0}
 .idx{display:none}
 .lede{color:var(--muted);font-size:19px;line-height:1.42;margin:0 0 26px;max-width:760px;
 letter-spacing:-.01em}
+.context-box{background:var(--card);border:1px solid var(--line);border-radius:14px;
+padding:18px 20px;margin:0 0 22px;max-width:840px}
+.context-box p{margin:0;color:var(--muted);font-size:15.5px;line-height:1.5}
+.context-box .eyebrow{margin:0 0 6px;color:var(--ink);font-weight:700;font-size:12.5px;
+letter-spacing:.08em;text-transform:uppercase}
 .replay{margin:56px auto 0;max-width:900px;width:100%;text-align:left;background:#0b0b0c;
 border:1px solid #2b2b2e;border-radius:16px;overflow:hidden;
 box-shadow:0 24px 60px rgba(0,0,0,.18)}
@@ -723,6 +728,13 @@ it, and the walkthrough shows the base blocked when its harmful half is absent.<
 <h2 id="cards"><span class="idx">02</span>The cards</h2>
 <p class="lede">Each card is the unit of evidence. Verify recomputes it from the committed
 responses; tamper test edits one number and shows the fingerprint change.</p>
+<div class="context-box">
+<p class="eyebrow">What am I looking at?</p>
+<p>This is the Keel evidence locker. Standard benchmarks can go stale; every card here is
+recomputable. Select a model to see how its behavior deviated from its baseline. Each score
+is tied to the committed responses by a SHA-256 fingerprint, and the verify button
+recomputes the card from those responses.</p>
+</div>
 <div class="cards">{cards}</div>
 
 <h2 id="verify"><span class="idx">03</span>Verify it is real</h2>
